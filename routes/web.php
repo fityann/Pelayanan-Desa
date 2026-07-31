@@ -69,57 +69,81 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// ==== Area Admin/Perangkat Desa (dilindungi role) ====
+// ==== Area Admin/Perangkat Desa (dilindungi role + permission CRUD) ====
 Route::prefix('admin')->name('admin.')
     ->middleware(['auth', 'verified', 'role:Super Admin|Kepala Desa|Sekretaris Desa|Bendahara|Admin Desa'])
     ->group(function () {
-        Route::resource('users', UserController::class)->middleware('can_manage_users');
-        Route::resource('keluarga', KeluargaController::class);
-        Route::resource('penduduk', PendudukController::class);
-        Route::get('penduduk-import', [PendudukController::class, 'import'])->name('penduduk.import');
-        Route::post('penduduk-import', [PendudukController::class, 'importStore'])->name('penduduk.import.store');
+        // Manajemen User
+        Route::get('users', [UserController::class, 'index'])->middleware(['permission:R Manajemen User', 'can_manage_users'])->name('users.index');
+        Route::get('users/create', [UserController::class, 'create'])->middleware(['permission:C Manajemen User', 'can_manage_users'])->name('users.create');
+        Route::post('users', [UserController::class, 'store'])->middleware(['permission:C Manajemen User', 'can_manage_users'])->name('users.store');
+        Route::get('users/{user}/edit', [UserController::class, 'edit'])->middleware(['permission:U Manajemen User', 'can_manage_users'])->name('users.edit');
+        Route::match(['put', 'patch'], 'users/{user}', [UserController::class, 'update'])->middleware(['permission:U Manajemen User', 'can_manage_users'])->name('users.update');
+        Route::delete('users/{user}', [UserController::class, 'destroy'])->middleware(['permission:D Manajemen User', 'can_manage_users'])->name('users.destroy');
 
-        // Surat
-        Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->name('surat.jenis');
-        Route::post('surat/jenis', [SuratController::class, 'storeJenisSurat'])->name('surat.jenis.store');
-        Route::get('surat/pengajuan', [SuratController::class, 'pengajuanMasuk'])->name('surat.pengajuan');
-        Route::post('surat/{pengajuan}/verifikasi', [SuratController::class, 'verifikasi'])->name('surat.verifikasi');
-        Route::post('surat/{pengajuan}/approve', [SuratController::class, 'approve'])->name('surat.approve');
-        Route::post('surat/{pengajuan}/reject', [SuratController::class, 'reject'])->name('surat.reject');
-        Route::post('surat/{pengajuan}/selesai', [SuratController::class, 'selesai'])->name('surat.selesai');
-        Route::get('surat/{pengajuan}/pdf', [SuratController::class, 'pdf'])->name('surat.pdf');
-        Route::get('surat/arsip', [SuratController::class, 'arsip'])->name('surat.arsip');
-        Route::get('surat/tracking', [SuratController::class, 'tracking'])->name('surat.tracking');
+        // Keluarga
+        Route::get('keluarga', [KeluargaController::class, 'index'])->middleware('permission:R Keluarga')->name('keluarga.index');
+        Route::get('keluarga/create', [KeluargaController::class, 'create'])->middleware('permission:C Keluarga')->name('keluarga.create');
+        Route::post('keluarga', [KeluargaController::class, 'store'])->middleware('permission:C Keluarga')->name('keluarga.store');
+        Route::get('keluarga/{keluarga}/edit', [KeluargaController::class, 'edit'])->middleware('permission:U Keluarga')->name('keluarga.edit');
+        Route::match(['put', 'patch'], 'keluarga/{keluarga}', [KeluargaController::class, 'update'])->middleware('permission:U Keluarga')->name('keluarga.update');
+        Route::delete('keluarga/{keluarga}', [KeluargaController::class, 'destroy'])->middleware('permission:D Keluarga')->name('keluarga.destroy');
+
+        // Penduduk
+        Route::get('penduduk', [PendudukController::class, 'index'])->middleware('permission:R Penduduk')->name('penduduk.index');
+        Route::get('penduduk/create', [PendudukController::class, 'create'])->middleware('permission:C Penduduk')->name('penduduk.create');
+        Route::post('penduduk', [PendudukController::class, 'store'])->middleware('permission:C Penduduk')->name('penduduk.store');
+        Route::get('penduduk/{penduduk}/edit', [PendudukController::class, 'edit'])->middleware('permission:U Penduduk')->name('penduduk.edit');
+        Route::match(['put', 'patch'], 'penduduk/{penduduk}', [PendudukController::class, 'update'])->middleware('permission:U Penduduk')->name('penduduk.update');
+        Route::delete('penduduk/{penduduk}', [PendudukController::class, 'destroy'])->middleware('permission:D Penduduk')->name('penduduk.destroy');
+        Route::get('penduduk-import', [PendudukController::class, 'import'])->middleware('permission:C Penduduk')->name('penduduk.import');
+        Route::post('penduduk-import', [PendudukController::class, 'importStore'])->middleware('permission:C Penduduk')->name('penduduk.import.store');
+
+        // Surat (jenis surat)
+        Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->middleware('permission:R Surat')->name('surat.jenis');
+        Route::post('surat/jenis', [SuratController::class, 'storeJenisSurat'])->middleware('permission:C Surat')->name('surat.jenis.store');
+
+        // Pengajuan Surat (pemrosesan)
+        Route::get('surat/pengajuan', [SuratController::class, 'pengajuanMasuk'])->middleware('permission:R Pengajuan Surat')->name('surat.pengajuan');
+        Route::post('surat/{pengajuan}/verifikasi', [SuratController::class, 'verifikasi'])->middleware('permission:U Pengajuan Surat')->name('surat.verifikasi');
+        Route::post('surat/{pengajuan}/approve', [SuratController::class, 'approve'])->middleware('permission:U Pengajuan Surat')->name('surat.approve');
+        Route::post('surat/{pengajuan}/reject', [SuratController::class, 'reject'])->middleware('permission:U Pengajuan Surat')->name('surat.reject');
+        Route::post('surat/{pengajuan}/selesai', [SuratController::class, 'selesai'])->middleware('permission:U Pengajuan Surat')->name('surat.selesai');
+        Route::get('surat/{pengajuan}/pdf', [SuratController::class, 'pdf'])->middleware('permission:R Pengajuan Surat')->name('surat.pdf');
+
+        // Arsip Surat
+        Route::get('surat/arsip', [SuratController::class, 'arsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip');
+        Route::get('surat/tracking', [SuratController::class, 'tracking'])->middleware('permission:R Pengajuan Surat')->name('surat.tracking');
 
         // APBDes
-        Route::get('apbdes', [ApbdesController::class, 'index'])->name('apbdes.index');
-        Route::get('apbdes/create', [ApbdesController::class, 'create'])->name('apbdes.create');
-        Route::post('apbdes', [ApbdesController::class, 'store'])->name('apbdes.store');
-        Route::post('apbdes/{apbde}/review', [ApbdesController::class, 'review'])->name('apbdes.review');
-        Route::post('apbdes/{apbde}/publish', [ApbdesController::class, 'publish'])->name('apbdes.publish');
-        Route::delete('apbdes/{apbde}', [ApbdesController::class, 'destroy'])->name('apbdes.destroy');
+        Route::get('apbdes', [ApbdesController::class, 'index'])->middleware('permission:R APBDes')->name('apbdes.index');
+        Route::get('apbdes/create', [ApbdesController::class, 'create'])->middleware('permission:C APBDes')->name('apbdes.create');
+        Route::post('apbdes', [ApbdesController::class, 'store'])->middleware('permission:C APBDes')->name('apbdes.store');
+        Route::post('apbdes/{apbde}/review', [ApbdesController::class, 'review'])->middleware('permission:U APBDes')->name('apbdes.review');
+        Route::post('apbdes/{apbde}/publish', [ApbdesController::class, 'publish'])->middleware('permission:U APBDes')->name('apbdes.publish');
+        Route::delete('apbdes/{apbde}', [ApbdesController::class, 'destroy'])->middleware('permission:D APBDes')->name('apbdes.destroy');
 
         // Pengaduan
-        Route::get('pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
-        Route::get('pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
-        Route::post('pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
-        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->name('pengaduan.proses');
-        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->name('pengaduan.selesai');
-        Route::delete('pengaduan/{pengaduan}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
+        Route::get('pengaduan', [PengaduanController::class, 'index'])->middleware('permission:R Pengaduan')->name('pengaduan.index');
+        Route::get('pengaduan/create', [PengaduanController::class, 'create'])->middleware('permission:C Pengaduan')->name('pengaduan.create');
+        Route::post('pengaduan', [PengaduanController::class, 'store'])->middleware('permission:C Pengaduan')->name('pengaduan.store');
+        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->middleware('permission:U Pengaduan')->name('pengaduan.proses');
+        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->middleware('permission:U Pengaduan')->name('pengaduan.selesai');
+        Route::delete('pengaduan/{pengaduan}', [PengaduanController::class, 'destroy'])->middleware('permission:D Pengaduan')->name('pengaduan.destroy');
 
         // Informasi
-        Route::get('informasi', [InformasiController::class, 'index'])->name('informasi.index');
-        Route::get('informasi/create', [InformasiController::class, 'create'])->name('informasi.create');
-        Route::post('informasi', [InformasiController::class, 'store'])->name('informasi.store');
-        Route::get('informasi/{informasi}/edit', [InformasiController::class, 'edit'])->name('informasi.edit');
-        Route::patch('informasi/{informasi}', [InformasiController::class, 'update'])->name('informasi.update');
-        Route::post('informasi/{informasi}/publish', [InformasiController::class, 'publish'])->name('informasi.publish');
-        Route::delete('informasi/{informasi}', [InformasiController::class, 'destroy'])->name('informasi.destroy');
+        Route::get('informasi', [InformasiController::class, 'index'])->middleware('permission:R Informasi')->name('informasi.index');
+        Route::get('informasi/create', [InformasiController::class, 'create'])->middleware('permission:C Informasi')->name('informasi.create');
+        Route::post('informasi', [InformasiController::class, 'store'])->middleware('permission:C Informasi')->name('informasi.store');
+        Route::get('informasi/{informasi}/edit', [InformasiController::class, 'edit'])->middleware('permission:U Informasi')->name('informasi.edit');
+        Route::match(['put', 'patch'], 'informasi/{informasi}', [InformasiController::class, 'update'])->middleware('permission:U Informasi')->name('informasi.update');
+        Route::post('informasi/{informasi}/publish', [InformasiController::class, 'publish'])->middleware('permission:U Informasi')->name('informasi.publish');
+        Route::delete('informasi/{informasi}', [InformasiController::class, 'destroy'])->middleware('permission:D Informasi')->name('informasi.destroy');
 
         // Role & Permission
-        Route::get('roles', [RoleController::class, 'index'])->middleware('can_manage_users')->name('roles.index');
-        Route::post('roles/update', [RoleController::class, 'update'])->middleware('can_manage_users')->name('roles.update');
-        Route::post('roles/sync', [RoleController::class, 'syncAll'])->middleware('can_manage_users')->name('roles.sync');
+        Route::get('roles', [RoleController::class, 'index'])->middleware(['permission:R Role & Permission', 'can_manage_users'])->name('roles.index');
+        Route::post('roles/update', [RoleController::class, 'update'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.update');
+        Route::post('roles/sync', [RoleController::class, 'syncAll'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.sync');
     });
 
 require __DIR__.'/auth.php';

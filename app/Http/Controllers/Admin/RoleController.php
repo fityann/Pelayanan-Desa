@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Support\PermissionDefinitions;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -11,20 +12,6 @@ use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
-    private array $resources = [
-        'Penduduk' => ['C', 'R', 'U', 'D'],
-        'Keluarga' => ['C', 'R', 'U', 'D'],
-        'Surat' => ['C', 'R', 'U', 'D'],
-        'Pengajuan Surat' => ['C', 'R', 'U', 'D'],
-        'Arsip Surat' => ['R'],
-        'Pengaduan' => ['C', 'R', 'U', 'D'],
-        'Informasi' => ['C', 'R', 'U', 'D'],
-        'APBDes' => ['C', 'R', 'U', 'D'],
-        'Manajemen User' => ['C', 'R', 'U', 'D'],
-        'Role & Permission' => ['R', 'U'],
-        'Pengaturan' => ['R', 'U'],
-    ];
-
     public function index(): View
     {
         // Pastikan permission tersedia (lazy sync saat pertama kali dibuka)
@@ -39,7 +26,7 @@ class RoleController extends Controller
         $permissionCount = $permissions->flatten()->count();
 
         $matrix = [];
-        foreach ($this->resources as $resource => $actions) {
+        foreach (PermissionDefinitions::RESOURCES as $resource => $actions) {
             foreach ($actions as $action) {
                 $permName = $action . ' ' . $resource;
                 $matrix[$resource][$action] = [];
@@ -83,32 +70,18 @@ class RoleController extends Controller
 
     private function seedPermissions(): void
     {
-        $rolePermissions = [
-            'Super Admin' => [], // all permissions
-            'Kepala Desa' => ['R Penduduk', 'R Keluarga', 'R Surat', 'R Pengajuan Surat', 'R Arsip Surat', 'R Pengaduan', 'R Informasi', 'R APBDes', 'U APBDes'],
-            'Sekretaris Desa' => ['R Penduduk', 'R Keluarga', 'R Surat', 'R Pengajuan Surat', 'R Arsip Surat', 'R Pengaduan', 'R Informasi', 'R APBDes', 'U APBDes'],
-            'Bendahara' => ['R Penduduk', 'R Keluarga', 'R Surat', 'R Pengajuan Surat', 'R Arsip Surat', 'R Pengaduan', 'R Informasi', 'C APBDes', 'R APBDes', 'U APBDes'],
-            'Admin Desa' => ['C Penduduk', 'R Penduduk', 'U Penduduk', 'D Penduduk', 'C Keluarga', 'R Keluarga', 'U Keluarga', 'D Keluarga', 'C Surat', 'R Surat', 'U Surat', 'D Surat', 'R Pengajuan Surat', 'U Pengajuan Surat', 'R Arsip Surat', 'C Pengaduan', 'R Pengaduan', 'U Pengaduan', 'D Pengaduan', 'C Informasi', 'R Informasi', 'U Informasi', 'D Informasi', 'C APBDes', 'R APBDes'],
-            'Warga' => ['R Penduduk', 'C Pengaduan', 'R Informasi', 'C Pengajuan Surat'],
-            'RT' => ['R Penduduk', 'R Pengajuan Surat', 'R Pengaduan', 'R Informasi'],
-            'RW' => ['R Penduduk', 'R Pengajuan Surat', 'R Pengaduan', 'R Informasi'],
-        ];
-
-        // Create permissions
-        foreach ($this->resources as $resource => $actions) {
+        // Buat semua permission berdasarkan definisi resource + aksi
+        foreach (PermissionDefinitions::RESOURCES as $resource => $actions) {
             foreach ($actions as $action) {
                 Permission::firstOrCreate(['name' => $action . ' ' . $resource, 'guard_name' => 'web']);
             }
         }
 
-        // Assign to roles
-        foreach ($rolePermissions as $roleName => $perms) {
+        // Assign ke tiap role (Super Admin = semua izin)
+        foreach (PermissionDefinitions::ROLE_PERMISSIONS as $roleName => $perms) {
             $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
-            if (empty($perms)) {
-                $role->syncPermissions(Permission::all());
-            } else {
-                $role->syncPermissions($perms);
-            }
+
+            $role->syncPermissions(empty($perms) ? Permission::all() : $perms);
         }
     }
 }

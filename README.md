@@ -70,6 +70,13 @@ diajukan → diverifikasi_admin → ditolak (alasan wajib)
 | Approve surat (`surat/{id}/approve`) | Kepala Desa, Super Admin |
 | Layanan warga (`/layanan/*`) | Semua user login (verified) |
 
+Selain proteksi role di atas, setiap route admin juga dicek **permission CRUD**
+(`permission:C/R/U/D <Modul>`) yang dikelola lewat halaman **User & Role**. Definisi
+resource + pemetaan permission per role ada di `app/Support/PermissionDefinitions.php`
+(sumber tunggal, dipakai `RolePermissionSeeder` dan `RoleController`). Matriks izin
+di halaman `admin/roles` kini benar-benar ter-enforce: mencabut izin langsung memblokir
+route terkait.
+
 Catatan: middleware Spatie didaftarkan di `bootstrap/app.php` (alias `role`, `permission`, `role_or_permission`, `can_manage_users`).
 
 ---

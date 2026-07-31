@@ -128,6 +128,9 @@ class DatabaseSeeder extends Seeder
 
         $this->command->info('Roles dan users berhasil dibuat');
 
+        // ==== PERMISSION & AKSES (CRUD ter-enforce di route) ====
+        $this->call(RolePermissionSeeder::class);
+
         // ==== DATA PENDUKUNG (Sample Fase 1) ====
         $this->call([
             JenisSuratSeeder::class,

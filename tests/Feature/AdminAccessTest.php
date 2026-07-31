@@ -3,7 +3,10 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class AdminAccessTest extends TestCase
@@ -14,7 +17,8 @@ class AdminAccessTest extends TestCase
 
     protected function createUserWithRole(string $role): User
     {
-        \Spatie\Permission\Models\Role::firstOrCreate(['name' => $role, 'guard_name' => 'web']);
+        // Sinkronkan role + permission sesuai definisi produksi
+        $this->seed(RolePermissionSeeder::class);
 
         $user = User::create([
             'name' => 'User ' . $role,
@@ -64,17 +68,34 @@ class AdminAccessTest extends TestCase
             ->assertForbidden();
     }
 
-    public function test_roles_page_seeds_permissions_when_empty(): void
+    public function test_permission_crud_is_enforced_on_routes(): void
     {
+        // Bendahara punya 'R Penduduk' tapi TIDAK punya 'C Penduduk'
+        $bendahara = $this->createUserWithRole('Bendahara');
+
+        $this->actingAs($bendahara)
+            ->get(route('admin.penduduk.index'))
+            ->assertOk();
+
+        $this->actingAs($bendahara)
+            ->get(route('admin.penduduk.create'))
+            ->assertForbidden();
+
+        // Admin Desa punya 'C Penduduk'
         $admin = $this->createUserWithRole('Admin Desa');
 
-        $this->assertSame(0, \Spatie\Permission\Models\Permission::count());
+        $this->actingAs($admin)
+            ->get(route('admin.penduduk.create'))
+            ->assertOk();
+    }
+
+    public function test_roles_page_works_with_seeded_permissions(): void
+    {
+        $admin = $this->createUserWithRole('Admin Desa');
 
         $this->actingAs($admin)
             ->get(route('admin.roles.index'))
             ->assertOk();
-
-        $this->assertGreaterThan(0, \Spatie\Permission\Models\Permission::count());
     }
 
     public function test_only_kades_can_approve_surat(): void
@@ -104,5 +125,18 @@ class AdminAccessTest extends TestCase
 
         $this->assertSame('menunggu_ttd_fisik', $pengajuan->fresh()->status);
         $this->assertNotNull($pengajuan->fresh()->nomor_surat);
+    }
+
+    public function test_revoking_permission_revokes_access(): void
+    {
+        $admin = $this->createUserWithRole('Admin Desa');
+        $role = Role::findByName('Admin Desa');
+
+        // Cabut izin membuat penduduk
+        $role->revokePermissionTo('C Penduduk');
+
+        $this->actingAs($admin)
+            ->get(route('admin.penduduk.create'))
+            ->assertForbidden();
     }
 }
