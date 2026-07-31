@@ -49,9 +49,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
 
-    Route::prefix('admin')->name('admin.')->group(function () {
-        Route::resource('users', UserController::class);
+// ==== Area Admin/Perangkat Desa (dilindungi role) ====
+Route::prefix('admin')->name('admin.')
+    ->middleware(['auth', 'verified', 'role:Super Admin|Kepala Desa|Sekretaris Desa|Bendahara|Admin Desa'])
+    ->group(function () {
+        Route::resource('users', UserController::class)->middleware('can_manage_users');
         Route::resource('keluarga', KeluargaController::class);
         Route::resource('penduduk', PendudukController::class);
         Route::get('penduduk-import', [PendudukController::class, 'import'])->name('penduduk.import');
@@ -95,10 +99,9 @@ Route::middleware('auth')->group(function () {
         Route::delete('informasi/{informasi}', [InformasiController::class, 'destroy'])->name('informasi.destroy');
 
         // Role & Permission
-        Route::get('roles', [RoleController::class, 'index'])->name('roles.index');
-        Route::post('roles/update', [RoleController::class, 'update'])->name('roles.update');
-        Route::post('roles/sync', [RoleController::class, 'syncAll'])->name('roles.sync');
+        Route::get('roles', [RoleController::class, 'index'])->middleware('can_manage_users')->name('roles.index');
+        Route::post('roles/update', [RoleController::class, 'update'])->middleware('can_manage_users')->name('roles.update');
+        Route::post('roles/sync', [RoleController::class, 'syncAll'])->middleware('can_manage_users')->name('roles.sync');
     });
-});
 
 require __DIR__.'/auth.php';
