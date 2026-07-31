@@ -13,6 +13,14 @@ class Informasi extends Model
         'user_id', 'published_at',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'tanggal_kegiatan' => 'datetime',
+            'published_at' => 'datetime',
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
