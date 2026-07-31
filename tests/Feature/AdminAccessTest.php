@@ -63,4 +63,33 @@ class AdminAccessTest extends TestCase
             ->get(route('admin.users.index'))
             ->assertForbidden();
     }
+
+    public function test_only_kades_can_approve_surat(): void
+    {
+        $admin = $this->createUserWithRole('Admin Desa');
+        $kades = $this->createUserWithRole('Kepala Desa');
+
+        $jenis = \App\Models\JenisSurat::create([
+            'kode' => 'SKU',
+            'nama' => 'Surat Keterangan Usaha',
+        ]);
+
+        $pengajuan = \App\Models\PengajuanSurat::create([
+            'user_id' => $admin->id,
+            'jenis_surat_id' => $jenis->id,
+            'status' => 'diverifikasi_admin',
+            'butuh_ttd_fisik' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.surat.approve', $pengajuan))
+            ->assertForbidden();
+
+        $this->actingAs($kades)
+            ->post(route('admin.surat.approve', $pengajuan))
+            ->assertRedirect(route('admin.surat.pengajuan'));
+
+        $this->assertSame('menunggu_ttd_fisik', $pengajuan->fresh()->status);
+        $this->assertNotNull($pengajuan->fresh()->nomor_surat);
+    }
 }

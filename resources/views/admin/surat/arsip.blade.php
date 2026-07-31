@@ -27,6 +27,7 @@
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Jenis</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Tgl Disetujui</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
+                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-variant/20">
@@ -42,17 +43,17 @@
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->jenisSurat->nama }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                <span class="text-body-sm text-on-surface-variant">{{ $item->tanggal_disetujui ? \Carbon\Carbon::parse($item->tanggal_disetujui)->format('d/m/Y') : '-' }}</span>
+                                <span class="text-body-sm text-on-surface-variant">{{ $item->tanggal_disetujui?->format('d/m/Y') ?? '-' }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                @php
-                                    $cls = $item->status === 'selesai' ? 'bg-success/10 text-success' : 'bg-secondary/10 text-secondary';
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $cls }}">{{ $item->status }}</span>
+                                @include('partials.surat-status-badge', ['status' => $item->status])
+                            </td>
+                            <td class="px-lg py-4">
+                                <a href="{{ route('admin.surat.pdf', $item) }}" class="text-secondary text-label-sm font-bold hover:underline">PDF</a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center py-xl text-on-surface-variant">Belum ada arsip surat</td></tr>
+                        <tr><td colspan="6" class="text-center py-xl text-on-surface-variant">Belum ada arsip surat</td></tr>
                     @endforelse
                 </tbody>
             </table>

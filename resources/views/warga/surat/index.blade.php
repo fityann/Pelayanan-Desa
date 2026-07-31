@@ -51,6 +51,9 @@
                 @if ($jenis->masa_berlaku)
                     <span class="text-label-sm text-on-surface-variant">Berlaku {{ $jenis->masa_berlaku }} hari</span>
                 @endif
+                @if (!$jenis->butuh_ttd_fisik)
+                    <span class="text-label-sm text-on-surface-variant">Tanpa TTD fisik</span>
+                @endif
                 <a href="{{ route('warga.surat.create', $jenis) }}" class="mt-lg bg-primary text-on-primary text-center px-lg py-2.5 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-sm">
                     <span class="material-symbols-outlined text-[18px]">edit_note</span>
                     Ajukan Surat

@@ -47,6 +47,9 @@
                 @if ($jenis->masa_berlaku)
                     <p class="text-label-sm text-on-surface-variant">Masa berlaku: {{ $jenis->masa_berlaku }} hari</p>
                 @endif
+                <p class="text-label-sm {{ $jenis->butuh_ttd_fisik ? 'text-on-surface-variant' : 'text-success' }} mt-xs">
+                    {{ $jenis->butuh_ttd_fisik ? 'Butuh TTD fisik Kepala Desa' : 'Tanpa TTD fisik (langsung final)' }}
+                </p>
             </div>
         @endforeach
     </div>
@@ -81,6 +84,10 @@
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">Masa Berlaku (hari)</label>
                 <input type="number" name="masa_berlaku" min="1" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Kosongkan jika tidak terbatas">
+            </div>
+            <div class="flex items-center gap-md">
+                <input type="checkbox" name="butuh_ttd_fisik" id="butuh_ttd_fisik" value="1" checked class="w-4 h-4 accent-[#51007a]">
+                <label for="butuh_ttd_fisik" class="text-label-sm font-bold text-on-surface">Butuh tanda tangan fisik Kepala Desa</label>
             </div>
             <div class="flex gap-md justify-end pt-md border-t border-surface-variant/30">
                 <button type="button" onclick="document.getElementById('modalTambah').classList.add('hidden')" class="px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all">Batal</button>

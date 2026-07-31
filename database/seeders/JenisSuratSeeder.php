@@ -16,6 +16,7 @@ class JenisSuratSeeder extends Seeder
                 'deskripsi' => 'Surat keterangan tempat tinggal/domisili untuk keperluan administrasi',
                 'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat pengantar RT/RW",
                 'masa_berlaku' => 90,
+                'butuh_ttd_fisik' => true,
             ],
             [
                 'kode' => 'SKU',
@@ -23,6 +24,7 @@ class JenisSuratSeeder extends Seeder
                 'deskripsi' => 'Surat keterangan untuk mengurus izin usaha atau keperluan perbankan',
                 'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Pas foto 3x4 (2 lembar)\n4. Keterangan usaha dari RT/RW",
                 'masa_berlaku' => null,
+                'butuh_ttd_fisik' => true,
             ],
             [
                 'kode' => 'SKTM',
@@ -30,6 +32,7 @@ class JenisSuratSeeder extends Seeder
                 'deskripsi' => 'Surat keterangan untuk mengurus bantuan sosial, beasiswa, atau keringanan biaya',
                 'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat pengantar RT/RW",
                 'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
             ],
             [
                 'kode' => 'SPN',
@@ -37,6 +40,7 @@ class JenisSuratSeeder extends Seeder
                 'deskripsi' => 'Surat pengantar untuk pendaftaran pernikahan di KUA',
                 'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Pas foto 4x6 (4 lembar)\n4. Surat izin orang tua (jika diperlukan)",
                 'masa_berlaku' => 60,
+                'butuh_ttd_fisik' => true,
             ],
             [
                 'kode' => 'SKematian',
@@ -44,6 +48,7 @@ class JenisSuratSeeder extends Seeder
                 'deskripsi' => 'Surat keterangan untuk melaporkan dan mengurus administrasi kematian',
                 'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP almarhum/almarhumah\n3. Surat keterangan dari saksi/RT/RW",
                 'masa_berlaku' => null,
+                'butuh_ttd_fisik' => true,
             ],
         ];
 

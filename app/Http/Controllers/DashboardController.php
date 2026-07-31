@@ -21,10 +21,10 @@ class DashboardController extends Controller
 
         $suratPerStatus = [
             'diajukan' => PengajuanSurat::where('status', 'diajukan')->count(),
-            'diproses' => PengajuanSurat::where('status', 'diproses')->count(),
-            'disetujui' => PengajuanSurat::where('status', 'disetujui')->count(),
+            'diverifikasi_admin' => PengajuanSurat::where('status', 'diverifikasi_admin')->count(),
             'ditolak' => PengajuanSurat::where('status', 'ditolak')->count(),
-            'siap_diambil' => PengajuanSurat::where('status', 'siap_diambil')->count(),
+            'disetujui_kades' => PengajuanSurat::where('status', 'disetujui_kades')->count(),
+            'menunggu_ttd_fisik' => PengajuanSurat::where('status', 'menunggu_ttd_fisik')->count(),
             'selesai' => PengajuanSurat::where('status', 'selesai')->count(),
         ];
 

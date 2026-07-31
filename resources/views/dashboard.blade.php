@@ -128,10 +128,10 @@
                 <div class="grid grid-cols-3 md:grid-cols-6 gap-md">
                     @foreach ([
                         'diajukan' => ['bg-amber-50 text-amber-700', 'pending'],
-                        'diproses' => ['bg-blue-50 text-blue-700', 'hourglass_top'],
-                        'disetujui' => ['bg-emerald-50 text-emerald-700', 'check_circle'],
+                        'diverifikasi_admin' => ['bg-blue-50 text-blue-700', 'fact_check'],
                         'ditolak' => ['bg-red-50 text-red-700', 'cancel'],
-                        'siap_diambil' => ['bg-purple-50 text-purple-700', 'inventory'],
+                        'disetujui_kades' => ['bg-emerald-50 text-emerald-700', 'check_circle'],
+                        'menunggu_ttd_fisik' => ['bg-purple-50 text-purple-700', 'ink_pen'],
                         'selesai' => ['bg-gray-100 text-gray-700', 'task_alt'],
                     ] as $sts => $cfg)
                         <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl {{ $cfg[0] }}">

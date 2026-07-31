@@ -57,20 +57,7 @@
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->created_at->format('d/m/Y H:i') }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                @php
-                                    $statusClass = match($item->status) {
-                                        'diajukan' => 'bg-on-tertiary-container/10 text-on-tertiary-container',
-                                        'diproses' => 'bg-primary/10 text-primary',
-                                        'disetujui' => 'bg-success/10 text-success',
-                                        'ditolak' => 'bg-error/10 text-error',
-                                        'siap_diambil' => 'bg-secondary/10 text-secondary',
-                                        'selesai' => 'bg-surface-variant/30 text-on-surface-variant',
-                                        default => 'bg-surface-variant/30 text-on-surface-variant'
-                                    };
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">
-                                    {{ $item->status }}
-                                </span>
+                                @include('partials.surat-status-badge', ['status' => $item->status])
                             </td>
                             <td class="px-lg py-4">
                                 <div class="flex items-center gap-sm flex-wrap">
@@ -80,24 +67,21 @@
                                             <button class="text-primary text-label-sm font-bold hover:underline">Verifikasi</button>
                                         </form>
                                     @endif
-                                    @if ($item->status === 'diproses')
+                                    @if ($item->status === 'diverifikasi_admin')
                                         <form method="POST" action="{{ route('admin.surat.approve', $item) }}" class="inline">
                                             @csrf
-                                            <button class="text-success text-label-sm font-bold hover:underline" onclick="return confirm('Setujui pengajuan ini?')">Setujui</button>
+                                            <button class="text-success text-label-sm font-bold hover:underline" onclick="return confirm('Setujui pengajuan ini? Nomor surat akan digenerate otomatis.')">Setujui (Kades)</button>
                                         </form>
                                         <button onclick="openRejectModal({{ $item->id }})" class="text-error text-label-sm font-bold hover:underline">Tolak</button>
                                     @endif
-                                    @if ($item->status === 'disetujui')
+                                    @if (in_array($item->status, ['disetujui_kades', 'menunggu_ttd_fisik']))
                                         <span class="text-label-sm text-on-surface-variant">No: {{ $item->nomor_surat }}</span>
-                                        <form method="POST" action="{{ route('admin.surat.siap-ambil', $item) }}" class="inline">
-                                            @csrf
-                                            <button class="text-secondary text-label-sm font-bold hover:underline">Siap Ambil</button>
-                                        </form>
+                                        <a href="{{ route('admin.surat.pdf', $item) }}" class="text-secondary text-label-sm font-bold hover:underline">Download PDF</a>
                                     @endif
-                                    @if ($item->status === 'siap_diambil')
+                                    @if ($item->status === 'menunggu_ttd_fisik')
                                         <form method="POST" action="{{ route('admin.surat.selesai', $item) }}" class="inline">
                                             @csrf
-                                            <button class="text-on-surface-variant text-label-sm font-bold hover:underline">Selesai</button>
+                                            <button class="text-on-surface-variant text-label-sm font-bold hover:underline" onclick="return confirm('Pastikan surat sudah ditandatangani Kepala Desa. Tandai selesai?')">Tandai Selesai</button>
                                         </form>
                                     @endif
                                     @if ($item->alasan_ditolak)

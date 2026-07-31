@@ -15,6 +15,7 @@ return new class extends Migration
             $table->text('deskripsi')->nullable();
             $table->text('syarat')->nullable();
             $table->integer('masa_berlaku')->nullable()->comment('dalam hari');
+            $table->boolean('butuh_ttd_fisik')->default(true)->comment('apakah surat perlu tanda tangan basah Kepala Desa');
             $table->boolean('aktif')->default(true);
             $table->timestamps();
         });

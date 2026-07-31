@@ -40,10 +40,15 @@
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->created_at->format('d/m/Y') }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-on-tertiary-container/10 text-on-tertiary-container">{{ $item->status }}</span>
+                                @include('partials.surat-status-badge', ['status' => $item->status])
                             </td>
                             <td class="px-lg py-4">
-                                <a href="{{ route('warga.surat.status', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Lihat</a>
+                                <div class="flex items-center gap-sm flex-wrap">
+                                    <a href="{{ route('warga.surat.status', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Lihat</a>
+                                    @if (in_array($item->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']))
+                                        <a href="{{ route('warga.surat.pdf', $item) }}" class="text-on-surface-variant text-label-sm font-bold hover:underline">Download PDF</a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty

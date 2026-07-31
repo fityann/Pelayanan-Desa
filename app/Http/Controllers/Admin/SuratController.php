@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\JenisSurat;
 use App\Models\PengajuanSurat;
-use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -26,39 +26,64 @@ class SuratController extends Controller
             'deskripsi' => ['nullable', 'string'],
             'syarat' => ['nullable', 'string'],
             'masa_berlaku' => ['nullable', 'integer', 'min:1'],
+            'butuh_ttd_fisik' => ['nullable', 'boolean'],
         ]);
 
-        JenisSurat::create($request->all());
+        JenisSurat::create($request->all() + ['butuh_ttd_fisik' => $request->boolean('butuh_ttd_fisik', true)]);
 
         return redirect()->route('admin.surat.jenis')->with('success', 'Jenis surat berhasil ditambahkan');
     }
 
     public function pengajuanMasuk(): View
     {
-        $pengajuan = PengajuanSurat::with(['user', 'jenisSurat'])->latest()->paginate(15);
+        $pengajuan = PengajuanSurat::with(['user', 'jenisSurat'])
+            ->whereNotIn('status', ['selesai'])
+            ->latest()
+            ->paginate(15);
+
         return view('admin.surat.pengajuan', compact('pengajuan'));
     }
 
+    /**
+     * Tahap 1: Admin Desa memverifikasi kelengkapan berkas.
+     * diajukan -> diverifikasi_admin
+     */
     public function verifikasi(PengajuanSurat $pengajuan): RedirectResponse
     {
+        abort_unless($pengajuan->status === 'diajukan', 422);
+
         $pengajuan->update([
-            'status' => 'diproses',
+            'status' => 'diverifikasi_admin',
             'verified_by' => auth()->id(),
         ]);
 
-        return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan diverifikasi');
+        return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan diverifikasi. Menunggu approval Kepala Desa.');
     }
 
+    /**
+     * Tahap 2 (hanya Kepala Desa): approval + generate nomor surat + draft PDF.
+     * diverifikasi_admin -> disetujui_kades -> (menunggu_ttd_fisik | selesai)
+     */
     public function approve(Request $request, PengajuanSurat $pengajuan): RedirectResponse
     {
+        // Approval hanya oleh Kepala Desa (sesuai PRD Fase 1)
+        abort_unless(auth()->user()->hasAnyRole(['Kepala Desa', 'Super Admin']), 403);
+        abort_unless($pengajuan->status === 'diverifikasi_admin', 422);
+
         $nomor = $this->generateNomorSurat($pengajuan->jenisSurat->kode);
 
         $pengajuan->update([
-            'status' => 'disetujui',
+            'status' => 'disetujui_kades',
             'nomor_surat' => $nomor,
             'approved_by' => auth()->id(),
             'tanggal_disetujui' => now(),
         ]);
+
+        if ($pengajuan->butuh_ttd_fisik) {
+            $pengajuan->update(['status' => 'menunggu_ttd_fisik']);
+        } else {
+            $pengajuan->update(['status' => 'selesai', 'tanggal_diambil' => now()]);
+        }
 
         return redirect()->route('admin.surat.pengajuan')->with('success', "Surat disetujui. Nomor: {$nomor}");
     }
@@ -66,6 +91,8 @@ class SuratController extends Controller
     public function reject(Request $request, PengajuanSurat $pengajuan): RedirectResponse
     {
         $request->validate(['alasan_ditolak' => ['required', 'string']]);
+
+        abort_unless(in_array($pengajuan->status, ['diajukan', 'diverifikasi_admin']), 422);
 
         $pengajuan->update([
             'status' => 'ditolak',
@@ -75,27 +102,40 @@ class SuratController extends Controller
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan ditolak');
     }
 
-    public function siapAmbil(PengajuanSurat $pengajuan): RedirectResponse
-    {
-        $pengajuan->update(['status' => 'siap_diambil']);
-
-        return redirect()->route('admin.surat.pengajuan')->with('success', 'Status: siap diambil');
-    }
-
+    /**
+     * Tahap akhir: setelah tanda tangan fisik, admin update status selesai.
+     * menunggu_ttd_fisik -> selesai
+     */
     public function selesai(PengajuanSurat $pengajuan): RedirectResponse
     {
+        abort_unless($pengajuan->status === 'menunggu_ttd_fisik', 422);
+
         $pengajuan->update([
             'status' => 'selesai',
+            'tanggal_ttd_fisik' => now(),
             'tanggal_diambil' => now(),
         ]);
 
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan selesai');
     }
 
+    public function pdf(PengajuanSurat $pengajuan): \Illuminate\Http\Response
+    {
+        abort_unless(in_array($pengajuan->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']), 422);
+
+        $pdf = Pdf::loadView('pdf.surat', ['surat' => $pengajuan])
+            ->setPaper('a4', 'portrait');
+
+        $filename = (str_replace(['/', '\\'], '-', $pengajuan->nomor_surat) ?? 'draft')
+            . '-' . str_replace([' ', '/', '\\'], '-', $pengajuan->user->name) . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
     public function arsip(): View
     {
         $arsip = PengajuanSurat::with(['user', 'jenisSurat'])
-            ->whereIn('status', ['disetujui', 'siap_diambil', 'selesai'])
+            ->whereIn('status', ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai'])
             ->latest()
             ->paginate(15);
 
@@ -118,7 +158,9 @@ class SuratController extends Controller
     {
         $bulan = now()->format('m');
         $tahun = now()->format('Y');
-        $count = PengajuanSurat::whereYear('created_at', $tahun)->count() + 1;
+        $count = PengajuanSurat::whereYear('created_at', $tahun)
+            ->whereNotNull('nomor_surat')
+            ->count() + 1;
 
         return sprintf('%s/%03d/%s/%s', $kode, $count, $bulan, $tahun);
     }

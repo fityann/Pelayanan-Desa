@@ -31,6 +31,7 @@
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Jenis</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Tgl Diajukan</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
+                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-variant/20">
@@ -49,22 +50,14 @@
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->created_at->format('d/m/Y') }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                @php
-                                    $cls = match($item->status) {
-                                        'diajukan' => 'bg-on-tertiary-container/10 text-on-tertiary-container',
-                                        'diproses' => 'bg-primary/10 text-primary',
-                                        'disetujui' => 'bg-success/10 text-success',
-                                        'ditolak' => 'bg-error/10 text-error',
-                                        'siap_diambil' => 'bg-secondary/10 text-secondary',
-                                        'selesai' => 'bg-surface-variant/30 text-on-surface-variant',
-                                        default => 'bg-surface-variant/30 text-on-surface-variant'
-                                    };
-                                @endphp
-                                <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $cls }}">{{ $item->status }}</span>
+                                @include('partials.surat-status-badge', ['status' => $item->status])
+                            </td>
+                            <td class="px-lg py-4">
+                                <a href="{{ route('warga.surat.status', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Detail</a>
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="5" class="text-center py-xl text-on-surface-variant">Data tidak ditemukan</td></tr>
+                        <tr><td colspan="6" class="text-center py-xl text-on-surface-variant">Data tidak ditemukan</td></tr>
                     @endforelse
                 </tbody>
             </table>

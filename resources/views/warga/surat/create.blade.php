@@ -45,6 +45,17 @@
             <p class="text-[10px] text-on-surface-variant mt-xs">Maks. 2MB. Format: PDF, JPG, PNG</p>
         </div>
 
+        <div class="bg-on-tertiary-container/5 border border-on-tertiary-container/20 rounded-xl p-md text-body-sm text-on-surface-variant flex gap-md">
+            <span class="material-symbols-outlined text-on-tertiary-container">info</span>
+            <p>
+                @if ($jenisSurat->butuh_ttd_fisik)
+                    Surat ini memerlukan <strong class="text-on-surface">tanda tangan fisik Kepala Desa</strong>. Setelah disetujui, sistem membuat draft PDF siap cetak — Anda/Admin cukup mencetaknya, lalu menyerahkan ke Kepala Desa hanya untuk tanda tangan.
+                @else
+                    Surat ini tidak memerlukan tanda tangan fisik — setelah disetujui Anda dapat langsung mengunduh PDF.
+                @endif
+            </p>
+        </div>
+
         <div class="flex gap-md justify-end pt-md border-t border-surface-variant/30">
             <a href="{{ route('warga.surat.index') }}" class="px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all">Batal</a>
             <button type="submit" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all">Kirim Pengajuan</button>

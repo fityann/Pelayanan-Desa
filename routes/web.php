@@ -55,6 +55,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
         Route::get('/saya/riwayat', [WargaSuratController::class, 'riwayat'])->name('riwayat');
         Route::get('/{pengajuan}/status', [WargaSuratController::class, 'status'])->name('status');
+        Route::get('/{pengajuan}/pdf', [WargaSuratController::class, 'pdf'])->name('pdf');
     });
 
     // QR Code pengaduan (PRD 1.5): /pengaduan/buat
@@ -82,11 +83,11 @@ Route::prefix('admin')->name('admin.')
         Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->name('surat.jenis');
         Route::post('surat/jenis', [SuratController::class, 'storeJenisSurat'])->name('surat.jenis.store');
         Route::get('surat/pengajuan', [SuratController::class, 'pengajuanMasuk'])->name('surat.pengajuan');
-        Route::post('surat/{pengajuanSurat}/verifikasi', [SuratController::class, 'verifikasi'])->name('surat.verifikasi');
-        Route::post('surat/{pengajuanSurat}/approve', [SuratController::class, 'approve'])->name('surat.approve');
-        Route::post('surat/{pengajuanSurat}/reject', [SuratController::class, 'reject'])->name('surat.reject');
-        Route::post('surat/{pengajuanSurat}/siap-ambil', [SuratController::class, 'siapAmbil'])->name('surat.siap-ambil');
-        Route::post('surat/{pengajuanSurat}/selesai', [SuratController::class, 'selesai'])->name('surat.selesai');
+        Route::post('surat/{pengajuan}/verifikasi', [SuratController::class, 'verifikasi'])->name('surat.verifikasi');
+        Route::post('surat/{pengajuan}/approve', [SuratController::class, 'approve'])->name('surat.approve');
+        Route::post('surat/{pengajuan}/reject', [SuratController::class, 'reject'])->name('surat.reject');
+        Route::post('surat/{pengajuan}/selesai', [SuratController::class, 'selesai'])->name('surat.selesai');
+        Route::get('surat/{pengajuan}/pdf', [SuratController::class, 'pdf'])->name('surat.pdf');
         Route::get('surat/arsip', [SuratController::class, 'arsip'])->name('surat.arsip');
         Route::get('surat/tracking', [SuratController::class, 'tracking'])->name('surat.tracking');
 

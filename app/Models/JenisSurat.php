@@ -7,7 +7,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class JenisSurat extends Model
 {
-    protected $fillable = ['kode', 'nama', 'deskripsi', 'syarat', 'masa_berlaku', 'aktif'];
+    protected $fillable = ['kode', 'nama', 'deskripsi', 'syarat', 'masa_berlaku', 'butuh_ttd_fisik', 'aktif'];
+
+    protected function casts(): array
+    {
+        return [
+            'butuh_ttd_fisik' => 'boolean',
+            'aktif' => 'boolean',
+        ];
+    }
 
     public function pengajuanSurat(): HasMany
     {

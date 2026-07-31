@@ -28,18 +28,7 @@
                 <p class="text-label-sm text-on-surface-variant">Nomor Surat</p>
                 <p class="text-title-md font-mono font-bold text-on-surface">{{ $pengajuan->nomor_surat ?? '-' }}</p>
             </div>
-            @php
-                $statusClass = match($pengajuan->status) {
-                    'diajukan' => 'bg-on-tertiary-container/10 text-on-tertiary-container',
-                    'diproses' => 'bg-primary/10 text-primary',
-                    'disetujui' => 'bg-success/10 text-success',
-                    'ditolak' => 'bg-error/10 text-error',
-                    'siap_diambil' => 'bg-secondary/10 text-secondary',
-                    'selesai' => 'bg-surface-variant/30 text-on-surface-variant',
-                    default => 'bg-surface-variant/30 text-on-surface-variant',
-                };
-            @endphp
-            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $statusClass }}">{{ $pengajuan->status }}</span>
+            @include('partials.surat-status-badge', ['status' => $pengajuan->status])
         </div>
 
         @if ($pengajuan->keterangan)
@@ -50,11 +39,41 @@
         @endif
 
         @if ($pengajuan->alasan_ditolak)
-            <div class="bg-error/5 border border-error/20 rounded-xl p-md flex gap-md">
+            <div class="bg-error/5 border border-error/20 rounded-xl p-md mb-md flex gap-md">
                 <span class="material-symbols-outlined text-error">cancel</span>
                 <div>
                     <p class="text-label-sm font-bold text-error mb-xs">Pengajuan Ditolak</p>
                     <p class="text-body-sm text-on-surface-variant">{{ $pengajuan->alasan_ditolak }}</p>
+                </div>
+            </div>
+        @endif
+
+        @if ($pengajuan->status === 'menunggu_ttd_fisik')
+            <div class="bg-secondary/10 border border-secondary/20 rounded-xl p-md flex gap-md">
+                <span class="material-symbols-outlined text-secondary">print</span>
+                <div>
+                    <p class="text-label-sm font-bold text-secondary mb-xs">Menunggu Tanda Tangan Kepala Desa</p>
+                    <p class="text-body-sm text-on-surface-variant">
+                        Draft PDF sudah siap. Silakan unduh, cetak, lalu bawa ke kantor desa untuk ditandatangani Kepala Desa.
+                    </p>
+                    <a href="{{ route('warga.surat.pdf', $pengajuan) }}" class="inline-flex items-center gap-sm mt-md bg-secondary text-on-secondary px-lg py-2 rounded-full text-label-md font-bold hover:bg-secondary/90 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        Unduh Draft PDF
+                    </a>
+                </div>
+            </div>
+        @endif
+
+        @if (in_array($pengajuan->status, ['disetujui_kades', 'selesai']) && !$pengajuan->butuh_ttd_fisik)
+            <div class="bg-success/10 border border-success/20 rounded-xl p-md flex gap-md">
+                <span class="material-symbols-outlined text-success">task_alt</span>
+                <div>
+                    <p class="text-label-sm font-bold text-success mb-xs">Surat Selesai</p>
+                    <p class="text-body-sm text-on-surface-variant">Surat Anda sudah final dan dapat diunduh langsung.</p>
+                    <a href="{{ route('warga.surat.pdf', $pengajuan) }}" class="inline-flex items-center gap-sm mt-md bg-success text-on-success px-lg py-2 rounded-full text-label-md font-bold hover:bg-success/90 transition-all">
+                        <span class="material-symbols-outlined text-[18px]">download</span>
+                        Unduh PDF Final
+                    </a>
                 </div>
             </div>
         @endif

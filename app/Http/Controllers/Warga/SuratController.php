@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Warga;
 use App\Http\Controllers\Controller;
 use App\Models\JenisSurat;
 use App\Models\PengajuanSurat;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -69,6 +70,21 @@ class SuratController extends Controller
         $pengajuan->load('jenisSurat');
 
         return view('warga.surat.status', compact('pengajuan'));
+    }
+
+    public function pdf(PengajuanSurat $pengajuan): \Illuminate\Http\Response
+    {
+        $this->authorizeView($pengajuan);
+
+        abort_unless(in_array($pengajuan->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']), 403);
+
+        $pdf = Pdf::loadView('pdf.surat', ['surat' => $pengajuan])
+            ->setPaper('a4', 'portrait');
+
+        $filename = (str_replace(['/', '\\'], '-', $pengajuan->nomor_surat) ?? 'draft')
+            . '-' . str_replace([' ', '/', '\\'], '-', $pengajuan->user->name) . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     /**
