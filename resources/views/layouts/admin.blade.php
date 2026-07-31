@@ -39,6 +39,8 @@
                 $isBendahara = $user->hasRole('Bendahara');
                 $isKades = $user->hasRole('Kepala Desa');
                 $isSekdes = $user->hasRole('Sekretaris Desa');
+                $isStaff = $isSuperAdmin || $isAdmin || $isBendahara || $isKades || $isSekdes;
+                $isWarga = $user->hasRole('Warga');
             @endphp
 
             <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('dashboard') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('dashboard') }}">
@@ -46,6 +48,27 @@
                 <span class="text-label-md">Dashboard</span>
             </a>
 
+            @if ($isWarga)
+                <div class="pt-md pb-xs px-md text-on-primary-container opacity-50 text-label-sm uppercase tracking-widest">Layanan Warga</div>
+                <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('layanan/surat') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('warga.surat.index') }}">
+                    <span class="material-symbols-outlined">edit_note</span>
+                    <span class="text-label-md">Ajukan Surat</span>
+                </a>
+                <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('layanan/surat/saya') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('warga.surat.riwayat') }}">
+                    <span class="material-symbols-outlined">history</span>
+                    <span class="text-label-md">Riwayat Surat Saya</span>
+                </a>
+                <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('pengaduan/buat') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('pengaduan.buat') }}">
+                    <span class="material-symbols-outlined">campaign</span>
+                    <span class="text-label-md">Buat Pengaduan</span>
+                </a>
+                <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all text-on-primary-container hover:bg-primary/40" href="{{ route('informasi.publik') }}">
+                    <span class="material-symbols-outlined">newspaper</span>
+                    <span class="text-label-md">Info Desa</span>
+                </a>
+            @endif
+
+            @if ($isStaff)
             <div class="pt-md pb-xs px-md text-on-primary-container opacity-50 text-label-sm uppercase tracking-widest">Kependudukan</div>
             <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('admin/penduduk') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.penduduk.index') }}">
                 <span class="material-symbols-outlined">groups</span>
@@ -93,6 +116,7 @@
                 <span class="material-symbols-outlined">newspaper</span>
                 <span class="text-label-md">Berita & Agenda</span>
             </a>
+            @endif
 
             <div class="pt-md border-t border-primary/20 mt-md">
                 @if($isAdmin)

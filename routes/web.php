@@ -10,6 +10,8 @@ use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Warga\PengaduanController as WargaPengaduanController;
+use App\Http\Controllers\Warga\SuratController as WargaSuratController;
 use App\Models\Penduduk;
 use Illuminate\Support\Facades\Route;
 
@@ -44,6 +46,21 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
 
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
 Route::get('/apbdes-publik', [ApbdesController::class, 'publik'])->name('apbdes.publik');
+
+// ==== Layanan Warga (Fase 1) ====
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('layanan/surat')->name('warga.surat.')->group(function () {
+        Route::get('/', [WargaSuratController::class, 'index'])->name('index');
+        Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
+        Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
+        Route::get('/saya/riwayat', [WargaSuratController::class, 'riwayat'])->name('riwayat');
+        Route::get('/{pengajuan}/status', [WargaSuratController::class, 'status'])->name('status');
+    });
+
+    // QR Code pengaduan (PRD 1.5): /pengaduan/buat
+    Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
+    Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -16,6 +16,7 @@ return new class extends Migration
             $table->text('deskripsi');
             $table->string('foto')->nullable();
             $table->string('status', 50)->default('diterima')->comment('diterima, diproses, selesai');
+            $table->string('sumber_akses', 20)->default('web')->comment('web atau qr_code (scan QR di titik desa)');
             $table->text('tanggapan')->nullable();
             $table->foreignId('processed_by')->nullable()->constrained('users');
             $table->timestamp('tanggal_diterima')->useCurrent();

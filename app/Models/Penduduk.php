@@ -29,6 +29,13 @@ class Penduduk extends Model
         'user_id',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'tanggal_lahir' => 'date',
+        ];
+    }
+
     public function keluarga(): BelongsTo
     {
         return $this->belongsTo(Keluarga::class);

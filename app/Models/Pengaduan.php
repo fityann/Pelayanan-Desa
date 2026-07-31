@@ -9,9 +9,18 @@ class Pengaduan extends Model
 {
     protected $fillable = [
         'user_id', 'kategori', 'judul', 'deskripsi', 'foto',
-        'status', 'tanggapan', 'processed_by',
+        'status', 'sumber_akses', 'tanggapan', 'processed_by',
         'tanggal_diterima', 'tanggal_diproses', 'tanggal_selesai',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'tanggal_diterima' => 'datetime',
+            'tanggal_diproses' => 'datetime',
+            'tanggal_selesai' => 'datetime',
+        ];
+    }
 
     public function user(): BelongsTo
     {
