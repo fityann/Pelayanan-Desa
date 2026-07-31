@@ -150,12 +150,10 @@
                                                                 . ($action === 'U' ? 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/30' : '')
                                                                 . ($action === 'D' ? 'bg-surface-variant/50 text-on-surface-variant' : '')
                                                                 . ' opacity-100'
-                                                                : 'bg-surface-container border border-dashed border-outline-variant/30 opacity-40 hover:opacity-70'
+                                                                : 'bg-surface-container/70 border-2 border-dashed border-outline-variant/70 text-on-surface-variant/50 opacity-80 hover:opacity-100 hover:bg-surface-variant/30 hover:text-on-surface-variant/80'
                                                             }}"
                                                         title="{{ $role->name }}: {{ $granted ? 'Cabut izin' : 'Beri izin' }} {{ $action }} {{ $resource }}">
-                                                        @if ($granted)
-                                                            <span class="text-[14px] font-bold">{{ $action }}</span>
-                                                        @endif
+                                                        <span class="text-[14px] font-bold {{ $granted ? '' : 'opacity-60' }}">{{ $action }}</span>
                                                     </button>
                                                 </form>
                                             @endforeach
@@ -204,8 +202,8 @@ document.querySelectorAll('.permission-toggle button').forEach(btn => {
             this.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all ' + (colorMap[action] || '') + ' opacity-100';
             this.innerHTML = '<span class="text-[14px] font-bold">' + action + '</span>';
         } else {
-            this.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-surface-container border border-dashed border-outline-variant/30 opacity-40 hover:opacity-70';
-            this.innerHTML = '';
+            this.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-surface-container/70 border-2 border-dashed border-outline-variant/70 text-on-surface-variant/50 opacity-80 hover:opacity-100 hover:bg-surface-variant/30 hover:text-on-surface-variant/80';
+            this.innerHTML = '<span class="text-[14px] font-bold opacity-60">' + action + '</span>';
         }
         // tidak usah flip nilai hidden — form tetap mengirim state tujuan yang benar
     });
