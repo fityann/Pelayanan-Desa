@@ -27,6 +27,11 @@ class RoleController extends Controller
 
     public function index(): View
     {
+        // Pastikan permission tersedia (lazy sync saat pertama kali dibuka)
+        if (Permission::count() === 0) {
+            $this->seedPermissions();
+        }
+
         $roles = Role::with('permissions')->get();
         $permissions = Permission::all()->groupBy(fn($p) => explode(' ', $p->name)[1] ?? $p->name);
 
@@ -39,7 +44,7 @@ class RoleController extends Controller
                 $permName = $action . ' ' . $resource;
                 $matrix[$resource][$action] = [];
                 foreach ($roles as $role) {
-                    $matrix[$resource][$action][$role->id] = $role->hasPermissionTo($permName);
+                    $matrix[$resource][$action][$role->id] = $role->permissions->contains('name', $permName);
                 }
             }
         }
@@ -49,8 +54,16 @@ class RoleController extends Controller
 
     public function update(Request $request): RedirectResponse
     {
+        $request->validate([
+            'role_id' => ['required', 'exists:roles,id'],
+            'permission' => ['required', 'string'],
+            'granted' => ['required', 'in:true,false'],
+        ]);
+
         $role = Role::findById($request->role_id);
         $permissionName = $request->permission;
+
+        abort_unless(Permission::where('name', $permissionName)->exists(), 422, 'Permission tidak ditemukan.');
 
         if ($request->granted === 'true') {
             $role->givePermissionTo($permissionName);

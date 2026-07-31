@@ -64,6 +64,19 @@ class AdminAccessTest extends TestCase
             ->assertForbidden();
     }
 
+    public function test_roles_page_seeds_permissions_when_empty(): void
+    {
+        $admin = $this->createUserWithRole('Admin Desa');
+
+        $this->assertSame(0, \Spatie\Permission\Models\Permission::count());
+
+        $this->actingAs($admin)
+            ->get(route('admin.roles.index'))
+            ->assertOk();
+
+        $this->assertGreaterThan(0, \Spatie\Permission\Models\Permission::count());
+    }
+
     public function test_only_kades_can_approve_surat(): void
     {
         $admin = $this->createUserWithRole('Admin Desa');
