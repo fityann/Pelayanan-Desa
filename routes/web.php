@@ -21,11 +21,25 @@ Route::get('/dashboard', [DashboardController::class, 'index'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::get('/cek-nik/{nik}', function (string $nik) {
+    if (!preg_match('/^\d{16}$/', $nik)) {
+        return response()->json(['found' => false]);
+    }
+
     $penduduk = Penduduk::where('nik', $nik)->first();
     if (!$penduduk) {
         return response()->json(['found' => false]);
     }
-    return response()->json(['found' => true, 'data' => $penduduk]);
+
+    // Hanya field publik/minimal yang dibutuhkan form register (autofill)
+    return response()->json([
+        'found' => true,
+        'data' => [
+            'nama' => $penduduk->nama,
+            'alamat' => $penduduk->alamat,
+            'rt' => $penduduk->rt,
+            'rw' => $penduduk->rw,
+        ],
+    ]);
 })->name('cek-nik');
 
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
