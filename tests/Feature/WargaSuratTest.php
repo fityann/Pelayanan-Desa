@@ -52,6 +52,7 @@ class WargaSuratTest extends TestCase
         $pengajuan = PengajuanSurat::first();
         $this->assertNotNull($pengajuan);
         $this->assertSame('diajukan', $pengajuan->status);
+        $this->assertSame(1, $pengajuan->riwayatStatus()->count());
     }
 
     public function test_warga_can_view_own_pengajuan_only(): void

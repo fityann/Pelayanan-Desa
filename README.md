@@ -1,58 +1,102 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIPANDA — Puspamukti Smart Village
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Platform digital terpadu pelayanan Desa Puspamukti, Kecamatan Cigalontang, Kabupaten Tasikmalaya.
+Dibangun bertahap sesuai `PRD-Roadmap-Puspamukti-Smart-Village.md` (Fase 1 sebagai komitmen utama).
 
-## About Laravel
+**Tech stack:** Laravel + Blade (Tailwind) + spatie/laravel-permission + barryvdh/laravel-dompdf + MySQL.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
-
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
-
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Persiapan & Instalasi
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+npm install
+cp .env.example .env   # lalu sesuaikan kredensial DB (MySQL)
+php artisan key:generate
+php artisan migrate:fresh --seed
+npm run build
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+### Akun demo (hasil seeder)
 
-## Contributing
+| Role | Email | Password |
+|---|---|---|
+| Super Admin | admin@puspamukti.local | admin123 |
+| Kepala Desa | kepaladesa@puspamukti.local | kepaladesa123 |
+| Sekretaris Desa | sekdes@puspamukti.local | sekdes123 |
+| Bendahara | bendahara@puspamukti.local | bendahara123 |
+| Admin Desa | admindesa@puspamukti.local | admindesa123 |
+| Warga | warga@puspamukti.local | warga123 |
+| Warga | warga2@puspamukti.local | warga123 |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Semua akun dibuat dengan `email_verified_at` terisi agar lolos middleware `verified`.
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## Alur Pelayanan Surat (Fase 1 — sesuai PRD 7.1)
 
-## Security Vulnerabilities
+```
+diajukan → diverifikasi_admin → ditolak (alasan wajib)
+                              ↓
+                    disetujui_kades (nomor surat digenerate)
+                              ↓
+        ┌─────── butuh_ttd_fisik? ───────┐
+     ya (default)                        tidak
+        ↓                                 ↓
+ menunggu_ttd_fisik                    selesai (auto)
+   (draft PDF siap cetak)              (warga download PDF)
+        ↓
+ selesai (setelah TTD fisik + diambil)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+- Setiap perubahan status tercatat di tabel `riwayat_status_surats` (tracking real-time untuk warga & audit).
+- Approval **hanya boleh dilakukan Kepala Desa** (`role:Kepala Desa`).
+- Draft PDF dibuat otomatis via DomPDF begitu Kades approve.
 
-## License
+### Akses warga
+- `/layanan/surat` — pilih jenis surat, ajukan, pantau status.
+- `/pengaduan/buat` — target QR code (PRD 1.5), parameter `?qr=1` menandai sumber akses QR.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## Hak Akses (middleware)
+
+| Area | Role yang diizinkan |
+|---|---|
+| `/admin` (umum) | Super Admin, Kepala Desa, Sekretaris Desa, Bendahara, Admin Desa |
+| `/admin/users` & `/admin/roles` | Super Admin, Admin Desa |
+| Approve surat (`surat/{id}/approve`) | Kepala Desa, Super Admin |
+| Layanan warga (`/layanan/*`) | Semua user login (verified) |
+
+Catatan: middleware Spatie didaftarkan di `bootstrap/app.php` (alias `role`, `permission`, `role_or_permission`, `can_manage_users`).
+
+---
+
+## Keputusan Desain yang Disengaja (dicatat, bukan kelupaan)
+
+1. **APBDes memakai 1 tabel `apbdes` (bukan 4 tabel seperti ERD).**
+   ERD merancang `apbdes_tahun` + `apbdes_pendapatan/belanja/pembiayaan` untuk mendukung versi/revisi
+   dan perbandingan antar tahun. Untuk batas waktu KKN (±1 bulan), Fase 1 cukup memakai 1 tabel
+   ringkasan (Pendapatan/Belanja/Pembiayaan per tahun) — fitur revisi/versi & tren antar tahun ada di
+   **Fase 2** (`PRD` §2.10). Jika Fase 2 dikerjakan, migrasi ke skema multi-tabel atau penambahan kolom
+   `versi`/`apbdes_induk_id` dapat dilakukan tanpa merombak tampilan publik.
+
+2. **`pengumuman` digabung ke tabel `informasis`** (kategori: `berita`, `pengumuman`, `agenda`).
+
+3. **`jenis_surats` menggunakan kolom `deskripsi`/`syarat`/`masa_berlaku`/`butuh_ttd_fisik`**
+   (lebih sederhana dari kolom ERD `syarat_dokumen`/`estimasi_hari`/`template_pdf`).
+
+4. **Status surat di kode mengikuti PRD revisi** (`diverifikasi_admin`, `disetujui_kades`, `menunggu_ttd_fisik`),
+   bukan status awal migration lama (`diproses`, `disetujui`, `siap_diambil`).
+
+---
+
+## Menjalankan Test
+
+```bash
+php artisan test
+```
+
+Cakupan saat ini: auth, otorisasi admin/role, endpoint `cek-nik`, alur warga (surat + pengaduan), PDF surat.

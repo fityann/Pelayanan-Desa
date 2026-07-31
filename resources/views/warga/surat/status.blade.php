@@ -78,5 +78,31 @@
             </div>
         @endif
     </div>
+
+    {{-- Timeline riwayat status --}}
+    <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
+        <h3 class="text-label-md text-on-surface uppercase tracking-widest font-bold mb-lg">Riwayat Proses</h3>
+        <div class="relative pl-lg border-l-2 border-surface-variant/30 space-y-lg">
+            @forelse ($pengajuan->riwayatStatus as $riwayat)
+                <div class="relative">
+                    <span class="absolute -left-[27px] top-1 w-4 h-4 rounded-full border-2 border-surface-container-lowest bg-primary flex items-center justify-center">
+                        <span class="material-symbols-outlined text-[10px] text-on-primary">check</span>
+                    </span>
+                    <div class="flex items-center justify-between gap-sm">
+                        <p class="text-body-md font-bold text-on-surface capitalize">{{ str_replace('_', ' ', $riwayat->status) }}</p>
+                        <span class="text-label-sm text-on-surface-variant">{{ $riwayat->created_at->format('d/m/Y H:i') }}</span>
+                    </div>
+                    @if ($riwayat->catatan)
+                        <p class="text-body-sm text-on-surface-variant mt-xs">{{ $riwayat->catatan }}</p>
+                    @endif
+                    @if ($riwayat->olehUser)
+                        <p class="text-[10px] text-on-surface-variant/60 mt-xs">oleh {{ $riwayat->olehUser->name }}</p>
+                    @endif
+                </div>
+            @empty
+                <p class="text-body-sm text-on-surface-variant">Belum ada riwayat.</p>
+            @endforelse
+        </div>
+    </div>
 </div>
 @endsection

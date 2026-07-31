@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PengajuanSurat extends Model
 {
@@ -43,5 +44,22 @@ class PengajuanSurat extends Model
     public function approver(): BelongsTo
     {
         return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function riwayatStatus(): HasMany
+    {
+        return $this->hasMany(RiwayatStatusSurat::class);
+    }
+
+    /**
+     * Catat perubahan status ke riwayat (untuk tracking real-time & arsip audit).
+     */
+    public function catatStatus(string $status, ?string $catatan = null, ?int $olehUserId = null): void
+    {
+        $this->riwayatStatus()->create([
+            'status' => $status,
+            'catatan' => $catatan,
+            'oleh_user_id' => $olehUserId ?? auth()->id(),
+        ]);
     }
 }

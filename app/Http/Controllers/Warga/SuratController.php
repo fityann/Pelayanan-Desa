@@ -49,6 +49,8 @@ class SuratController extends Controller
             'tanggal_diajukan' => now(),
         ]);
 
+        $pengajuan->catatStatus('diajukan', 'Pengajuan diterima sistem. Menunggu verifikasi Admin Desa.');
+
         return redirect()->route('warga.surat.status', $pengajuan)
             ->with('success', 'Pengajuan surat berhasil dikirim. Pantau statusnya di sini.');
     }
@@ -67,7 +69,7 @@ class SuratController extends Controller
     {
         $this->authorizeView($pengajuan);
 
-        $pengajuan->load('jenisSurat');
+        $pengajuan->load(['jenisSurat', 'riwayatStatus.olehUser']);
 
         return view('warga.surat.status', compact('pengajuan'));
     }

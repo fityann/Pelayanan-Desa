@@ -57,6 +57,8 @@ class SuratController extends Controller
             'verified_by' => auth()->id(),
         ]);
 
+        $pengajuan->catatStatus('diverifikasi_admin', 'Berkas lengkap, diteruskan ke Kepala Desa untuk approval.');
+
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan diverifikasi. Menunggu approval Kepala Desa.');
     }
 
@@ -79,10 +81,14 @@ class SuratController extends Controller
             'tanggal_disetujui' => now(),
         ]);
 
+        $pengajuan->catatStatus('disetujui_kades', "Surat disetujui. Nomor: {$nomor}");
+
         if ($pengajuan->butuh_ttd_fisik) {
             $pengajuan->update(['status' => 'menunggu_ttd_fisik']);
+            $pengajuan->catatStatus('menunggu_ttd_fisik', 'Draft PDF siap cetak. Silakan cetak dan bawa ke Kepala Desa untuk tanda tangan.');
         } else {
             $pengajuan->update(['status' => 'selesai', 'tanggal_diambil' => now()]);
+            $pengajuan->catatStatus('selesai', 'Surat tanpa TTD fisik, otomatis selesai. Warga dapat mengunduh PDF.');
         }
 
         return redirect()->route('admin.surat.pengajuan')->with('success', "Surat disetujui. Nomor: {$nomor}");
@@ -98,6 +104,8 @@ class SuratController extends Controller
             'status' => 'ditolak',
             'alasan_ditolak' => $request->alasan_ditolak,
         ]);
+
+        $pengajuan->catatStatus('ditolak', $request->alasan_ditolak);
 
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan ditolak');
     }
@@ -115,6 +123,8 @@ class SuratController extends Controller
             'tanggal_ttd_fisik' => now(),
             'tanggal_diambil' => now(),
         ]);
+
+        $pengajuan->catatStatus('selesai', 'Surat telah ditandatangani dan siap diambil warga.');
 
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan selesai');
     }
