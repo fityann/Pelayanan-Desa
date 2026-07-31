@@ -97,13 +97,18 @@ Deployment     : Menyesuaikan infrastruktur desa (shared hosting/cPanel atau VPS
 - Import Excel data penduduk (mempercepat input awal)
 - Data otomatis terisi saat warga mengajukan layanan (mengurangi input manual berulang)
 
-#### 1.3 Modul Administrasi — Pelayanan Surat (Versi MVP)
+#### 1.3 Modul Administrasi — Pelayanan Surat (Versi MVP, Direvisi)
 - 3–5 jenis surat prioritas tertinggi: **Surat Domisili, Surat Keterangan Usaha, SKTM, Surat Pengantar Nikah, Surat Kematian**
-- Alur simplified: `Warga ajukan → Admin Desa verifikasi → Kepala Desa approve → Surat siap`
-- Nomor surat otomatis (format sesuai tata naskah dinas)
-- Cetak PDF dengan kop surat resmi (DomPDF)
-- Tracking status surat (Diajukan, Diproses, Ditolak+alasan, Siap Diambil, Selesai)
+- **Seluruh proses administrasi dilakukan via aplikasi** — warga tidak perlu datang ke kantor desa kecuali untuk surat yang butuh tanda tangan basah Kepala Desa
+- Alur final (sesuai arahan Kepala Desa):
+  `Warga ajukan (aplikasi) → Admin Desa verifikasi (aplikasi) → Kepala Desa approve (aplikasi) → Sistem generate draft PDF siap cetak → [jika butuh TTD basah] cetak draft & bawa ke Kades hanya untuk tanda tangan → update status selesai`
+- Status surat: `diajukan → diverifikasi_admin → ditolak (+alasan) → disetujui_kades → menunggu_ttd_fisik → selesai`
+- **Kepala Desa tidak perlu memproses administrasi dari awal** — cukup approval digital + tanda tangan fisik di tahap akhir, sehingga menghemat waktu Kades secara signifikan
+- Nomor surat otomatis (format sesuai tata naskah dinas), digenerate begitu Kades approve
+- Cetak PDF dengan kop surat resmi, siap tanda tangan (DomPDF) — Admin/Kades tinggal print, tidak perlu ketik ulang surat
+- Tracking status surat real-time untuk warga
 - Arsip surat dasar (tersimpan otomatis per pengajuan)
+- *Catatan: opsi Tanda Tangan Elektronik (TTE) dapat menggantikan tahap cetak+TTD fisik ini di fase lanjutan, jika desa sudah memiliki TTE tersertifikasi.*
 
 #### 1.4 Modul APBDes — Transparansi Publik (Versi MVP)
 - Struktur sesuai Permendagri 20/2018: Pendapatan (PADes, Dana Desa, ADD, dll), Belanja per bidang, Pembiayaan
@@ -112,9 +117,12 @@ Deployment     : Menyesuaikan infrastruktur desa (shared hosting/cPanel atau VPS
 - **Diposisikan sebagai portal transparansi, bukan pengganti SISKEUDES**
 - Export PDF untuk laporan
 
-#### 1.5 Modul Pengaduan Masyarakat (Dasar)
+#### 1.5 Modul Pengaduan Masyarakat (Dasar) + Akses via QR Code
 - Form pengaduan: kategori, foto, deskripsi (lokasi peta ditunda ke Fase 4)
+- **Akses cepat via QR Code**: QR ditempel di titik strategis desa (kantor desa, balai warga, papan pengumuman) — discan langsung membuka halaman form pengaduan di browser HP, tanpa perlu install aplikasi maupun ketik alamat website manual
+- Warga login pakai NIK sebelum isi form (opsi pengaduan anonim dapat dipertimbangkan sesuai kebijakan desa)
 - Status: Diterima → Diproses → Selesai
+- Warga dapat cek kembali status pengaduannya sendiri melalui website
 - Dashboard rekap pengaduan per kategori
 
 #### 1.6 Modul Informasi & Pengumuman Desa
@@ -130,18 +138,19 @@ Deployment     : Menyesuaikan infrastruktur desa (shared hosting/cPanel atau VPS
 
 ### 🟡 FASE 2 — Penyempurnaan Modul Inti (Lanjutan Pasca-KKN Jangka Pendek / jika waktu tersisa)
 
-#### 2.1 Verifikasi Berjenjang Penuh
-- Alur lengkap: `Warga → RT → RW → Kasi/Kaur → Sekdes (paraf) → Kades (TTD)`
+#### 2.1 Verifikasi Berjenjang Penuh (Opsional — Hanya Jika Desa Ingin Melibatkan RT/RW)
+- Alur opsional jika suatu saat desa ingin melibatkan RT/RW dalam proses: `Warga → RT → RW → Kasi/Kaur → Sekdes (paraf) → Kades (approve+TTD)`
 - Role RT & RW aktif dengan hak approve/reject + catatan wajib
+- **Catatan:** sesuai arahan Kepala Desa saat ini, alur Fase 1 (Admin Desa → Kades langsung) sudah menjadi alur final yang dipakai — modul ini hanya opsi tambahan bila kebijakan desa berubah di kemudian hari
 
 #### 2.2 Perluasan Jenis Surat
 - Surat Kelahiran, Surat Pindah, Surat Datang, Surat Kehilangan, Surat Pengantar SKCK, Surat Izin Keramaian
 
 #### 2.3 Nomor Antrian Online
-- Ambil nomor antrian untuk pelayanan tatap muka di kantor desa
+- Ambil nomor antrian untuk pelayanan tatap muka di kantor desa (untuk kasus yang tetap butuh datang langsung, misalnya ambil surat fisik)
 
-#### 2.4 QR Code Pelayanan
-- QR ditempel di kantor desa, mengarah langsung ke modul terkait
+#### 2.4 QR Code Pelayanan Umum (Perluasan dari QR Pengaduan di Fase 1)
+- Selain QR untuk pengaduan (sudah aktif di Fase 1), tambahkan QR code lain di kantor desa yang mengarah ke modul lain: cek status surat, cek bantuan sosial, FAQ, dll
 
 #### 2.5 Notifikasi WhatsApp
 - Notifikasi otomatis via Fonnte API saat status surat/pengaduan berubah
@@ -235,22 +244,38 @@ Deployment     : Menyesuaikan infrastruktur desa (shared hosting/cPanel atau VPS
 
 ## 7. FLOW UTAMA SISTEM
 
-### 7.1 Flow Pengajuan Surat — Fase 1 (MVP, digunakan sekarang)
+### 7.1 Flow Pengajuan Surat — Fase 1 (MVP, Direvisi — Seluruh Proses via Aplikasi)
 
 ```
 Warga login (NIK) → Data kependudukan otomatis terisi
         ↓
-Pilih jenis surat + upload dokumen pendukung (KK/KTP)
+Pilih jenis surat + upload dokumen pendukung (KK/KTP), semua via aplikasi
         ↓
-Admin Desa verifikasi (approve/reject + alasan jika ditolak)
+Admin Desa verifikasi via aplikasi (approve/reject + alasan jika ditolak)
         ↓
-Kepala Desa approve akhir
+Kepala Desa approve via aplikasi (TIDAK perlu proses administrasi manual dari awal)
         ↓
-Nomor surat digenerate otomatis
+Nomor surat digenerate otomatis + draft PDF siap cetak dibuat sistem
         ↓
-Cetak PDF (kop resmi) → Warga download / ambil fisik di kantor desa
-        ↓
-Otomatis tersimpan di Arsip Surat
+     ┌───────────────────────┴───────────────────────┐
+     │                                                 │
+Surat tidak butuh TTD basah                   Surat butuh TTD basah Kades
+     │                                                 │
+Warga langsung download PDF                   Admin cetak draft PDF
+     │                                                 ↓
+     │                                      Dibawa ke Kades HANYA untuk
+     │                                      ditandatangani (bukan proses
+     │                                      administrasi dari nol)
+     │                                                 ↓
+     │                                      Kades tanda tangan fisik
+     │                                                 ↓
+     │                                      Admin update status "Selesai"
+     │                                      di aplikasi
+     └───────────────────────┬───────────────────────┘
+                              ↓
+              Warga ambil surat fisik / download versi final
+                              ↓
+              Otomatis tersimpan di Arsip Surat
 ```
 
 ### 7.2 Flow Pengajuan Surat — Fase 2 (Versi Lengkap, target lanjutan)
@@ -289,17 +314,29 @@ Kepala Desa approve & publish
 Tampil ke publik (warga akses tanpa login) — ringkasan + grafik
 ```
 
-### 7.4 Flow Pengaduan Masyarakat (Fase 1)
+### 7.4 Flow Pengaduan Masyarakat (Fase 1, dengan Akses QR Code)
 
 ```
-Warga isi form pengaduan (kategori, foto, deskripsi)
+QR Code ditempel di titik strategis desa
+(kantor desa, balai warga, papan pengumuman, dll)
+        ↓
+Warga scan QR pakai kamera HP → langsung terbuka
+halaman "Form Pengaduan" di browser (tanpa install apapun)
+        ↓
+Login pakai NIK (atau opsi anonim, sesuai kebijakan desa)
+        ↓
+Isi form pengaduan (kategori, foto, deskripsi, lokasi)
         ↓
 Masuk ke dashboard Admin sesuai kategori
         ↓
 Status: Diterima → Diproses → Selesai
         ↓
+Warga cek balik status pengaduannya via website
+        ↓
 Notifikasi ke warga saat status berubah (in-app di Fase 1, WhatsApp di Fase 2)
 ```
+
+*Catatan teknis: QR Code cukup berisi URL statis ke halaman `/pengaduan/buat` — tidak perlu QR dinamis khusus, karena tujuannya murni mempercepat akses tanpa warga harus mengetik alamat website secara manual.*
 
 ### 7.5 Flow Reservasi Wisata (Fase 3, untuk referensi jangka panjang)
 

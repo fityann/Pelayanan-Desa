@@ -18,9 +18,12 @@ class RegistrationTest extends TestCase
 
     public function test_new_users_can_register(): void
     {
+        \Spatie\Permission\Models\Role::create(['name' => 'Warga', 'guard_name' => 'web']);
+
         $response = $this->post('/register', [
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'nik' => '3201010101010199',
             'password' => 'password',
             'password_confirmation' => 'password',
         ]);

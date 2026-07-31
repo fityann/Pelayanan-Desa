@@ -1,0 +1,471 @@
+Table users {
+  id bigint [pk, increment]
+  name varchar(150)
+  email varchar(150)
+  password varchar(255)
+}
+
+Table perangkat_desa {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  jabatan varchar(50)
+  nama_lengkap varchar(150)
+  nip varchar(30)
+  no_telepon varchar(20)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table keluarga {
+  id bigint [pk, increment]
+  no_kk varchar(20) [unique]
+  nama_kepala_keluarga varchar(150)
+  alamat text
+  dusun varchar(100)
+  rt varchar(5)
+  rw varchar(5)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table penduduk {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  keluarga_id bigint [ref: > keluarga.id]
+  nik varchar(16) [unique]
+  nama_lengkap varchar(150)
+  tempat_lahir varchar(100)
+  tanggal_lahir date
+  jenis_kelamin varchar(1)
+  agama varchar(30)
+  status_perkawinan varchar(20)
+  pekerjaan varchar(100)
+  status_hubungan_keluarga varchar(30)
+  alamat text
+  dusun varchar(100)
+  rt varchar(5)
+  rw varchar(5)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table jenis_surat {
+  id bigint [pk, increment]
+  kode varchar(20) [unique]
+  nama varchar(150)
+  syarat_dokumen text
+  estimasi_hari int
+  template_pdf varchar(100)
+  butuh_verifikasi_rt_rw boolean
+  aktif boolean
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table pengajuan_surat {
+  id bigint [pk, increment]
+  nomor_surat varchar(50) [unique]
+  user_id bigint [ref: > users.id]
+  penduduk_id bigint [ref: > penduduk.id]
+  jenis_surat_id bigint [ref: > jenis_surat.id]
+  keperluan text
+  file_pendukung text
+  status varchar(30)
+  catatan_penolakan text
+  butuh_ttd_fisik boolean
+  diverifikasi_rt_oleh bigint [ref: > users.id]
+  diverifikasi_rw_oleh bigint [ref: > users.id]
+  diverifikasi_oleh bigint [ref: > users.id]
+  diparaf_oleh bigint [ref: > users.id]
+  disetujui_oleh bigint [ref: > users.id]
+  dicetak_oleh bigint [ref: > users.id]
+  tanggal_cetak_draft date
+  tanggal_ttd_fisik date
+  tanggal_pengajuan date
+  tanggal_selesai date
+  created_at timestamp
+  updated_at timestamp
+}
+
+/*
+Nilai status yang dipakai (sesuai alur Fase 1 revisi - PRD Puspamukti Smart Village):
+diajukan -> diverifikasi_admin -> ditolak (+catatan_penolakan)
+-> disetujui_kades -> menunggu_ttd_fisik (jika butuh_ttd_fisik = true)
+-> selesai
+
+Catatan: kolom diverifikasi_rt_oleh, diverifikasi_rw_oleh, diparaf_oleh
+disiapkan untuk opsi Fase 2 (verifikasi berjenjang), tidak wajib diisi
+pada alur Fase 1 yang berlaku sekarang.
+*/
+
+Table riwayat_status_surat {
+  id bigint [pk, increment]
+  pengajuan_surat_id bigint [ref: > pengajuan_surat.id]
+  status varchar(30)
+  catatan text
+  oleh_user_id bigint [ref: > users.id]
+  created_at timestamp
+}
+
+Table apbdes_tahun {
+  id bigint [pk, increment]
+  tahun int
+  status varchar(20)
+  versi int
+  apbdes_induk_id bigint [ref: > apbdes_tahun.id]
+  diinput_oleh bigint [ref: > users.id]
+  direview_oleh bigint [ref: > users.id]
+  dipublikasi_oleh bigint [ref: > users.id]
+  tanggal_publikasi date
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table apbdes_pendapatan {
+  id bigint [pk, increment]
+  apbdes_tahun_id bigint [ref: > apbdes_tahun.id]
+  kategori varchar(100)
+  uraian varchar(255)
+  jumlah_rencana decimal
+  jumlah_realisasi decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table apbdes_belanja {
+  id bigint [pk, increment]
+  apbdes_tahun_id bigint [ref: > apbdes_tahun.id]
+  bidang varchar(100)
+  uraian varchar(255)
+  jumlah_rencana decimal
+  jumlah_realisasi decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table apbdes_pembiayaan {
+  id bigint [pk, increment]
+  apbdes_tahun_id bigint [ref: > apbdes_tahun.id]
+  jenis varchar(20)
+  uraian varchar(255)
+  jumlah decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table pengaduan {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  kategori varchar(50)
+  deskripsi text
+  foto text
+  lokasi_teks varchar(255)
+  latitude decimal
+  longitude decimal
+  status varchar(20)
+  sumber_akses varchar(20)
+  is_anonim boolean
+  tanggapan text
+  foto_bukti_selesai varchar(255)
+  ditangani_oleh bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+/*
+Nilai sumber_akses: 'qr_code' (scan QR di titik strategis desa) atau 'web'
+(akses langsung dari website/aplikasi tanpa scan QR).
+QR Code sendiri tidak perlu tabel/generator dinamis - cukup QR statis
+berisi URL ke halaman /pengaduan/buat.
+*/
+
+Table pengumuman {
+  id bigint [pk, increment]
+  judul varchar(200)
+  isi text
+  kategori varchar(20)
+  gambar_sampul varchar(255)
+  tanggal_publish date
+  dibuat_oleh bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table jadwal_pelayanan {
+  id bigint [pk, increment]
+  hari varchar(10)
+  jam_buka time
+  jam_tutup time
+  keterangan varchar(255)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table hari_libur {
+  id bigint [pk, increment]
+  tanggal date
+  keterangan varchar(255)
+  created_at timestamp
+}
+
+Table antrian {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  nomor_antrian varchar(10)
+  layanan varchar(100)
+  tanggal date
+  status varchar(20)
+  created_at timestamp
+}
+
+Table notifikasi {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  judul varchar(150)
+  pesan text
+  kanal varchar(20)
+  status_kirim varchar(20)
+  sudah_dibaca boolean
+  referensi_tabel varchar(50)
+  referensi_id bigint
+  created_at timestamp
+}
+
+Table survei_kepuasan {
+  id bigint [pk, increment]
+  pengajuan_surat_id bigint [ref: > pengajuan_surat.id]
+  pengaduan_id bigint [ref: > pengaduan.id]
+  user_id bigint [ref: > users.id]
+  rating int
+  unsur_kecepatan int
+  unsur_kemudahan_prosedur int
+  unsur_kesesuaian_biaya int
+  unsur_kompetensi_petugas int
+  komentar text
+  created_at timestamp
+}
+
+Table bantuan_sosial {
+  id bigint [pk, increment]
+  nama_program varchar(150)
+  tahun int
+  keterangan text
+  created_at timestamp
+}
+
+Table bantuan_sosial_penerima {
+  id bigint [pk, increment]
+  bantuan_sosial_id bigint [ref: > bantuan_sosial.id]
+  penduduk_id bigint [ref: > penduduk.id]
+  status_penerima varchar(20)
+  keterangan varchar(255)
+  created_at timestamp
+}
+
+Table faq {
+  id bigint [pk, increment]
+  jenis_surat_id bigint [ref: > jenis_surat.id]
+  pertanyaan varchar(255)
+  jawaban text
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table destinasi_wisata {
+  id bigint [pk, increment]
+  nama varchar(150)
+  deskripsi text
+  lokasi_teks varchar(255)
+  latitude decimal
+  longitude decimal
+  harga_tiket decimal
+  jam_operasional varchar(100)
+  dikelola_oleh bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table destinasi_galeri {
+  id bigint [pk, increment]
+  destinasi_id bigint [ref: > destinasi_wisata.id]
+  tipe varchar(10)
+  path_file varchar(255)
+  created_at timestamp
+}
+
+Table paket_wisata {
+  id bigint [pk, increment]
+  destinasi_id bigint [ref: > destinasi_wisata.id]
+  nama_paket varchar(150)
+  deskripsi text
+  harga decimal
+  kuota_per_jadwal int
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table reservasi_wisata {
+  id bigint [pk, increment]
+  paket_wisata_id bigint [ref: > paket_wisata.id]
+  user_id bigint [ref: > users.id]
+  jumlah_orang int
+  tanggal_kunjungan date
+  kode_qr varchar(100) [unique]
+  status varchar(30)
+  dikonfirmasi_oleh bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table umkm {
+  id bigint [pk, increment]
+  user_id bigint [ref: > users.id]
+  nama_usaha varchar(150)
+  kategori varchar(100)
+  deskripsi text
+  alamat varchar(255)
+  no_telepon varchar(20)
+  logo varchar(255)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table umkm_produk {
+  id bigint [pk, increment]
+  umkm_id bigint [ref: > umkm.id]
+  nama_produk varchar(150)
+  deskripsi text
+  harga decimal
+  foto varchar(255)
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table event_desa {
+  id bigint [pk, increment]
+  nama_event varchar(150)
+  deskripsi text
+  tanggal_mulai date
+  tanggal_selesai date
+  lokasi varchar(255)
+  butuh_pendaftaran boolean
+  dibuat_oleh bigint [ref: > users.id]
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table event_pendaftaran {
+  id bigint [pk, increment]
+  event_id bigint [ref: > event_desa.id]
+  user_id bigint [ref: > users.id]
+  status varchar(20)
+  created_at timestamp
+}
+
+Table event_dokumentasi {
+  id bigint [pk, increment]
+  event_id bigint [ref: > event_desa.id]
+  tipe varchar(10)
+  path_file varchar(255)
+  created_at timestamp
+}
+
+Table petani {
+  id bigint [pk, increment]
+  penduduk_id bigint [ref: > penduduk.id]
+  kelompok_tani varchar(100)
+  created_at timestamp
+}
+
+Table lahan_pertanian {
+  id bigint [pk, increment]
+  petani_id bigint [ref: > petani.id]
+  luas_hektar decimal
+  lokasi_teks varchar(255)
+  latitude decimal
+  longitude decimal
+  status_kepemilikan varchar(20)
+  created_at timestamp
+}
+
+Table jenis_tanaman {
+  id bigint [pk, increment]
+  nama varchar(100)
+  satuan_hasil varchar(20)
+}
+
+Table jadwal_tanam_panen {
+  id bigint [pk, increment]
+  lahan_id bigint [ref: > lahan_pertanian.id]
+  jenis_tanaman_id bigint [ref: > jenis_tanaman.id]
+  musim varchar(50)
+  tanggal_tanam date
+  estimasi_panen date
+  tanggal_panen_aktual date
+  hasil_panen decimal
+  harga_jual_per_satuan decimal
+  created_at timestamp
+}
+
+Table peternak {
+  id bigint [pk, increment]
+  penduduk_id bigint [ref: > penduduk.id]
+  kelompok_ternak varchar(100)
+  created_at timestamp
+}
+
+Table jenis_ternak {
+  id bigint [pk, increment]
+  nama varchar(100)
+}
+
+Table data_ternak {
+  id bigint [pk, increment]
+  peternak_id bigint [ref: > peternak.id]
+  jenis_ternak_id bigint [ref: > jenis_ternak.id]
+  jumlah int
+  berat_rata_kg decimal
+  created_at timestamp
+  updated_at timestamp
+}
+
+Table riwayat_kesehatan_ternak {
+  id bigint [pk, increment]
+  data_ternak_id bigint [ref: > data_ternak.id]
+  jenis_kegiatan varchar(20)
+  keterangan text
+  tanggal date
+  created_at timestamp
+}
+
+Table penjualan_ternak {
+  id bigint [pk, increment]
+  data_ternak_id bigint [ref: > data_ternak.id]
+  jumlah_terjual int
+  harga_per_ekor decimal
+  tanggal_jual date
+  created_at timestamp
+}
+
+Table titik_lokasi {
+  id bigint [pk, increment]
+  nama varchar(150)
+  kategori varchar(30)
+  referensi_tabel varchar(50)
+  referensi_id bigint
+  latitude decimal
+  longitude decimal
+  keterangan varchar(255)
+  created_at timestamp
+}
+
+Table arsip_dokumen {
+  id bigint [pk, increment]
+  jenis_dokumen varchar(30)
+  nomor_dokumen varchar(100)
+  judul varchar(255)
+  tanggal_dokumen date
+  file_path varchar(255)
+  diunggah_oleh bigint [ref: > users.id]
+  created_at timestamp
+}
