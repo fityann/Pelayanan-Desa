@@ -93,9 +93,12 @@ class AdminAccessTest extends TestCase
     {
         $admin = $this->createUserWithRole('Admin Desa');
 
-        $this->actingAs($admin)
-            ->get(route('admin.roles.index'))
-            ->assertOk();
+        $response = $this->actingAs($admin)
+            ->get(route('admin.roles.index'));
+
+        $response->assertOk();
+        $response->assertSee('CR');
+        $response->assertSee('UD');
     }
 
     public function test_only_kades_can_approve_surat(): void

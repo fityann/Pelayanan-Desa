@@ -74,19 +74,33 @@
     </div>
 
     {{-- Permission Matrix --}}
+    @php
+        $groupDefs = ['CR' => ['C', 'R'], 'UD' => ['U', 'D']];
+        $grouped = [];
+        foreach ($matrix as $resource => $actions) {
+            $rows = [];
+            foreach ($groupDefs as $label => $letters) {
+                $present = array_values(array_intersect($letters, array_keys($actions)));
+                if ($present) {
+                    $rows[$label] = $present;
+                }
+            }
+            $grouped[$resource] = $rows;
+        }
+    @endphp
     <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden">
         <div class="p-lg border-b border-surface-variant/20">
             <h3 class="text-title-md font-bold text-on-surface">Matriks Izin Akses</h3>
-            <p class="text-body-sm text-on-surface-variant mt-1">Centang/dicentang untuk memberikan atau mencabut izin</p>
+            <p class="text-body-sm text-on-surface-variant mt-1">Baris CR (Create/Read) dan UD (Update/Delete). Centang untuk memberikan atau mencabut izin</p>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
                     <tr class="bg-surface-container/30">
                         <th class="text-left px-lg py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest min-w-[180px]">Resource / Modul</th>
-                        <th class="text-center px-3 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Aksi</th>
+                        <th class="text-center px-3 py-4 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest w-24">CRUD</th>
                         @foreach ($roles as $role)
-                            <th class="text-center px-3 py-4 min-w-[100px]">
+                            <th class="text-center px-3 py-4 min-w-[120px]">
                                 <span class="inline-flex items-center gap-1.5">
                                     <span class="w-2 h-2 rounded-full {{ $role->name === 'Super Admin' ? 'bg-error' : ($role->name === 'Warga' ? 'bg-success' : 'bg-primary') }}"></span>
                                     <span class="text-label-sm font-bold text-on-surface">{{ $role->name }}</span>
@@ -96,50 +110,58 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-surface-variant/10">
-                    @foreach ($matrix as $resource => $actions)
+                    @foreach ($grouped as $resource => $rows)
                         <tr class="hover:bg-surface-container/20 transition-colors">
-                            <td class="px-lg py-3 text-body-md font-semibold text-on-surface" rowspan="{{ count($actions) }}">
+                            <td class="px-lg py-3 text-body-md font-semibold text-on-surface align-middle" rowspan="{{ count($rows) }}">
                                 {{ $resource }}
                             </td>
-                            @php $first = true; @endphp
-                            @foreach ($actions as $action => $rolePerms)
-                                @if (!$first)
+                            @foreach ($rows as $label => $letters)
+                                @if (!$loop->first)
                                     </tr><tr class="hover:bg-surface-container/20 transition-colors">
                                 @endif
-                                <td class="px-3 py-3 text-center">
-                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-[11px] font-extrabold tracking-wide
-                                        {{ $action === 'C' ? 'bg-error/10 text-error' : '' }}
-                                        {{ $action === 'R' ? 'bg-primary/10 text-primary' : '' }}
-                                        {{ $action === 'U' ? 'bg-indigo-100 text-indigo-700' : '' }}
-                                        {{ $action === 'D' ? 'bg-surface-variant/30 text-on-surface-variant' : '' }}">
-                                        {{ $action }}
+                                <td class="px-3 py-2 text-center align-middle">
+                                    <span class="inline-flex items-center justify-center gap-1">
+                                        @foreach ($letters as $action)
+                                            <span class="inline-flex items-center justify-center w-7 h-7 rounded-lg text-[11px] font-extrabold tracking-wide
+                                                {{ $action === 'C' ? 'bg-error/10 text-error' : '' }}
+                                                {{ $action === 'R' ? 'bg-primary/10 text-primary' : '' }}
+                                                {{ $action === 'U' ? 'bg-indigo-100 text-indigo-700' : '' }}
+                                                {{ $action === 'D' ? 'bg-surface-variant/30 text-on-surface-variant' : '' }}">
+                                                {{ $action }}
+                                            </span>
+                                        @endforeach
                                     </span>
                                 </td>
                                 @foreach ($roles as $role)
-                                    <td class="px-3 py-3 text-center">
-                                        <form method="POST" action="{{ route('admin.roles.update') }}" class="inline permission-toggle" data-role-id="{{ $role->id }}" data-permission="{{ $action }} {{ $resource }}">
-                                            @csrf
-                                            <input type="hidden" name="role_id" value="{{ $role->id }}">
-                                            <input type="hidden" name="permission" value="{{ $action }} {{ $resource }}">
-                                            <input type="hidden" name="granted" value="{{ $rolePerms[$role->id] ? 'false' : 'true' }}">
-                                            <button type="submit" class="w-8 h-8 rounded-lg flex items-center justify-center transition-all
-                                                {{ $rolePerms[$role->id]
-                                                    ? ($action === 'C' ? 'bg-error text-white shadow-sm shadow-error/30' : '')
-                                                    . ($action === 'R' ? 'bg-primary text-white shadow-sm shadow-primary/30' : '')
-                                                    . ($action === 'U' ? 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/30' : '')
-                                                    . ($action === 'D' ? 'bg-surface-variant/50 text-on-surface-variant' : '')
-                                                    . ' opacity-100'
-                                                    : 'bg-surface-container border border-dashed border-outline-variant/30 opacity-40 hover:opacity-70'
-                                                }}"
-                                                title="{{ $role->name }}: {{ $rolePerms[$role->id] ? 'Dicabut' : 'Beri izin' }} {{ $action }} {{ $resource }}">
-                                                @if ($rolePerms[$role->id])
-                                                    <span class="text-[14px] font-bold">{{ $action }}</span>
-                                                @endif
-                                            </button>
-                                        </form>
+                                    <td class="px-3 py-2 text-center align-middle">
+                                        <div class="flex items-center justify-center gap-1.5">
+                                            @foreach ($letters as $action)
+                                                @php $granted = $matrix[$resource][$action][$role->id] ?? false; @endphp
+                                                <form method="POST" action="{{ route('admin.roles.update') }}" class="permission-toggle">
+                                                    @csrf
+                                                    <input type="hidden" name="role_id" value="{{ $role->id }}">
+                                                    <input type="hidden" name="permission" value="{{ $action }} {{ $resource }}">
+                                                    <input type="hidden" name="granted" value="{{ $granted ? 'false' : 'true' }}">
+                                                    <button type="submit"
+                                                        class="w-8 h-8 rounded-lg flex items-center justify-center transition-all
+                                                            {{ $granted
+                                                                ? ($action === 'C' ? 'bg-error text-white shadow-sm shadow-error/30' : '')
+                                                                . ($action === 'R' ? 'bg-primary text-white shadow-sm shadow-primary/30' : '')
+                                                                . ($action === 'U' ? 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/30' : '')
+                                                                . ($action === 'D' ? 'bg-surface-variant/50 text-on-surface-variant' : '')
+                                                                . ' opacity-100'
+                                                                : 'bg-surface-container border border-dashed border-outline-variant/30 opacity-40 hover:opacity-70'
+                                                            }}"
+                                                        title="{{ $role->name }}: {{ $granted ? 'Cabut izin' : 'Beri izin' }} {{ $action }} {{ $resource }}">
+                                                        @if ($granted)
+                                                            <span class="text-[14px] font-bold">{{ $action }}</span>
+                                                        @endif
+                                                    </button>
+                                                </form>
+                                            @endforeach
+                                        </div>
                                     </td>
                                 @endforeach
-                                @php $first = false; @endphp
                             @endforeach
                         </tr>
                     @endforeach
@@ -149,8 +171,10 @@
         <div class="p-lg border-t border-surface-variant/20 bg-surface-container/20">
             <div class="flex items-center gap-lg text-[10px] uppercase tracking-wider">
                 <span class="font-semibold text-on-surface-variant">Keterangan:</span>
+                <span class="text-on-surface-variant font-bold">CR</span>
                 <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-error text-white flex items-center justify-center text-[9px] font-bold">C</span><span class="text-on-surface-variant">Create</span></div>
                 <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-primary text-white flex items-center justify-center text-[9px] font-bold">R</span><span class="text-on-surface-variant">Read</span></div>
+                <span class="text-on-surface-variant font-bold ml-lg">UD</span>
                 <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-indigo-500 text-white flex items-center justify-center text-[9px] font-bold">U</span><span class="text-on-surface-variant">Update</span></div>
                 <div class="flex items-center gap-1.5"><span class="w-4 h-4 rounded bg-surface-variant/50 text-on-surface-variant flex items-center justify-center text-[9px] font-bold">D</span><span class="text-on-surface-variant">Delete</span></div>
             </div>
@@ -164,20 +188,26 @@
 document.querySelectorAll('.permission-toggle button').forEach(btn => {
     btn.addEventListener('click', function(e) {
         const form = this.closest('form');
-        const isActive = form.querySelector('input[name="granted"]');
-        const currentValue = isActive.value;
-        // Optimistic visual update - will be reverted if server rejects
-        if (currentValue === 'false') {
-            this.classList.remove('opacity-40', 'hover:opacity-70', 'bg-surface-container', 'border', 'border-dashed', 'border-outline-variant/30');
-            this.innerHTML = '<span class="text-[14px] font-bold">' + this.closest('form').querySelector('input[name="permission"]').value.charAt(0) + '</span>';
-            const action = this.closest('form').querySelector('input[name="permission"]').value.charAt(0);
-            const colorMap = { 'C': 'bg-error text-white shadow-sm shadow-error/30', 'R': 'bg-primary text-white shadow-sm shadow-primary/30', 'U': 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/30', 'D': 'bg-surface-variant/50 text-on-surface-variant' };
+        const grantedInput = form.querySelector('input[name="granted"]');
+        const permission = form.querySelector('input[name="permission"]').value;
+        const action = permission.charAt(0);
+        // hidden 'granted' berisi state TUJUAN: 'true' = akan diberi izin, 'false' = akan dicabut
+        const willGrant = grantedInput.value === 'true';
+
+        if (willGrant) {
+            const colorMap = {
+                'C': 'bg-error text-white shadow-sm shadow-error/30',
+                'R': 'bg-primary text-white shadow-sm shadow-primary/30',
+                'U': 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/30',
+                'D': 'bg-surface-variant/50 text-on-surface-variant'
+            };
             this.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all ' + (colorMap[action] || '') + ' opacity-100';
+            this.innerHTML = '<span class="text-[14px] font-bold">' + action + '</span>';
         } else {
             this.className = 'w-8 h-8 rounded-lg flex items-center justify-center transition-all bg-surface-container border border-dashed border-outline-variant/30 opacity-40 hover:opacity-70';
             this.innerHTML = '';
         }
-        isActive.value = currentValue === 'true' ? 'false' : 'true';
+        // tidak usah flip nilai hidden — form tetap mengirim state tujuan yang benar
     });
 });
 </script>
