@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Tracking Surat - SIPANDA')
+@section('title', 'Tracking Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -41,7 +41,7 @@
                                 <span class="text-body-md font-mono font-bold text-on-surface">{{ $item->nomor_surat ?? '-' }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                <span class="text-body-md text-on-surface">{{ $item->user->name }}</span>
+                                <span class="text-body-md text-on-surface">{{ $item->pemohon_name }}</span>
                             </td>
                             <td class="px-lg py-4">
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->jenisSurat->nama }}</span>
@@ -53,7 +53,11 @@
                                 @include('partials.surat-status-badge', ['status' => $item->status])
                             </td>
                             <td class="px-lg py-4">
-                                <a href="{{ route('warga.surat.status', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Detail</a>
+                                @if ($item->kode_tracking)
+                                    <a href="{{ route('warga.surat.status', $item->kode_tracking) }}" class="text-primary text-label-sm font-bold hover:underline">Detail</a>
+                                @else
+                                    <span class="text-body-sm text-on-surface-variant">-</span>
+                                @endif
                             </td>
                         </tr>
                     @empty

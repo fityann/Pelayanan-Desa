@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
 @section('title', 'Dashboard - Puspamukti Smart Village')
 
@@ -328,7 +328,7 @@
                         <span class="material-symbols-outlined text-[24px]">flash_on</span>
                     </div>
                     <h3 class="text-headline-sm font-extrabold mb-1">Akses Cepat</h3>
-                    <p class="text-body-sm text-on-primary/70 mb-xl leading-relaxed">Modul utama sistem SIPANDA</p>
+                    <p class="text-body-sm text-on-primary/70 mb-xl leading-relaxed">Modul utama sistem SILAPU</p>
                     <div class="grid grid-cols-1 gap-2.5">
                         <a class="flex items-center gap-3 bg-white/10 hover:bg-white/20 backdrop-blur-sm px-lg py-3 rounded-xl text-label-sm font-bold transition-all group/btn" href="{{ route('admin.surat.pengajuan') }}">
                             <span class="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center group-hover/btn:bg-white/20 transition-all">

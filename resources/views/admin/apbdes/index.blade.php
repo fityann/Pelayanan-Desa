@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'APBDes - SIPANDA')
+@section('title', 'APBDes - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -19,10 +19,10 @@
                 </select>
             </form>
             @if(auth()->user()->hasRole('Bendahara'))
-                <a href="{{ route('admin.apbdes.create') }}" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
+                <button onclick="showApbdesModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     Input Data
-                </a>
+                </button>
             @endif
         </div>
     </div>
@@ -136,3 +136,61 @@
     @endforeach
 </div>
 @endsection
+
+@include('components.apbdes-modal')
+
+@push('scripts')
+<script>
+function showApbdesModal() {
+    document.getElementById('apbdesModal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeApbdesModal() {
+    document.getElementById('apbdesModal').classList.add('hidden');
+    document.body.style.overflow = 'auto';
+    resetApbdesForm();
+}
+
+function resetApbdesForm() {
+    document.getElementById('apbdesForm').reset();
+    updatePersentase();
+}
+
+function updatePersentase() {
+    const anggaran = parseFloat(document.getElementById('anggaran').value) || 0;
+    const realisasi = parseFloat(document.getElementById('realisasi').value) || 0;
+    
+    let persentase = 0;
+    if (anggaran > 0) {
+        persentase = (realisasi / anggaran) * 100;
+    }
+    
+    const roundedPersentase = Math.min(Math.round(persentase * 100) / 100, 100);
+    
+    document.getElementById('persentaseDisplay').textContent = roundedPersentase.toFixed(2) + '%';
+    document.getElementById('persentaseBar').style.width = roundedPersentase + '%';
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', function() {
+    // Update persentase saat input berubah
+    document.getElementById('anggaran').addEventListener('input', updatePersentase);
+    document.getElementById('realisasi').addEventListener('input', updatePersentase);
+    
+    // Close modal dengan ESC
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('apbdesModal').classList.contains('hidden')) {
+            closeApbdesModal();
+        }
+    });
+    
+    // Close modal dengan klik di luar
+    document.getElementById('apbdesModal').addEventListener('click', function(e) {
+        if (e.target.id === 'apbdesModal') {
+            closeApbdesModal();
+        }
+    });
+});
+</script>
+@endpush

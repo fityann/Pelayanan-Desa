@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Arsip Surat - SIPANDA')
+@section('title', 'Arsip Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -37,7 +37,7 @@
                                 <span class="text-body-md font-mono font-bold text-on-surface">{{ $item->nomor_surat ?? '-' }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                <span class="text-body-md text-on-surface">{{ $item->user->name }}</span>
+                                <span class="text-body-md text-on-surface">{{ $item->pemohon_name }}</span>
                             </td>
                             <td class="px-lg py-4">
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->jenisSurat->nama }}</span>

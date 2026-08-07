@@ -42,6 +42,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        
+        'warga' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
     ],
 
     /*

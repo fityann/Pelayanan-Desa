@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Pengajuan Surat - SIPANDA')
+@section('title', 'Pengajuan Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -45,8 +45,11 @@
                                         <span class="material-symbols-outlined text-[20px]">person</span>
                                     </div>
                                     <div>
-                                        <p class="text-body-md font-semibold text-on-surface">{{ $item->user->name }}</p>
-                                        <p class="text-label-sm text-on-surface-variant">NIK: {{ $item->user->nik }}</p>
+                                        <p class="text-body-md font-semibold text-on-surface">{{ $item->pemohon_name }}</p>
+                                        <p class="text-label-sm text-on-surface-variant">NIK: {{ $item->pemohon_nik }}</p>
+                                        @if ($item->no_whatsapp)
+                                            <p class="text-label-sm text-on-surface-variant">WA: {{ $item->no_whatsapp }}</p>
+                                        @endif
                                     </div>
                                 </div>
                             </td>

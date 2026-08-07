@@ -1,9 +1,9 @@
-<x-guest-layout>
+﻿<x-guest-layout>
     <div class="min-h-screen bg-gradient-to-br from-surface to-surface-container-low flex items-center justify-center p-lg">
         <div class="w-full max-w-md">
             <div class="text-center mb-xl">
                 <div class="w-16 h-16 rounded-2xl bg-primary flex items-center justify-center text-on-primary font-bold text-headline-md mx-auto mb-lg shadow-lg shadow-primary/20">S</div>
-                <h1 class="text-headline-md font-bold text-on-surface">Masuk ke SIPANDA</h1>
+                <h1 class="text-headline-md font-bold text-on-surface">Masuk ke SILAPU</h1>
                 <p class="text-body-sm text-on-surface-variant mt-xs">Sistem Informasi Puspamukti Smart Village</p>
             </div>
 

@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Status Pengajuan Surat - SIPANDA')
+@section('title', 'Status Pengajuan Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg max-w-3xl">
@@ -9,9 +9,9 @@
             <h1 class="text-headline-md font-bold text-on-surface">Status Pengajuan</h1>
             <p class="text-body-sm text-on-surface-variant">{{ $pengajuan->jenisSurat->nama }}</p>
         </div>
-        <a href="{{ route('warga.surat.riwayat') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
+        <a href="{{ route('warga.surat.cek') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
             <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            Kembali
+            Cek Surat Lain
         </a>
     </div>
 
@@ -25,10 +25,16 @@
     <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
         <div class="flex items-center justify-between mb-lg">
             <div>
-                <p class="text-label-sm text-on-surface-variant">Nomor Surat</p>
-                <p class="text-title-md font-mono font-bold text-on-surface">{{ $pengajuan->nomor_surat ?? '-' }}</p>
+                <p class="text-label-sm text-on-surface-variant">Kode Tracking</p>
+                <p class="text-title-md font-mono font-bold text-primary">{{ $pengajuan->kode_tracking }}</p>
+                <p class="text-[10px] text-on-surface-variant mt-xs">Simpan kode ini untuk memantau status pengajuan Anda.</p>
             </div>
             @include('partials.surat-status-badge', ['status' => $pengajuan->status])
+        </div>
+
+        <div class="mb-lg">
+            <p class="text-label-sm text-on-surface-variant">Nomor Surat</p>
+            <p class="text-title-md font-mono font-bold text-on-surface">{{ $pengajuan->nomor_surat ?? '-' }}</p>
         </div>
 
         @if ($pengajuan->keterangan)
@@ -56,7 +62,7 @@
                     <p class="text-body-sm text-on-surface-variant">
                         Draft PDF sudah siap. Silakan unduh, cetak, lalu bawa ke kantor desa untuk ditandatangani Kepala Desa.
                     </p>
-                    <a href="{{ route('warga.surat.pdf', $pengajuan) }}" class="inline-flex items-center gap-sm mt-md bg-secondary text-on-secondary px-lg py-2 rounded-full text-label-md font-bold hover:bg-secondary/90 transition-all">
+                    <a href="{{ route('warga.surat.pdf', $pengajuan->kode_tracking) }}" class="inline-flex items-center gap-sm mt-md bg-secondary text-on-secondary px-lg py-2 rounded-full text-label-md font-bold hover:bg-secondary/90 transition-all">
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         Unduh Draft PDF
                     </a>
@@ -70,7 +76,7 @@
                 <div>
                     <p class="text-label-sm font-bold text-success mb-xs">Surat Selesai</p>
                     <p class="text-body-sm text-on-surface-variant">Surat Anda sudah final dan dapat diunduh langsung.</p>
-                    <a href="{{ route('warga.surat.pdf', $pengajuan) }}" class="inline-flex items-center gap-sm mt-md bg-success text-on-success px-lg py-2 rounded-full text-label-md font-bold hover:bg-success/90 transition-all">
+                    <a href="{{ route('warga.surat.pdf', $pengajuan->kode_tracking) }}" class="inline-flex items-center gap-sm mt-md bg-success text-on-success px-lg py-2 rounded-full text-label-md font-bold hover:bg-success/90 transition-all">
                         <span class="material-symbols-outlined text-[18px]">download</span>
                         Unduh PDF Final
                     </a>

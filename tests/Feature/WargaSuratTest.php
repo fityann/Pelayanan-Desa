@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\JenisSurat;
 use App\Models\PengajuanSurat;
-use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -12,20 +11,15 @@ class WargaSuratTest extends TestCase
 {
     use RefreshDatabase;
 
-    private function warga(): User
+    private function pengajuanData(): array
     {
-        $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Warga', 'guard_name' => 'web']);
-
-        $user = User::create([
-            'name' => 'Warga Test',
-            'email' => 'wargatest@test.local',
+        return [
+            'nama' => 'Warga Test',
             'nik' => '3201010101010111',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
-        $user->assignRole($role);
-
-        return $user;
+            'no_whatsapp' => '081234567890',
+            'alamat' => 'Kp. Contoh RT 01/RW 01',
+            'keterangan' => 'Untuk keperluan rekening bank',
+        ];
     }
 
     private function jenisSurat(): JenisSurat
@@ -37,90 +31,71 @@ class WargaSuratTest extends TestCase
         ]);
     }
 
-    public function test_warga_can_submit_pengajuan_surat(): void
+    public function test_guest_can_submit_pengajuan_surat_without_login(): void
     {
-        $warga = $this->warga();
         $jenis = $this->jenisSurat();
 
-        $response = $this->actingAs($warga)
-            ->post(route('warga.surat.store', $jenis), [
-                'keterangan' => 'Untuk keperluan rekening bank',
-            ]);
+        $response = $this->post(route('warga.surat.store', $jenis), $this->pengajuanData());
 
         $response->assertRedirect();
 
         $pengajuan = PengajuanSurat::first();
         $this->assertNotNull($pengajuan);
         $this->assertSame('diajukan', $pengajuan->status);
+        $this->assertNull($pengajuan->user_id);
+        $this->assertSame('Warga Test', $pengajuan->nama_pemohon);
+        $this->assertNotNull($pengajuan->kode_tracking);
         $this->assertSame(1, $pengajuan->riwayatStatus()->count());
     }
 
-    public function test_warga_can_view_own_pengajuan_only(): void
+    public function test_guest_can_check_status_via_kode_tracking(): void
     {
-        $warga = $this->warga();
         $jenis = $this->jenisSurat();
 
-        $this->actingAs($warga)->post(route('warga.surat.store', $jenis), [
-            'keterangan' => 'keperluan test',
-        ]);
+        $this->post(route('warga.surat.store', $jenis), $this->pengajuanData());
 
         $pengajuan = PengajuanSurat::first();
 
-        $this->actingAs($warga)
-            ->get(route('warga.surat.status', $pengajuan))
+        $this->get(route('warga.surat.status', $pengajuan->kode_tracking))
             ->assertOk();
+    }
 
-        // Warga lain tidak boleh lihat
-        $role = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'Warga', 'guard_name' => 'web']);
-        $other = User::create([
-            'name' => 'Warga Lain',
-            'email' => 'wargalain@test.local',
-            'nik' => '3201010101010112',
-            'password' => bcrypt('password'),
-            'email_verified_at' => now(),
-        ]);
-        $other->assignRole($role);
+    public function test_guest_can_submit_and_get_kode(): void
+    {
+        $jenis = $this->jenisSurat();
 
-        $this->actingAs($other)
-            ->get(route('warga.surat.status', $pengajuan))
-            ->assertForbidden();
+        $response = $this->post(route('warga.surat.store', $jenis), $this->pengajuanData());
+
+        $pengajuan = PengajuanSurat::first();
+        $response->assertRedirect(route('warga.surat.status', $pengajuan->kode_tracking));
     }
 
     public function test_pdf_not_available_before_approval(): void
     {
-        $warga = $this->warga();
         $jenis = $this->jenisSurat();
 
-        $this->actingAs($warga)->post(route('warga.surat.store', $jenis), [
-            'keterangan' => 'keperluan test',
-        ]);
+        $this->post(route('warga.surat.store', $jenis), $this->pengajuanData());
 
         $pengajuan = PengajuanSurat::first();
 
-        $this->actingAs($warga)
-            ->get(route('warga.surat.pdf', $pengajuan))
+        $this->get(route('warga.surat.pdf', $pengajuan->kode_tracking))
             ->assertForbidden();
     }
 
     public function test_pdf_available_after_approval(): void
     {
-        $warga = $this->warga();
         $jenis = $this->jenisSurat();
 
-        $this->actingAs($warga)->post(route('warga.surat.store', $jenis), [
-            'keterangan' => 'keperluan test',
-        ]);
+        $this->post(route('warga.surat.store', $jenis), $this->pengajuanData());
 
         $pengajuan = PengajuanSurat::first();
         $pengajuan->update([
             'status' => 'disetujui_kades',
             'nomor_surat' => 'SKU/001/07/2026',
-            'approved_by' => $warga->id,
             'tanggal_disetujui' => now(),
         ]);
 
-        $this->actingAs($warga)
-            ->get(route('warga.surat.pdf', $pengajuan))
+        $this->get(route('warga.surat.pdf', $pengajuan->kode_tracking))
             ->assertOk()
             ->assertHeader('content-type', 'application/pdf');
     }

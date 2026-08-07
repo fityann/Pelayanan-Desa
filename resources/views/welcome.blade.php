@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>SIPANDA - Puspamukti Smart Village</title>
+    <title>SILAPU - Puspamukti Smart Village</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -14,7 +14,7 @@
         <div class="max-w-6xl mx-auto px-lg h-16 flex items-center justify-between">
             <a href="/" class="flex items-center gap-md">
                 <div class="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-on-primary font-bold text-title-md">S</div>
-                <span class="font-headline-sm text-on-surface font-bold">SIPANDA</span>
+                <span class="font-headline-sm text-on-surface font-bold">SILAPU</span>
             </a>
             <div class="flex items-center gap-md">
                 @auth
@@ -160,7 +160,7 @@
         <div class="max-w-6xl mx-auto px-lg text-center">
             <div class="flex items-center justify-center gap-md mb-lg">
                 <div class="w-10 h-10 rounded-lg bg-on-primary/20 flex items-center justify-center font-bold text-title-md">S</div>
-                <span class="font-headline-sm font-bold">SIPANDA</span>
+                <span class="font-headline-sm font-bold">SILAPU</span>
             </div>
             <p class="text-body-sm text-on-primary/80 mb-md">Sistem Informasi Puspamukti Smart Village</p>
             <p class="text-label-sm text-on-primary/60">Desa Puspamukti, Kecamatan Cigalontang, Kabupaten Tasikmalaya</p>

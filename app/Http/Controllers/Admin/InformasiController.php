@@ -27,13 +27,19 @@ class InformasiController extends Controller
             'judul' => ['required', 'string', 'max:200'],
             'isi' => ['required', 'string'],
             'kategori' => ['required', 'in:berita,pengumuman,agenda'],
-            'gambar' => ['nullable', 'image', 'max:2048'],
+            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'tanggal_kegiatan' => ['nullable', 'date'],
             'lokasi' => ['nullable', 'string', 'max:255'],
+            'rt' => ['nullable', 'string', 'max:3'],
+            'rw' => ['nullable', 'string', 'max:3'],
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'judul', 'isi', 'kategori', 'tanggal_kegiatan', 'lokasi',
+        ]);
         $data['user_id'] = auth()->id();
+        $data['rt'] = $request->filled('rt') ? $request->rt : null;
+        $data['rw'] = $request->filled('rw') ? $request->rw : null;
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('informasi', 'public');
@@ -60,12 +66,18 @@ class InformasiController extends Controller
             'judul' => ['required', 'string', 'max:200'],
             'isi' => ['required', 'string'],
             'kategori' => ['required', 'in:berita,pengumuman,agenda'],
-            'gambar' => ['nullable', 'image', 'max:2048'],
+            'gambar' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
             'tanggal_kegiatan' => ['nullable', 'date'],
             'lokasi' => ['nullable', 'string', 'max:255'],
+            'rt' => ['nullable', 'string', 'max:3'],
+            'rw' => ['nullable', 'string', 'max:3'],
         ]);
 
-        $data = $request->all();
+        $data = $request->only([
+            'judul', 'isi', 'kategori', 'tanggal_kegiatan', 'lokasi',
+        ]);
+        $data['rt'] = $request->filled('rt') ? $request->rt : null;
+        $data['rw'] = $request->filled('rw') ? $request->rw : null;
 
         if ($request->hasFile('gambar')) {
             $data['gambar'] = $request->file('gambar')->store('informasi', 'public');
@@ -97,8 +109,13 @@ class InformasiController extends Controller
         return redirect()->route('admin.informasi.index')->with('success', 'Informasi berhasil dihapus');
     }
 
-    public function publik(): View
+    public function publik(Request $request): View
     {
+        // Dukung konteks RT/RW lewat query (?rt=01&rw=01) agar navbar tetap scoped
+        if ($request->has('rt') && $request->has('rw')) {
+            session(['warga_rt' => $request->rt, 'warga_rw' => $request->rw]);
+        }
+
         $berita = Informasi::where('published', true)
             ->where('kategori', 'berita')
             ->latest('published_at')

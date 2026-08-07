@@ -13,10 +13,63 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 
 class PendudukController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $penduduk = Penduduk::with('keluarga')->latest()->paginate(15);
-        return view('admin.penduduk.index', compact('penduduk'));
+        // Query base dengan eager loading
+        $query = Penduduk::with('keluarga');
+        
+        // Apply filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nik', 'like', "%{$search}%")
+                  ->orWhere('nama', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($request->filled('rt')) {
+            $query->where('rt', $request->rt);
+        }
+        
+        if ($request->filled('rw')) {
+            $query->where('rw', $request->rw);
+        }
+        
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+        
+        if ($request->filled('status_perkawinan')) {
+            $query->where('status_perkawinan', $request->status_perkawinan);
+        }
+        
+        if ($request->filled('pendidikan')) {
+            $query->where('pendidikan_terakhir', $request->pendidikan);
+        }
+        
+        if ($request->filled('agama')) {
+            $query->where('agama', $request->agama);
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        $allowedSort = ['nik', 'nama', 'tanggal_lahir', 'rt', 'rw', 'created_at'];
+        if (in_array($sortBy, $allowedSort)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        // Get filter lists for dropdowns
+        $rtList = Penduduk::select('rt')->distinct()->whereNotNull('rt')->orderBy('rt')->pluck('rt');
+        $rwList = Penduduk::select('rw')->distinct()->whereNotNull('rw')->orderBy('rw')->pluck('rw');
+        
+        $penduduk = $query->paginate(15)->withQueryString();
+        
+        return view('admin.penduduk.index', compact('penduduk', 'rtList', 'rwList'));
     }
 
     public function create(): View

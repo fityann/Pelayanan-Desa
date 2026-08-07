@@ -10,6 +10,7 @@ class PengajuanSurat extends Model
 {
     protected $fillable = [
         'user_id', 'jenis_surat_id', 'nomor_surat', 'status',
+        'nama_pemohon', 'nik_pemohon', 'alamat_pemohon', 'no_whatsapp', 'kode_tracking',
         'butuh_ttd_fisik', 'keterangan', 'alasan_ditolak', 'file_pendukung',
         'verified_by', 'approved_by',
         'tanggal_diajukan', 'tanggal_disetujui', 'tanggal_ttd_fisik', 'tanggal_diambil',
@@ -52,8 +53,54 @@ class PengajuanSurat extends Model
     }
 
     /**
-     * Catat perubahan status ke riwayat (untuk tracking real-time & arsip audit).
+     * Accessor Eloquent: $pengajuan->pemohon_name
      */
+    public function getPemohonNameAttribute(): ?string
+    {
+        return $this->pemohonName();
+    }
+
+    /**
+     * Accessor Eloquent: $pengajuan->pemohon_nik
+     */
+    public function getPemohonNikAttribute(): ?string
+    {
+        return $this->pemohonNik();
+    }
+
+    /**
+     * Accessor Eloquent: $pengajuan->pemohon_alamat
+     */
+    public function getPemohonAlamatAttribute(): ?string
+    {
+        return $this->pemohonAlamat();
+    }
+
+    public function pemohonName(): ?string
+    {
+        return $this->nama_pemohon ?? $this->user?->name;
+    }
+
+    public function pemohonNik(): ?string
+    {
+        return $this->nik_pemohon ?? $this->user?->nik;
+    }
+
+    public function pemohonAlamat(): ?string
+    {
+        if ($this->alamat_pemohon) {
+            return $this->alamat_pemohon;
+        }
+
+        $pd = $this->user?->penduduk;
+
+        if ($pd) {
+            return trim("{$pd->alamat} RT {$pd->rt}/RW {$pd->rw}");
+        }
+
+        return $this->user?->address;
+    }
+
     public function catatStatus(string $status, ?string $catatan = null, ?int $olehUserId = null): void
     {
         $this->riwayatStatus()->create([

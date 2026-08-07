@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Manajemen Role & Permission - SIPANDA')
+@section('title', 'Manajemen Role & Permission - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -12,7 +12,7 @@
                 <span class="px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-primary/10 text-primary">Akses Kontrol Keamanan</span>
             </div>
             <h1 class="text-headline-md font-bold text-on-surface">Manajemen Pengguna & Role</h1>
-            <p class="text-body-sm text-on-surface-variant">Kelola role dan izin akses pengguna sistem SIPANDA</p>
+            <p class="text-body-sm text-on-surface-variant">Kelola role dan izin akses pengguna sistem SILAPU</p>
         </div>
         <div class="flex gap-sm">
             <form method="POST" action="{{ route('admin.roles.sync') }}" class="inline">

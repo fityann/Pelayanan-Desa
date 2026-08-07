@@ -33,9 +33,16 @@ class WargaPengaduanTest extends TestCase
                 'kategori' => 'Infrastruktur',
                 'judul' => 'Jalan rusak',
                 'deskripsi' => 'Jalan berlubang di depan rumah',
-            ]);
+                'nama' => 'Warga Test',
+                'whatsapp' => '081234567890',
+                'sumber_akses' => 'qr_code',
+            ], ['Accept' => 'application/json']);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertStatus(201)
+            ->assertJson([
+                'success' => true,
+                'redirect' => route('dashboard'),
+            ]);
 
         $this->assertDatabaseHas('pengaduans', [
             'user_id' => $warga->id,

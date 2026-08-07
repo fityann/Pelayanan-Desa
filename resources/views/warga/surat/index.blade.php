@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Layanan Surat - SIPANDA')
+@section('title', 'Layanan Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
@@ -9,9 +9,9 @@
             <h1 class="text-headline-md font-bold text-on-surface">Layanan Surat</h1>
             <p class="text-body-sm text-on-surface-variant">Pilih jenis surat untuk diajukan</p>
         </div>
-        <a href="{{ route('warga.surat.riwayat') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
-            <span class="material-symbols-outlined text-[18px]">history</span>
-            Riwayat Saya
+        <a href="{{ route('warga.surat.cek') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
+            <span class="material-symbols-outlined text-[18px]">manage_search</span>
+            Cek Status
         </a>
     </div>
 

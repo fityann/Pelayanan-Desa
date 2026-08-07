@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Import Penduduk - SIPANDA')
+@section('title', 'Import Penduduk - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg max-w-2xl">

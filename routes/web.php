@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\ApbdesController;
+use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\InformasiController;
 use App\Http\Controllers\Admin\KeluargaController;
 use App\Http\Controllers\Admin\PendudukController;
@@ -10,6 +11,8 @@ use App\Http\Controllers\Admin\SuratController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Warga\ChatController as WargaChatController;
+use App\Http\Controllers\Warga\NotificationController as WargaNotificationController;
 use App\Http\Controllers\Warga\PengaduanController as WargaPengaduanController;
 use App\Http\Controllers\Warga\SuratController as WargaSuratController;
 use App\Models\Penduduk;
@@ -47,21 +50,57 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
 Route::get('/apbdes-publik', [ApbdesController::class, 'publik'])->name('apbdes.publik');
 
-// ==== Layanan Warga (Fase 1) ====
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('layanan/surat')->name('warga.surat.')->group(function () {
-        Route::get('/', [WargaSuratController::class, 'index'])->name('index');
-        Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
-        Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
-        Route::get('/saya/riwayat', [WargaSuratController::class, 'riwayat'])->name('riwayat');
-        Route::get('/{pengajuan}/status', [WargaSuratController::class, 'status'])->name('status');
-        Route::get('/{pengajuan}/pdf', [WargaSuratController::class, 'pdf'])->name('pdf');
-    });
+// ==== QR Code untuk Warga per RT (Fase 2 - Tanpa Login) ====
+Route::prefix('rt/{rt}/rw/{rw}')->name('warga.rt.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\WargaRtController::class, 'landing'])->name('landing');
+    Route::get('/info', [\App\Http\Controllers\WargaRtController::class, 'infoDesa'])->name('info');
+    Route::post('/pengaduan', [\App\Http\Controllers\WargaRtController::class, 'createPengaduan'])->name('createPengaduan');
 
-    // QR Code pengaduan (PRD 1.5): /pengaduan/buat
-    Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
-    Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
+    // Login warga (NIK + Nama) — khusus warga yang terdaftar di panel admin
+    Route::get('/login', [\App\Http\Controllers\WargaRtController::class, 'showLogin'])->name('login');
+    Route::post('/login', [\App\Http\Controllers\WargaRtController::class, 'authenticateWarga'])->name('login.authenticate');
+    Route::post('/logout', [\App\Http\Controllers\WargaRtController::class, 'logoutWarga'])->name('logout');
+
+    // Surat warga (hanya warga yang sudah login dengan NIK)
+    Route::middleware('warga.auth')->group(function () {
+        Route::get('/surat', [WargaSuratController::class, 'indexRt'])->name('surat.index');
+        Route::get('/surat/status/{kode}', [WargaSuratController::class, 'statusRt'])->name('surat.status');
+        Route::get('/surat/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('surat.pdf');
+        Route::get('/surat/{jenisSurat}/buat', [WargaSuratController::class, 'createRt'])->name('surat.create');
+        Route::post('/surat/{jenisSurat}', [WargaSuratController::class, 'storeRt'])->name('surat.store');
+
+        // Chat warga dengan admin desa (hanya warga yang sudah login)
+        Route::get('/chat', [WargaChatController::class, 'index'])->name('chat');
+        Route::get('/chat/data', [WargaChatController::class, 'data'])->name('chat.data');
+        Route::post('/chat', [WargaChatController::class, 'kirim'])->name('chat.store');
+
+        // Notifikasi warga (terlihat di icon lonceng)
+        Route::get('/notif/data', [WargaNotificationController::class, 'data'])->name('notif.data');
+        Route::post('/notif/{id}/read', [WargaNotificationController::class, 'markRead'])->name('notif.read');
+        Route::post('/notif/read-all', [WargaNotificationController::class, 'markAll'])->name('notif.read-all');
+    });
 });
+
+// ==== Layanan Warga (Fase 1) — publik tanpa login ====
+Route::prefix('layanan/surat')->name('warga.surat.')->group(function () {
+    Route::get('/', [WargaSuratController::class, 'index'])->name('index');
+    Route::get('/cek', [WargaSuratController::class, 'cek'])->name('cek');
+    Route::get('/status/{kode}', [WargaSuratController::class, 'status'])->name('status');
+    Route::get('/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('pdf');
+    Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
+    Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
+});
+
+// Layanan Warga - Usulan Kegiatan (Musrenbang)
+Route::prefix('layanan/musrenbang')->name('warga.musrenbang.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\Warga\MusrenbangController::class, 'index'])->name('index');
+    Route::get('/{musrenbang}', [\App\Http\Controllers\Warga\MusrenbangController::class, 'show'])->name('show');
+    Route::post('/{musrenbang}/support', [\App\Http\Controllers\Warga\MusrenbangController::class, 'support'])->middleware('auth:warga')->name('support');
+});
+
+// QR Code pengaduan (PRD 1.5): /pengaduan/buat — publik tanpa login
+Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
+Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -115,20 +154,63 @@ Route::prefix('admin')->name('admin.')
         Route::get('surat/arsip', [SuratController::class, 'arsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip');
         Route::get('surat/tracking', [SuratController::class, 'tracking'])->middleware('permission:R Pengajuan Surat')->name('surat.tracking');
 
-        // APBDes
+        // APBDes Dashboard (Fase 2)
+        Route::get('apbdes/dashboard', [\App\Http\Controllers\ApbdesController::class, 'index'])->middleware('permission:R APBDes')->name('apbdes.dashboard');
+        Route::get('apbdes/export', [\App\Http\Controllers\ApbdesController::class, 'export'])->middleware('permission:R APBDes')->name('apbdes.export');
+        
+        // APBDes Management
         Route::get('apbdes', [ApbdesController::class, 'index'])->middleware('permission:R APBDes')->name('apbdes.index');
         Route::get('apbdes/create', [ApbdesController::class, 'create'])->middleware('permission:C APBDes')->name('apbdes.create');
         Route::post('apbdes', [ApbdesController::class, 'store'])->middleware('permission:C APBDes')->name('apbdes.store');
         Route::post('apbdes/{apbde}/review', [ApbdesController::class, 'review'])->middleware('permission:U APBDes')->name('apbdes.review');
         Route::post('apbdes/{apbde}/publish', [ApbdesController::class, 'publish'])->middleware('permission:U APBDes')->name('apbdes.publish');
         Route::delete('apbdes/{apbde}', [ApbdesController::class, 'destroy'])->middleware('permission:D APBDes')->name('apbdes.destroy');
+        
+        // Musrenbang (Fase 2 - Perencanaan)
+        Route::prefix('musrenbang')->name('musrenbang.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\MusrenbangController::class, 'index'])->middleware('permission:R APBDes')->name('index');
+            Route::get('/create', [\App\Http\Controllers\MusrenbangController::class, 'create'])->middleware('permission:C APBDes')->name('create');
+            Route::post('/', [\App\Http\Controllers\MusrenbangController::class, 'store'])->middleware('permission:C APBDes')->name('store');
+            Route::get('/{musrenbang}', [\App\Http\Controllers\MusrenbangController::class, 'show'])->middleware('permission:R APBDes')->name('show');
+            Route::post('/{musrenbang}/verify', [\App\Http\Controllers\MusrenbangController::class, 'verify'])->middleware('permission:U APBDes')->name('verify');
+            Route::post('/{musrenbang}/review', [\App\Http\Controllers\MusrenbangController::class, 'review'])->middleware('permission:U APBDes')->name('review');
+            Route::post('/{musrenbang}/approve', [\App\Http\Controllers\MusrenbangController::class, 'approve'])->middleware('permission:U APBDes')->name('approve');
+            Route::post('/{musrenbang}/support', [\App\Http\Controllers\MusrenbangController::class, 'support'])->middleware('permission:C APBDes')->name('support');
+        });
+        
+        // Pencairan Dana (Fase 2 - Keuangan)
+        Route::prefix('pencairan-dana')->name('pencairan-dana.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\PencairanDanaController::class, 'index'])->middleware('permission:R APBDes')->name('index');
+            Route::get('/create', [\App\Http\Controllers\PencairanDanaController::class, 'create'])->middleware('permission:C APBDes')->name('create');
+            Route::post('/', [\App\Http\Controllers\PencairanDanaController::class, 'store'])->middleware('permission:C APBDes')->name('store');
+            Route::post('/{pencairanDana}/verify', [\App\Http\Controllers\PencairanDanaController::class, 'verify'])->middleware('permission:U APBDes')->name('verify');
+            Route::post('/{pencairanDana}/approve', [\App\Http\Controllers\PencairanDanaController::class, 'approve'])->middleware('permission:U APBDes')->name('approve');
+            Route::post('/{pencairanDana}/process', [\App\Http\Controllers\PencairanDanaController::class, 'process'])->middleware('permission:U APBDes')->name('process');
+            Route::post('/{pencairanDana}/complete', [\App\Http\Controllers\PencairanDanaController::class, 'complete'])->middleware('permission:U APBDes')->name('complete');
+        });
+        
+        // Belanja (Fase 2 - Pengadaan)
+        Route::prefix('belanja')->name('belanja.')->group(function () {
+            Route::get('/', [\App\Http\Controllers\BelanjaController::class, 'index'])->middleware('permission:R APBDes')->name('index');
+            Route::get('/create', [\App\Http\Controllers\BelanjaController::class, 'create'])->middleware('permission:C APBDes')->name('create');
+            Route::post('/', [\App\Http\Controllers\BelanjaController::class, 'store'])->middleware('permission:C APBDes')->name('store');
+            Route::post('/{belanja}/approve', [\App\Http\Controllers\BelanjaController::class, 'approve'])->middleware('permission:U APBDes')->name('approve');
+            Route::post('/{belanja}/deliver', [\App\Http\Controllers\BelanjaController::class, 'deliver'])->middleware('permission:U APBDes')->name('deliver');
+            Route::post('/{belanja}/receive', [\App\Http\Controllers\BelanjaController::class, 'receive'])->middleware('permission:U APBDes')->name('receive');
+            Route::post('/{belanja}/complete', [\App\Http\Controllers\BelanjaController::class, 'complete'])->middleware('permission:U APBDes')->name('complete');
+        });
 
-        // Pengaduan
+        // Pengaduan Dashboard (Enhanced Fase 2)
+        Route::get('pengaduan/dashboard', [PengaduanController::class, 'index'])->middleware('permission:R Pengaduan')->name('pengaduan.dashboard');
+        Route::get('pengaduan/{pengaduan}/detail', [PengaduanController::class, 'show'])->middleware('permission:R Pengaduan')->name('pengaduan.show');
+        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->middleware('permission:U Pengaduan')->name('pengaduan.proses');
+        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->middleware('permission:U Pengaduan')->name('pengaduan.selesai');
+        Route::get('pengaduan/export', [PengaduanController::class, 'export'])->middleware('permission:R Pengaduan')->name('pengaduan.export');
+        
+        // Pengaduan Legacy Routes
         Route::get('pengaduan', [PengaduanController::class, 'index'])->middleware('permission:R Pengaduan')->name('pengaduan.index');
         Route::get('pengaduan/create', [PengaduanController::class, 'create'])->middleware('permission:C Pengaduan')->name('pengaduan.create');
         Route::post('pengaduan', [PengaduanController::class, 'store'])->middleware('permission:C Pengaduan')->name('pengaduan.store');
-        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->middleware('permission:U Pengaduan')->name('pengaduan.proses');
-        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->middleware('permission:U Pengaduan')->name('pengaduan.selesai');
         Route::delete('pengaduan/{pengaduan}', [PengaduanController::class, 'destroy'])->middleware('permission:D Pengaduan')->name('pengaduan.destroy');
 
         // Informasi
@@ -144,6 +226,33 @@ Route::prefix('admin')->name('admin.')
         Route::get('roles', [RoleController::class, 'index'])->middleware(['permission:R Role & Permission', 'can_manage_users'])->name('roles.index');
         Route::post('roles/update', [RoleController::class, 'update'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.update');
         Route::post('roles/sync', [RoleController::class, 'syncAll'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.sync');
+
+        // Notifikasi Admin (tersedia untuk semua staff/role yang masuk area admin)
+        Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('notifications/data', [\App\Http\Controllers\Admin\NotificationController::class, 'data'])->name('notifications.data');
+        Route::post('notifications/{id}/read', [\App\Http\Controllers\Admin\NotificationController::class, 'markRead'])->name('notifications.read');
+        Route::post('notifications/read-all', [\App\Http\Controllers\Admin\NotificationController::class, 'markAll'])->name('notifications.read-all');
+        Route::delete('notifications/{notification}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
+
+        // Chat Warga (kotak masuk bersama untuk semua staff)
+        Route::get('chat', [AdminChatController::class, 'index'])->name('chat.index');
+        Route::get('chat/unread', [AdminChatController::class, 'unread'])->name('chat.unread');
+        Route::get('chat/{chat}', [AdminChatController::class, 'show'])->name('chat.show');
+        Route::get('chat/{chat}/data', [AdminChatController::class, 'data'])->name('chat.data');
+        Route::post('chat/{chat}', [AdminChatController::class, 'kirim'])->name('chat.store');
+
+        // QR & Link Wilayah (per RT/RW)
+        Route::get('qr-links', [\App\Http\Controllers\Admin\QrCodeController::class, 'index'])->name('qr-links.index');
+        Route::get('qr-links/create', [\App\Http\Controllers\Admin\QrCodeController::class, 'create'])->name('qr-links.create');
+        Route::post('qr-links', [\App\Http\Controllers\Admin\QrCodeController::class, 'store'])->name('qr-links.store');
+        Route::get('qr-links/{rtQrCode}/edit', [\App\Http\Controllers\Admin\QrCodeController::class, 'edit'])->name('qr-links.edit');
+        Route::match(['put', 'patch'], 'qr-links/{rtQrCode}', [\App\Http\Controllers\Admin\QrCodeController::class, 'update'])->name('qr-links.update');
+        Route::delete('qr-links/{rtQrCode}', [\App\Http\Controllers\Admin\QrCodeController::class, 'destroy'])->name('qr-links.destroy');
+        Route::post('qr-links/{rtQrCode}/generate', [\App\Http\Controllers\Admin\QrCodeController::class, 'generate'])->name('qr-links.generate');
+        Route::post('qr-links/{rt}/{rw}/generate', [\App\Http\Controllers\Admin\QrCodeController::class, 'generateByRtRw'])->name('qr-links.generateByRtRw');
+        Route::get('qr-links/{rtQrCode}/download', [\App\Http\Controllers\Admin\QrCodeController::class, 'download'])->name('qr-links.download');
+        Route::get('qr-links/cetak', [\App\Http\Controllers\Admin\QrCodeController::class, 'cetak'])->name('qr-links.cetak');
+        Route::post('qr-links/{rt}/{rw}/status', [\App\Http\Controllers\Admin\QrCodeController::class, 'toggleStatus'])->name('qr-links.status');
     });
 
 require __DIR__.'/auth.php';

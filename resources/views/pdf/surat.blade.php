@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8">
@@ -59,31 +59,31 @@
         <table class="data">
             <tr>
                 <td class="label">Nama</td>
-                <td>: {{ $surat->user->name }}</td>
+                <td>: {{ $surat->pemohon_name }}</td>
             </tr>
             <tr>
                 <td class="label">NIK</td>
-                <td>: {{ $surat->user->nik }}</td>
+                <td>: {{ $surat->pemohon_nik }}</td>
             </tr>
             <tr>
                 <td class="label">Tempat / Tanggal Lahir</td>
-                <td>: {{ $surat->user->penduduk?->tempat_lahir ?? '-' }} / {{ $surat->user->penduduk?->tanggal_lahir?->format('d-m-Y') ?? '-' }}</td>
+                <td>: {{ $surat->user?->penduduk?->tempat_lahir ?? '-' }} / {{ $surat->user?->penduduk?->tanggal_lahir?->format('d-m-Y') ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Jenis Kelamin</td>
-                <td>: {{ $surat->user->penduduk?->jenis_kelamin ?? '-' }}</td>
+                <td>: {{ $surat->user?->penduduk?->jenis_kelamin ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Agama</td>
-                <td>: {{ $surat->user->penduduk?->agama ?? '-' }}</td>
+                <td>: {{ $surat->user?->penduduk?->agama ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Pekerjaan</td>
-                <td>: {{ $surat->user->penduduk?->pekerjaan ?? '-' }}</td>
+                <td>: {{ $surat->user?->penduduk?->pekerjaan ?? '-' }}</td>
             </tr>
             <tr>
                 <td class="label">Alamat</td>
-                <td>: {{ $surat->user->penduduk?->alamat ?? $surat->user->address }} RT {{ $surat->user->penduduk?->rt ?? $surat->user->rt }}/RW {{ $surat->user->penduduk?->rw ?? $surat->user->rw }}</td>
+                <td>: {{ $surat->pemohon_alamat }}</td>
             </tr>
         </table>
 
@@ -101,7 +101,7 @@
     </div>
 
     <div class="catatan-draft">
-        * Dokumen ini adalah DRAFT yang dibuat otomatis oleh SIPANDA. Belum sah sebelum ditandatangani
+        * Dokumen ini adalah DRAFT yang dibuat otomatis oleh SILAPU. Belum sah sebelum ditandatangani
         dan distempel oleh Kepala Desa. Nomor surat: {{ $surat->nomor_surat }}.
     </div>
 </body>

@@ -137,7 +137,7 @@ class SuratController extends Controller
             ->setPaper('a4', 'portrait');
 
         $filename = (str_replace(['/', '\\'], '-', $pengajuan->nomor_surat) ?? 'draft')
-            . '-' . str_replace([' ', '/', '\\'], '-', $pengajuan->user->name) . '.pdf';
+            . '-' . str_replace([' ', '/', '\\'], '-', $pengajuan->pemohon_name) . '.pdf';
 
         return $pdf->download($filename);
     }

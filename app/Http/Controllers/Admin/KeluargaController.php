@@ -10,10 +10,55 @@ use Illuminate\View\View;
 
 class KeluargaController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $keluargaList = Keluarga::withCount('penduduk')->latest()->paginate(15);
-        return view('admin.keluarga.index', compact('keluargaList'));
+        // Query base dengan eager loading
+        $query = Keluarga::withCount('penduduk');
+        
+        // Apply filters
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('no_kk', 'like', "%{$search}%")
+                  ->orWhere('kepala_keluarga', 'like', "%{$search}%")
+                  ->orWhere('alamat', 'like', "%{$search}%");
+            });
+        }
+        
+        if ($request->filled('rt')) {
+            $query->where('rt', $request->rt);
+        }
+        
+        if ($request->filled('rw')) {
+            $query->where('rw', $request->rw);
+        }
+        
+        if ($request->filled('min_anggota')) {
+            $query->has('penduduk', '>=', $request->min_anggota);
+        }
+        
+        if ($request->filled('max_anggota')) {
+            $query->has('penduduk', '<=', $request->max_anggota);
+        }
+        
+        // Sorting
+        $sortBy = $request->get('sort_by', 'created_at');
+        $sortOrder = $request->get('sort_order', 'desc');
+        
+        $allowedSort = ['no_kk', 'kepala_keluarga', 'rt', 'rw', 'created_at', 'penduduk_count'];
+        if (in_array($sortBy, $allowedSort)) {
+            $query->orderBy($sortBy, $sortOrder);
+        } else {
+            $query->latest();
+        }
+        
+        // Get RT/RW list for filter dropdown
+        $rtList = Keluarga::select('rt')->distinct()->whereNotNull('rt')->orderBy('rt')->pluck('rt');
+        $rwList = Keluarga::select('rw')->distinct()->whereNotNull('rw')->orderBy('rw')->pluck('rw');
+        
+        $keluargaList = $query->paginate(15)->withQueryString();
+        
+        return view('admin.keluarga.index', compact('keluargaList', 'rtList', 'rwList'));
     }
 
     public function create(): View

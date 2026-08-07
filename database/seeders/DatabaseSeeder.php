@@ -117,7 +117,7 @@ class DatabaseSeeder extends Seeder
                     'rt' => $userData['rt'] ?? null,
                     'rw' => $userData['rw'] ?? null,
                     'email_verified_at' => now(),
-                    'password' => bcrypt($userData['password']),
+                    'password' => bcrypt($userData['password']), 
                 ]
             );
 

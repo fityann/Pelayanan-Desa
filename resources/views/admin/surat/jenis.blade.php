@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Jenis Surat - SIPANDA')
+@section('title', 'Jenis Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">

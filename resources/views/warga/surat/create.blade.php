@@ -1,6 +1,6 @@
-@extends('layouts.admin')
+﻿@extends('layouts.admin')
 
-@section('title', 'Ajukan Surat - SIPANDA')
+@section('title', 'Ajukan Surat - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg max-w-2xl">
@@ -13,18 +13,31 @@
         @csrf
 
         <div class="bg-primary-fixed/20 border border-primary/20 rounded-xl p-md text-body-sm text-on-surface">
-            <strong>Data pemohon diambil otomatis dari data kependudukan desa:</strong>
-            <ul class="mt-sm space-y-1 text-on-surface-variant">
-                <li>Nama: <strong class="text-on-surface">{{ auth()->user()->name }}</strong></li>
-                <li>NIK: <strong class="text-on-surface">{{ auth()->user()->nik }}</strong></li>
-                @php $pd = auth()->user()->penduduk; @endphp
-                @if ($pd)
-                    <li>Alamat: {{ $pd->alamat }} RT {{ $pd->rt }}/RW {{ $pd->rw }}</li>
-                @endif
-            </ul>
-            @if (!$pd)
-                <p class="text-label-sm text-warning mt-sm">Data penduduk belum terhubung dengan akun Anda. Hubungi admin desa bila data tidak sesuai.</p>
-            @endif
+            <strong>Data Pemohon</strong>
+            <p class="text-on-surface-variant mt-xs">Isi data diri Anda di bawah ini.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+            <div>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Nama Lengkap</label>
+                <input type="text" name="nama" value="{{ old('nama', auth()->check() ? auth()->user()->name : '') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Nama sesuai KTP">
+                @error('nama') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">NIK</label>
+                <input type="text" name="nik" value="{{ old('nik', auth()->check() ? auth()->user()->nik : '') }}" required pattern="\d{16}" maxlength="16" inputmode="numeric" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="16 digit NIK">
+                @error('nik') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">No. WhatsApp</label>
+                <input type="text" name="no_whatsapp" value="{{ old('no_whatsapp') }}" required maxlength="20" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: 081234567890">
+                @error('no_whatsapp') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Alamat</label>
+                <input type="text" name="alamat" value="{{ old('alamat', auth()->check() ? auth()->user()->penduduk?->alamat : '') }}" maxlength="255" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Alamat lengkap / RT-RW">
+                @error('alamat') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+            </div>
         </div>
 
         @if ($jenisSurat->syarat)
@@ -36,7 +49,8 @@
 
         <div>
             <label class="text-label-sm font-bold text-on-surface block mb-xs">Keperluan</label>
-            <textarea name="keterangan" rows="4" required maxlength="1000" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: untuk keperluan pengajuan beasiswa anak..."></textarea>
+            <textarea name="keterangan" rows="4" required maxlength="1000" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: untuk keperluan pengajuan beasiswa anak...">{{ old('keterangan') }}</textarea>
+            @error('keterangan') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
         </div>
 
         <div>

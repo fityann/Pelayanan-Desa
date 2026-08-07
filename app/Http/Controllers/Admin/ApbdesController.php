@@ -34,7 +34,7 @@ class ApbdesController extends Controller
         return view('admin.apbdes.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'tahun' => ['required', 'string', 'size:4'],
@@ -50,6 +50,14 @@ class ApbdesController extends Controller
         $data['status'] = 'draft';
 
         Apbde::create($data);
+
+        // Respons JSON untuk submit via modal (AJAX)
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data APBDes berhasil ditambahkan',
+            ], 201);
+        }
 
         return redirect()->route('admin.apbdes.index')->with('success', 'Data APBDes berhasil ditambahkan');
     }
@@ -83,6 +91,11 @@ class ApbdesController extends Controller
 
     public function publik(): View
     {
+        // Dukung konteks RT/RW lewat query (?rt=01&rw=01) agar navbar tetap scoped
+        if (request()->has('rt') && request()->has('rw')) {
+            session(['warga_rt' => request('rt'), 'warga_rw' => request('rw')]);
+        }
+
         $tahun = request('tahun', date('Y'));
         $data = Apbde::where('tahun', $tahun)
             ->where('status', 'dipublikasikan')

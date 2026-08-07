@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureCanManageUsers;
+use App\Http\Middleware\WargaAuth;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'permission' => PermissionMiddleware::class,
             'role_or_permission' => RoleOrPermissionMiddleware::class,
             'can_manage_users' => EnsureCanManageUsers::class,
+            'warga.auth' => WargaAuth::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
