@@ -1,62 +1,71 @@
-﻿@extends('layouts.admin')
+@extends('layouts.warga')
 
 @section('title', 'Layanan Surat - SILAPU')
 
 @section('content')
-<div class="flex flex-col gap-lg">
-    <div class="flex items-center justify-between">
+<div class="space-y-8 max-w-5xl mx-auto py-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-            <h1 class="text-headline-md font-bold text-on-surface">Layanan Surat</h1>
-            <p class="text-body-sm text-on-surface-variant">Pilih jenis surat untuk diajukan</p>
+            <div class="flex items-center space-x-3 mb-3">
+                <div class="bg-emerald-100 p-3 rounded-xl">
+                    <span class="material-symbols-outlined text-emerald-600 text-2xl">edit_note</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Layanan Surat</h1>
+                    <p class="text-sm text-gray-500">Pilih jenis surat untuk diajukan</p>
+                </div>
+            </div>
         </div>
-        <a href="{{ route('warga.surat.cek') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
+        <a href="{{ route('warga.surat.cek') }}" class="inline-flex items-center space-x-2 bg-white text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors border border-gray-200 shadow-sm">
             <span class="material-symbols-outlined text-[18px]">manage_search</span>
-            Cek Status
+            <span>Cek Status</span>
         </a>
     </div>
 
     @if (session('success'))
-        <div class="bg-success/10 border border-success/20 text-success px-lg py-3 rounded-xl flex items-center gap-md">
-            <span class="material-symbols-outlined">check_circle</span>
-            {{ session('success') }}
+        <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg flex items-center space-x-3">
+            <span class="material-symbols-outlined text-green-600">check_circle</span>
+            <p class="text-sm font-medium text-green-800">{{ session('success') }}</p>
         </div>
     @endif
 
     @if ($jenisSurat->isEmpty())
-        <div class="bg-surface-container-lowest rounded-xl p-xl text-center text-on-surface-variant">
-            <span class="material-symbols-outlined text-[40px] block mb-md">description</span>
-            <p>Belum ada jenis surat yang tersedia. Silakan hubungi kantor desa.</p>
+        <div class="bg-white rounded-2xl shadow-sm p-12 text-center border border-gray-100">
+            <span class="material-symbols-outlined text-5xl text-gray-300 block mb-3">description</span>
+            <p class="text-gray-600">Belum ada jenis surat yang tersedia. Silakan hubungi kantor desa.</p>
         </div>
     @endif
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($jenisSurat as $jenis)
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg hover:shadow-md hover:-translate-y-0.5 transition-all border border-outline-variant/10 flex flex-col">
-                <div class="flex items-start justify-between mb-md">
-                    <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
-                        <span class="material-symbols-outlined">description</span>
+            <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-100 flex flex-col">
+                <div class="flex items-start justify-between mb-4">
+                    <div class="bg-emerald-100 w-12 h-12 rounded-xl flex items-center justify-center">
+                        <span class="material-symbols-outlined text-emerald-600">description</span>
                     </div>
-                    <span class="px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider bg-primary-fixed/20 text-primary">Aktif</span>
+                    <span class="px-2 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-50 text-emerald-700">Aktif</span>
                 </div>
-                <h3 class="text-title-md font-bold text-on-surface mb-1">{{ $jenis->nama }}</h3>
+                <h3 class="text-lg font-bold text-gray-900 mb-1">{{ $jenis->nama }}</h3>
                 @if ($jenis->deskripsi)
-                    <p class="text-body-sm text-on-surface-variant mb-md">{{ $jenis->deskripsi }}</p>
+                    <p class="text-sm text-gray-600 mb-4">{{ $jenis->deskripsi }}</p>
                 @endif
                 @if ($jenis->syarat)
-                    <div class="bg-surface-container rounded-lg p-md mb-md flex-1">
-                        <p class="text-label-sm font-bold text-on-surface mb-xs">Syarat:</p>
-                        <p class="text-body-sm text-on-surface-variant whitespace-pre-line">{{ $jenis->syarat }}</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mb-4 flex-1">
+                        <p class="text-xs font-bold text-gray-900 mb-1">Syarat:</p>
+                        <p class="text-sm text-gray-600 whitespace-pre-line">{{ $jenis->syarat }}</p>
                     </div>
                 @endif
-                @if ($jenis->masa_berlaku)
-                    <span class="text-label-sm text-on-surface-variant">Berlaku {{ $jenis->masa_berlaku }} hari</span>
-                @endif
-                @if (!$jenis->butuh_ttd_fisik)
-                    <span class="text-label-sm text-on-surface-variant">Tanpa TTD fisik</span>
-                @endif
-                <a href="{{ route('warga.surat.create', $jenis) }}" class="mt-lg bg-primary text-on-primary text-center px-lg py-2.5 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center justify-center gap-sm">
+                <div class="flex flex-wrap gap-2 mb-4">
+                    @if ($jenis->masa_berlaku)
+                        <span class="text-xs text-gray-500">Berlaku {{ $jenis->masa_berlaku }} hari</span>
+                    @endif
+                    @if (!$jenis->butuh_ttd_fisik)
+                        <span class="text-xs text-gray-500">Tanpa TTD fisik</span>
+                    @endif
+                </div>
+                <a href="{{ route('warga.surat.create', $jenis) }}" class="mt-auto bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-center px-4 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all flex items-center justify-center space-x-2">
                     <span class="material-symbols-outlined text-[18px]">edit_note</span>
-                    Ajukan Surat
+                    <span>Ajukan Surat</span>
                 </a>
             </div>
         @endforeach
