@@ -20,7 +20,7 @@
             </div>
             <div class="flex-1 min-w-0">
                 <h1 class="text-title-md font-bold text-on-primary truncate">{{ $chat->user->name }}</h1>
-                <p class="text-body-sm text-on-primary">Warga RT {{ $chat->rt }} / RW {{ $chat->rw }} · {{ $chat->user->email }}</p>
+                <p class="text-body-sm text-on-primary">Warga RT {{ $chat->rt }} · {{ $chat->user->email }}</p>
             </div>
         </div>
 

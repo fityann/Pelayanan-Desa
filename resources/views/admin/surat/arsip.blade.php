@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Arsip Surat - SILAPU')
 
@@ -40,7 +40,10 @@
                                 <span class="text-body-md text-on-surface">{{ $item->pemohon_name }}</span>
                             </td>
                             <td class="px-lg py-4">
-                                <span class="text-body-sm text-on-surface-variant">{{ $item->jenisSurat->nama }}</span>
+                                <span class="text-body-sm font-bold text-on-surface block">{{ $item->jenisSurat->nama }}</span>
+                                @if ($item->keterangan || $item->keperluan)
+                                    <span class="text-[11px] text-on-surface-variant block mt-0.5">Keperluan: {{ $item->keterangan ?? $item->keperluan }}</span>
+                                @endif
                             </td>
                             <td class="px-lg py-4">
                                 <span class="text-body-sm text-on-surface-variant">{{ $item->tanggal_disetujui?->format('d/m/Y') ?? '-' }}</span>

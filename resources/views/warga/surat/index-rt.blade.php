@@ -1,6 +1,6 @@
 @extends('layouts.warga')
 
-@section('title', "Surat Online - RT $rt RW $rw")
+@section('title', "Surat Online - RT $rt")
 
 @section('content')
 <div class="space-y-8">
@@ -13,13 +13,18 @@
                 </div>
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Surat Online</h1>
-                    <p class="text-sm text-gray-500">Layanan pengajuan surat untuk warga RT {{ $rt }} RW {{ $rw }}</p>
+                    <p class="text-sm text-gray-500">Layanan pengajuan surat untuk warga RT {{ $rt }}</p>
                 </div>
             </div>
         </div>
         <div class="flex items-center space-x-2">
-            <a href="{{ route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) }}"
-               class="inline-flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors">
+            <a href="{{ route('warga.rt.surat.riwayat', ['rt' => $rt]) }}"
+               class="inline-flex items-center space-x-2 bg-[#4B5D3A] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#364329] transition-all shadow-xs">
+                <span class="material-symbols-outlined text-sm">lan</span>
+                <span>Riwayat & Tracking Surat Saya</span>
+            </a>
+            <a href="{{ route('warga.rt.landing', ['rt' => $rt]) }}"
+               class="inline-flex items-center space-x-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-xl text-xs font-bold hover:bg-gray-200 transition-colors">
                 <span class="material-symbols-outlined text-sm">arrow_back</span>
                 <span>Kembali</span>
             </a>
@@ -68,7 +73,7 @@
                     <span class="text-xs text-gray-500">Tanpa TTD fisik</span>
                 @endif
             </div>
-            <a href="{{ route('warga.rt.surat.create', ['rt' => $rt, 'rw' => $rw, 'jenisSurat' => $jenis]) }}"
+            <a href="{{ route('warga.rt.surat.create', ['rt' => $rt, 'jenisSurat' => $jenis]) }}"
                class="mt-auto bg-gradient-to-r from-emerald-600 to-teal-600 text-white text-center px-4 py-2.5 rounded-xl font-semibold hover:from-emerald-700 hover:to-teal-700 transition-all flex items-center justify-center space-x-2">
                 <span class="material-symbols-outlined text-[18px]">edit_note</span>
                 <span>Ajukan Surat</span>

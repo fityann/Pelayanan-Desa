@@ -52,6 +52,14 @@ class PengajuanSurat extends Model
         return $this->hasMany(RiwayatStatusSurat::class);
     }
 
+    public function getKodeTrackingValAttribute(): string
+    {
+        if (!empty($this->attributes['kode_tracking'])) {
+            return $this->attributes['kode_tracking'];
+        }
+        return 'SRT-' . str_pad($this->id, 6, '0', STR_PAD_LEFT);
+    }
+
     /**
      * Accessor Eloquent: $pengajuan->pemohon_name
      */

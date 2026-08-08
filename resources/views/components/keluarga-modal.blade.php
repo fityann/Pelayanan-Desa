@@ -69,37 +69,20 @@
                     </div>
                 </div>
                 
-                <!-- RT/RW -->
-                <div class="grid grid-cols-2 gap-md mb-md">
-                    <div>
-                        <label class="block text-label-sm font-medium text-on-surface mb-xs">
-                            RT <span class="text-error">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="number" name="rt" id="rt" 
-                                   min="1" max="99"
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                   placeholder="01"
-                                   required>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
-                                <span class="material-symbols-outlined text-base">location_on</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <label class="block text-label-sm font-medium text-on-surface mb-xs">
-                            RW <span class="text-error">*</span>
-                        </label>
-                        <div class="relative">
-                            <input type="number" name="rw" id="rw" 
-                                   min="1" max="99"
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                   placeholder="01"
-                                   required>
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
-                                <span class="material-symbols-outlined text-base">location_on</span>
-                            </div>
+                <!-- RT -->
+                <div class="mb-md">
+                    <label class="block text-label-sm font-medium text-on-surface mb-xs">
+                        RT <span class="text-error">*</span>
+                    </label>
+                    <div class="relative">
+                        <input type="number" name="rt" id="rt" 
+                               min="1" max="99"
+                               class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                               placeholder="01"
+                               required>
+                        <input type="hidden" name="rw" id="rw" value="01">
+                        <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                            <span class="material-symbols-outlined text-base">location_on</span>
                         </div>
                     </div>
                 </div>

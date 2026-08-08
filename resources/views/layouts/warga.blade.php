@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#15803d"/>
-    <meta name="description" content="SILAPU - Sistem Layanan Puspamukti. Layanan digital mudah untuk warga RT {{ $rt ?? '' }} RW {{ $rw ?? '' }}">
+    <meta name="description" content="SILAPU - Sistem Layanan Puspamukti. Layanan digital mudah untuk warga RT {{ $rt ?? '' }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SILAPU - Sistem Layanan Puspamukti')</title>
 
@@ -15,30 +15,44 @@
 
     <style>
         @php
-            $isRtScoped = isset($rt) && isset($rw);
-            // Saat warga berada di halaman publik (APBDes/Berita/Info Desa),
-            // ambil konteks RT/RW dari session agar navbar tetap konsisten.
-            if (!$isRtScoped && session()->has('warga_rt') && session()->has('warga_rw')) {
-                $rt = session('warga_rt');
-                $rw = session('warga_rw');
-                $isRtScoped = true;
-            }
+            $rt = $rt ?? session('warga_rt', '01');
+            $rw = $rw ?? session('warga_rw', '01');
+            $isRtScoped = true;
             $currentRoute = request()->route()?->getName();
         @endphp
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(160deg, #f0fdf4 0%, #ecfeff 45%, #eff6ff 100%);
+            background: linear-gradient(160deg, #f4fbf7 0%, #fefce8 45%, #ecfdf5 100%);
             min-height: 100vh;
         }
         [x-cloak] { display: none !important; }
 
         .masy-navbar {
-            background: linear-gradient(120deg, #166534 0%, #15803d 55%, #0f766e 100%);
-            box-shadow: 0 6px 24px rgba(22, 101, 52, 0.25);
+            background: #4B5D3A;
+            border-bottom: 3px solid #D8B84C;
+            box-shadow: 0 6px 24px rgba(75, 93, 58, 0.35);
+        }
+
+        .desktop-menu {
+            display: flex !important;
+            align-items: center;
+            overflow-x: auto !important;
+            overflow-y: hidden;
+            white-space: nowrap;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 4px 6px;
+        }
+        .desktop-menu::-webkit-scrollbar {
+            display: none;
+            width: 0;
+            height: 0;
         }
 
         .masy-navlink {
-            display: flex;
+            display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 8px 14px;
@@ -46,38 +60,61 @@
             font-size: 13px;
             font-weight: 600;
             white-space: nowrap;
-            color: rgba(255, 255, 255, 0.85);
+            flex-shrink: 0;
+            color: rgba(255, 255, 255, 0.9);
             transition: all .2s ease;
         }
-        .masy-navlink:hover { background: rgba(255, 255, 255, 0.15); color: #fff; }
-        .masy-navlink.active { background: #fff; color: #15803d; }
+        .masy-navlink:hover {
+            background: linear-gradient(135deg, #F0D878 0%, #D8B84C 50%, #C4A23A 100%);
+            color: #2A3520;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(216, 184, 76, 0.4);
+        }
+        .masy-navlink.active {
+            background: linear-gradient(135deg, #F0D878 0%, #D8B84C 50%, #C4A23A 100%);
+            color: #2A3520;
+            font-weight: 800;
+            box-shadow: 0 4px 14px rgba(216, 184, 76, 0.35);
+        }
 
         .service-card {
             background: #fff;
             border-radius: 16px;
+            border: 1px solid rgba(216, 184, 76, 0.25);
             transition: all .3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.04);
         }
         .service-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.1);
+            border-color: #D8B84C;
+            box-shadow: 0 12px 28px rgba(216, 184, 76, 0.3);
         }
 
         .stats-card {
             background: #fff;
             border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(216, 184, 76, 0.25);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+            transition: all .3s ease;
+        }
+        .stats-card:hover {
+            border-color: #D8B84C;
+            box-shadow: 0 8px 20px rgba(216, 184, 76, 0.25);
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+            background: linear-gradient(135deg, #4B5D3A 0%, #364329 100%);
             color: #fff;
-            font-weight: 600;
+            font-weight: 700;
+            border: 1px solid rgba(216, 184, 76, 0.35);
             transition: all .3s ease;
         }
         .btn-primary:hover {
+            background: linear-gradient(135deg, #F0D878 0%, #D8B84C 50%, #C4A23A 100%);
+            color: #2A3520;
+            border-color: #F7F0D4;
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(22, 163, 74, 0.3);
+            box-shadow: 0 6px 20px rgba(216, 184, 76, 0.5);
         }
 
         .floating-action-btn {
@@ -87,16 +124,46 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-            color: #fff;
+            background: linear-gradient(135deg, #F0D878 0%, #D8B84C 50%, #C4A23A 100%);
+            color: #2A3520;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.45);
+            box-shadow: 0 6px 20px rgba(216, 184, 76, 0.5);
             z-index: 900;
+            border: 2px solid #F7F0D4;
             transition: all .3s ease;
         }
-        .floating-action-btn:hover { transform: scale(1.1); }
+        .floating-action-btn:hover {
+            background: linear-gradient(135deg, #F7F0D4 0%, #F0D878 50%, #D8B84C 100%);
+            color: #2A3520;
+            box-shadow: 0 8px 25px rgba(216, 184, 76, 0.65);
+            transform: scale(1.12) rotate(6deg);
+        }
+
+        .floating-action-btn {
+            position: fixed;
+            bottom: 92px;
+            right: 24px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            color: #064e3b;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.5);
+            z-index: 900;
+            border: 2px solid #fef3c7;
+            transition: all .3s ease;
+        }
+        .floating-action-btn:hover {
+            background: linear-gradient(135deg, #fef08a 0%, #fbbf24 50%, #f59e0b 100%);
+            color: #064e3b;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.65);
+            transform: scale(1.12) rotate(6deg);
+        }
 
         /* Bottom navigation (mobile only) */
         @media (max-width: 767.98px) {
@@ -172,7 +239,7 @@
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 gap-4">
                 <!-- Brand -->
-                <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) : '/' }}" class="flex items-center space-x-3 flex-shrink-0">
+                <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="flex items-center space-x-3 flex-shrink-0">
                     <div class="bg-white/20 p-2 rounded-xl">
                         <span class="material-symbols-outlined text-white">holiday_village</span>
                     </div>
@@ -180,7 +247,7 @@
                         <h1 class="text-base sm:text-lg font-bold leading-tight">SILAPU</h1>
                         <p class="text-[11px] sm:text-sm text-white/80 leading-tight hidden sm:block">
                             @if ($isRtScoped)
-                                Sistem Layanan Puspamukti · RT {{ $rt }} / RW {{ $rw }}
+                                Sistem Layanan Puspamukti · RT {{ $rt }}
                             @else
                                 Sistem Layanan Puspamukti
                             @endif
@@ -188,18 +255,18 @@
                     </div>
                 </a>
 
-                <!-- Desktop menu -->
-                <nav class="desktop-menu flex-1 justify-center items-center space-x-1 min-w-0">
+                <!-- Desktop menu (Scrollable Kanan Kiri) -->
+                <nav class="desktop-menu flex-1 items-center space-x-1.5 min-w-0 overflow-x-auto">
                     @php
                         $inMenu = fn($name) => $currentRoute === $name;
-                        $rtQuery = $isRtScoped ? ['rt' => $rt, 'rw' => $rw] : [];
+                        $rtQuery = $isRtScoped ? ['rt' => $rt] : [];
                     @endphp
                     <a class="masy-navlink {{ $inMenu('warga.rt.landing') || $inMenu('dashboard') ? 'active' : '' }}"
-                       href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) : '/' }}">
+                       href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}">
                         <span class="material-symbols-outlined text-[18px]">home</span> Beranda
                     </a>
                     <a class="masy-navlink {{ $inMenu('warga.rt.info') || $inMenu('informasi.publik') ? 'active' : '' }}"
-                       href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt, 'rw' => $rw]) : route('informasi.publik', $rtQuery) }}">
+                       href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt]) : route('informasi.publik', $rtQuery) }}">
                         <span class="material-symbols-outlined text-[18px]">info</span> Info Desa
                     </a>
                     <a class="masy-navlink {{ $inMenu('apbdes.publik') ? 'active' : '' }}" href="{{ route('apbdes.publik', $rtQuery) }}">
@@ -209,15 +276,18 @@
                         <span class="material-symbols-outlined text-[18px]">newspaper</span> Berita
                     </a>
                     @if ($isRtScoped || auth()->check())
-                        <a class="masy-navlink {{ $inMenu('warga.rt.surat.index') || $inMenu('warga.surat.index') ? 'active' : '' }}" href="{{ $isRtScoped ? route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) : route('warga.surat.index') }}">
+                        <a class="masy-navlink {{ $inMenu('warga.rt.surat.index') || $inMenu('warga.surat.index') ? 'active' : '' }}" href="{{ $isRtScoped ? route('warga.rt.surat.index', ['rt' => $rt]) : route('warga.surat.index') }}">
                             <span class="material-symbols-outlined text-[18px]">edit_note</span> Surat
+                        </a>
+                        <a class="masy-navlink {{ $inMenu('warga.rt.surat.riwayat') ? 'active' : '' }}" href="{{ $isRtScoped ? route('warga.rt.surat.riwayat', ['rt' => $rt]) : route('warga.surat.index') }}">
+                            <span class="material-symbols-outlined text-[18px]">lan</span> Tracking Surat
                         </a>
                     @endif
                     <a class="masy-navlink {{ $inMenu('warga.musrenbang.index') || $inMenu('warga.musrenbang.show') ? 'active' : '' }}" href="{{ route('warga.musrenbang.index') }}">
                         <span class="material-symbols-outlined text-[18px]">architecture</span> Musrenbang
                     </a>
                     @if ($isRtScoped)
-                        <a class="masy-navlink {{ $inMenu('warga.rt.chat') ? 'active' : '' }}" href="{{ route('warga.rt.chat', ['rt' => $rt, 'rw' => $rw]) }}">
+                        <a class="masy-navlink {{ $inMenu('warga.rt.chat') ? 'active' : '' }}" href="{{ route('warga.rt.chat', ['rt' => $rt]) }}">
                             <span class="material-symbols-outlined text-[18px]">forum</span> Chat Admin
                         </a>
                     @endif
@@ -249,65 +319,63 @@
                                         <button @click="markAll(); $event.stopPropagation()"
                                                 class="text-xs font-medium text-emerald-600 hover:text-emerald-700">Tandai sudah dibaca</button>
                                     </div>
-                                    <div class="flex-1 overflow-y-auto p-2 space-y-1" x-ref="notifList">
-                                        <template x-if="notifs.length === 0">
-                                            <div class="p-4 text-center text-sm text-gray-500">Tidak ada notifikasi</div>
+                                    <div class="flex-1 overflow-y-auto p-2 space-y-1.5 max-h-[380px]" x-ref="notifList">
+                                        <template x-if="items.length === 0">
+                                            <div class="p-6 text-center text-xs font-semibold text-slate-400">
+                                                <span class="material-symbols-outlined text-3xl text-slate-300 block mb-1">notifications_off</span>
+                                                Belum ada notifikasi
+                                            </div>
                                         </template>
-                                        <template x-for="item in notifs" :key="item.id">
+                                        <template x-for="item in items" :key="item.id">
                                             <a :href="item.link || '#'"
                                                @click="if(!item.is_read) markRead(item.id)"
-                                               :class="{'bg-emerald-50': !item.is_read, 'hover:bg-gray-50': true}"
-                                               class="flex gap-3 p-3 rounded-lg transition-colors">
-                                                <div class="mt-0.5 text-emerald-600">
-                                                    <span class="material-symbols-outlined text-[20px]" x-text="item.icon || 'notifications'"></span>
+                                               :class="{'bg-[#4B5D3A]/10 border border-[#4B5D3A]/20': !item.is_read, 'bg-white border border-slate-100 hover:bg-slate-50': item.is_read}"
+                                               class="flex items-start gap-3 p-3 rounded-xl transition-all shadow-xs block group">
+                                                <div class="p-2 rounded-xl flex-shrink-0 flex items-center justify-center"
+                                                     :class="item.warna || 'bg-[#4B5D3A]/10 text-[#4B5D3A]'">
+                                                    <span class="material-symbols-outlined text-lg" x-text="item.icon || 'notifications'"></span>
                                                 </div>
-                                                <div class="flex-1 min-w-0">
-                                                    <p class="text-xs font-bold text-gray-800 truncate" x-text="item.judul"></p>
-                                                    <p class="text-[11px] text-gray-500 line-clamp-2" x-text="item.pesan"></p>
-                                                    <span class="text-[10px] text-gray-400" x-text="item.waktu"></span>
+                                                <div class="flex-1 min-w-0 text-left">
+                                                    <div class="flex items-center justify-between gap-1 mb-0.5">
+                                                        <p class="text-xs font-black text-slate-900 truncate group-hover:text-[#4B5D3A] transition-colors" x-text="item.judul"></p>
+                                                        <span x-show="!item.is_read" class="w-2 h-2 rounded-full bg-[#D8B84C] flex-shrink-0"></span>
+                                                    </div>
+                                                    <p class="text-[11px] text-slate-600 font-medium leading-snug line-clamp-2" x-text="item.pesan"></p>
+                                                    <span class="text-[10px] text-slate-400 font-semibold block mt-1" x-text="item.waktu"></span>
                                                 </div>
-                                                <span x-show="!item.is_read" class="w-2 h-2 rounded-full bg-emerald-500 mt-2 flex-shrink-0"></span>
                                             </a>
                                         </template>
                                     </div>
                                 </div>
                             </div>
 
-                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) }}'"
+                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt]) }}'"
                                     class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
                                 <span class="material-symbols-outlined text-sm">person</span>
                                 <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
                             </button>
                             
-                            <form method="POST" action="{{ route('warga.rt.logout', ['rt' => $rt, 'rw' => $rw]) }}" class="inline">
+                            <form method="POST" action="{{ route('warga.rt.logout', ['rt' => $rt]) }}" class="inline">
                                 @csrf
                                 <button type="submit" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="Keluar">
                                     <span class="material-symbols-outlined">logout</span>
                                 </button>
                             </form>
                         @else
-                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt ?? '01', 'rw' => $rw ?? '01']) }}'"
+                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt ?? '01']) }}'"
                                     class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
                                 <span class="material-symbols-outlined text-sm">person</span>
                                 <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
                             </button>
                         @endif
                     @else
-                        @if ($isRtScoped)
-                            <button onclick="window.location.href='{{ route('warga.rt.login', ['rt' => $rt, 'rw' => $rw]) }}'"
-                                    class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
-                                <span class="material-symbols-outlined text-sm">login</span>
-                                <span>Masuk Warga</span>
-                            </button>
-                        @else
-                            <button onclick="window.location.href='{{ route('login') }}'"
-                                    class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
-                                <span class="material-symbols-outlined text-sm">login</span>
-                                <span>Login Admin</span>
-                            </button>
-                        @endif
+                        <button onclick="window.location.href='{{ route('warga.rt.login', ['rt' => $rt ?? '01']) }}'"
+                                class="bg-white/20 hover:bg-white/30 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center space-x-1.5 shadow-sm flex-shrink-0">
+                            <span class="material-symbols-outlined text-sm">badge</span>
+                            <span>Masuk</span>
+                        </button>
                     @endauth
-                    <button onclick="window.location.href='{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) : '/' }}'" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="{{ $isRtScoped ? 'Kembali ke Beranda RT ' . $rt : 'Kembali ke Beranda' }}">
+                    <button onclick="window.location.href='{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}'" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="{{ $isRtScoped ? 'Kembali ke Beranda RT ' . $rt : 'Kembali ke Beranda' }}">
                         <span class="material-symbols-outlined">home</span>
                     </button>
                 </div>
@@ -387,13 +455,10 @@
 
                 @if ($isRtScoped)
                     <div>
-                        <h3 class="text-lg font-bold mb-4">Kontak RT/RW</h3>
+                        <h3 class="text-lg font-bold mb-4">Kontak RT</h3>
                         <ul class="space-y-2 text-sm text-gray-300">
                             <li class="flex items-center">
                                 <span class="material-symbols-outlined text-base mr-2">person</span><span>Ketua RT {{ $rt }}: 0813-1234-567</span>
-                            </li>
-                            <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">person</span><span>Ketua RW {{ $rw }}: 0821-9876-543</span>
                             </li>
                             <li class="flex items-center">
                                 <span class="material-symbols-outlined text-base mr-2">info</span><span>Untuk keadaan darurat segera hubungi</span>
@@ -427,26 +492,26 @@
 
     <!-- Bottom Navigation (mobile) -->
     <nav class="bottom-nav md:hidden">
-        <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) : '/' }}" class="{{ $inMenu('warga.rt.landing') || $inMenu('dashboard') ? 'active' : '' }}">
+        <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="{{ $inMenu('warga.rt.landing') || $inMenu('dashboard') ? 'active' : '' }}">
             <span class="material-symbols-outlined">home</span> Beranda
         </a>
-        <a href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt, 'rw' => $rw]) : route('informasi.publik') }}" class="{{ $inMenu('warga.rt.info') ? 'active' : '' }}">
+        <a href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt]) : route('informasi.publik') }}" class="{{ $inMenu('warga.rt.info') ? 'active' : '' }}">
             <span class="material-symbols-outlined">info</span> Info Desa
         </a>
 
         @if ($isRtScoped)
-            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) }}" class="{{ $inMenu('warga.rt.surat.index') ? 'active' : '' }}">
+            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.surat.index') ? 'active' : '' }}">
                 <span class="material-symbols-outlined">edit_note</span> Surat
             </a>
             <a onclick="showPengaduanModal()" style="cursor:pointer" class="{{ $inMenu('warga.rt.landing') ? '' : '' }}">
                 <span class="material-symbols-outlined">campaign</span> Lapor
             </a>
             @auth
-                <a href="{{ route('warga.rt.chat', ['rt' => $rt, 'rw' => $rw]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
+                <a href="{{ route('warga.rt.chat', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
                     <span class="material-symbols-outlined">forum</span> Chat
                 </a>
             @else
-                <a href="{{ route('warga.rt.login', ['rt' => $rt, 'rw' => $rw]) }}" class="{{ $inMenu('warga.rt.login') ? 'active' : '' }}">
+                <a href="{{ route('warga.rt.login', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.login') ? 'active' : '' }}">
                     <span class="material-symbols-outlined">login</span> Masuk
                 </a>
             @endauth
@@ -484,7 +549,7 @@
                 },
                 load() {
                     this.loading = true;
-                    fetch('{{ route('warga.rt.notif.data', ['rt' => $rt, 'rw' => $rw]) }}', {
+                    fetch('{{ route('warga.rt.notif.data', ['rt' => $rt]) }}', {
                         headers: { 'Accept': 'application/json' }
                     })
                     .then(r => r.json())
@@ -496,7 +561,7 @@
                     .finally(() => { this.loading = false; });
                 },
                 markRead(id) {
-                    fetch('{{ route('warga.rt.notif.read', ['rt' => $rt, 'rw' => $rw, 'id' => ':id']) }}'.replace(':id', id), {
+                    fetch('{{ route('warga.rt.notif.read', ['rt' => $rt, 'id' => ':id']) }}'.replace(':id', id), {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
@@ -506,7 +571,7 @@
                     .then(() => { this.load(); });
                 },
                 markAll() {
-                    fetch('{{ route('warga.rt.notif.read-all', ['rt' => $rt, 'rw' => $rw]) }}', {
+                    fetch('{{ route('warga.rt.notif.read-all', ['rt' => $rt]) }}', {
                         method: 'POST',
                         headers: {
                             'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '',
@@ -589,7 +654,7 @@
         function scrollToTop() { window.scrollTo({ top: 0, behavior: 'smooth' }); }
 
         function sharePage() {
-            const text = '{{ $isRtScoped ? "Lihat portal warga RT $rt RW $rw Desa Puspamukti" : "Portal Masyarakat Desa Puspamukti" }}';
+            const text = '{{ $isRtScoped ? "Lihat portal warga RT $rt Desa Puspamukti" : "Portal Masyarakat Desa Puspamukti" }}';
             if (navigator.share) {
                 navigator.share({ title: document.title, text, url: window.location.href })
                     .catch(() => {});

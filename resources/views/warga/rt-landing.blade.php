@@ -1,6 +1,6 @@
 @extends('layouts.warga')
 
-@section('title', "SILAPU - Sistem Layanan Puspamukti | RT $rt RW $rw")
+@section('title', "SILAPU - Sistem Layanan Puspamukti | RT $rt")
 
 @section('content')
 <div class="space-y-8">
@@ -10,48 +10,48 @@
         $prosesSelesai = ($pengaduanStats['total_pengaduan'] ?? 0) > 0 ? round((($pengaduanStats['pengaduan_selesai'] ?? 0) / $pengaduanStats['total_pengaduan']) * 100) : 0;
     @endphp
 
-    <!-- Welcome Hero Section -->
-    <section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-700 text-white">
-        <!-- Decorative blobs -->
-        <div class="absolute -top-16 -right-16 w-64 h-64 rounded-full bg-white/10 blur-2xl"></div>
-        <div class="absolute -bottom-20 -left-10 w-72 h-72 rounded-full bg-cyan-300/20 blur-3xl"></div>
-        <div class="absolute top-10 right-1/3 w-32 h-32 bg-emerald-300/20 blur-2xl rounded-full"></div>
+    <!-- Welcome Hero Section (#4B5D3A Green & #D8B84C Gold Theme) -->
+    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#364329] via-[#4B5D3A] to-[#2A3520] text-white border border-[#D8B84C]/35 shadow-2xl">
+        <!-- Decorative glowing gold & green blobs -->
+        <div class="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-[#D8B84C]/20 blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-20 -left-10 w-80 h-80 rounded-full bg-[#4B5D3A]/40 blur-3xl pointer-events-none"></div>
+        <div class="absolute top-10 right-1/3 w-40 h-40 bg-[#F0D878]/15 blur-2xl rounded-full pointer-events-none"></div>
 
         <div class="relative p-6 md:p-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
                 <div class="flex-1">
                     <div class="flex items-center space-x-4 mb-5">
-                        <div class="bg-white/15 backdrop-blur p-4 rounded-2xl">
-                            <span class="material-symbols-outlined text-4xl">qr_code_scanner</span>
+                        <div class="bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] text-[#2A3520] p-3.5 rounded-2xl shadow-lg shadow-[#D8B84C]/25 border border-[#F7F0D4]/50">
+                            <span class="material-symbols-outlined text-3xl font-bold">qr_code_scanner</span>
                         </div>
                         <div>
-                            <span class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 text-xs font-semibold tracking-wide uppercase">
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#D8B84C] via-[#E5C968] to-[#F0D878] text-[#2A3520] text-xs font-black tracking-wide uppercase shadow-sm border border-[#F7F0D4]/40">
                                 Portal Warga Desa Puspamukti
                             </span>
                         </div>
                     </div>
 
-                    <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-3">
+                    <h1 class="text-3xl md:text-4xl font-black leading-tight mb-3 tracking-tight">
                         {{ $greeting }}! 👋
                     </h1>
-                    <p class="text-white/90 text-base md:text-lg mb-1">
-                        Selamat datang di <span class="font-bold">{{ $qrCode->nama_rt ?? "RT $rt RW $rw" }}</span>
+                    <p class="text-slate-100 text-base md:text-lg mb-1 font-medium">
+                        Selamat datang di <span class="font-bold text-[#F0D878]">{{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}</span>
                     </p>
-                    <p class="text-white/75 text-sm md:text-base max-w-xl">
-                        {{ $qrCode->deskripsi ?? "Portal layanan digital untuk warga RT $rt RW $rw." }}
+                    <p class="text-slate-200/90 text-sm md:text-base max-w-xl">
+                        {{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->deskripsi ?? "Portal layanan digital untuk warga RT $rt.")) }}
                     </p>
 
                     <!-- Hero meta chips -->
                     <div class="flex flex-wrap gap-3 mt-6">
-                        <div class="flex items-center space-x-2 bg-white/15 backdrop-blur px-4 py-2 rounded-full">
+                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-[#D8B84C]/35 backdrop-blur px-4 py-2 rounded-full text-[#F0D878]">
                             <span class="material-symbols-outlined text-sm">location_on</span>
-                            <span class="text-sm font-semibold">RT {{ $rt }} / RW {{ $rw }}</span>
+                            <span class="text-sm font-bold">RT {{ $rt }}</span>
                         </div>
-                        <div class="flex items-center space-x-2 bg-white/15 backdrop-blur px-4 py-2 rounded-full">
+                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-slate-400/30 backdrop-blur px-4 py-2 rounded-full text-slate-200">
                             <span class="material-symbols-outlined text-sm">calendar_today</span>
                             <span class="text-sm font-semibold">{{ now()->translatedFormat('l, d F Y') }}</span>
                         </div>
-                        <div class="flex items-center space-x-2 bg-white/15 backdrop-blur px-4 py-2 rounded-full">
+                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-slate-400/30 backdrop-blur px-4 py-2 rounded-full text-slate-200">
                             <span class="material-symbols-outlined text-sm">visibility</span>
                             <span class="text-sm font-semibold">{{ $stats['total_scans'] ?? 0 }} kali dibuka</span>
                         </div>
@@ -60,12 +60,12 @@
                     <!-- Quick actions -->
                     <div class="flex flex-wrap gap-3 mt-7">
                         <button onclick="showPengaduanModal()"
-                                class="inline-flex items-center space-x-2 bg-white text-emerald-700 px-5 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all">
-                            <span class="material-symbols-outlined">campaign</span>
+                                class="inline-flex items-center space-x-2 bg-gradient-to-r from-[#D8B84C] via-[#E5C968] to-[#F0D878] hover:from-[#E5C968] hover:to-[#F7F0D4] text-[#2A3520] px-6 py-3.5 rounded-xl font-black shadow-xl shadow-[#D8B84C]/30 hover:scale-105 transition-all">
+                            <span class="material-symbols-outlined font-bold">campaign</span>
                             <span>Buat Pengaduan</span>
                         </button>
                         <button onclick="sharePage()"
-                                class="inline-flex items-center space-x-2 bg-white/15 backdrop-blur hover:bg-white/25 px-5 py-3 rounded-xl font-semibold transition-all">
+                                class="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur px-5 py-3.5 rounded-xl font-semibold transition-all">
                             <span class="material-symbols-outlined">share</span>
                             <span>Bagikan</span>
                         </button>
@@ -74,17 +74,17 @@
 
                 <!-- Location Confirmation Badge -->
                 <div class="flex-shrink-0">
-                    <div class="bg-white/10 backdrop-blur border border-white/25 rounded-2xl px-6 py-5 w-full md:w-64">
+                    <div class="bg-[#2A3520]/80 backdrop-blur-xl border border-[#D8B84C]/40 rounded-2xl p-6 w-full md:w-64 shadow-xl">
                         <div class="flex items-center space-x-3">
-                            <div class="bg-emerald-400/90 p-2.5 rounded-full">
-                                <span class="material-symbols-outlined">check_circle</span>
+                            <div class="bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] text-[#2A3520] p-2.5 rounded-full shadow-md">
+                                <span class="material-symbols-outlined font-bold">check_circle</span>
                             </div>
                             <div>
-                                <p class="text-[11px] uppercase tracking-wider text-white/80 font-medium">Lokasi Terhubung</p>
-                                <p class="text-xl font-extrabold">RT {{ $rt }} / RW {{ $rw }}</p>
+                                <p class="text-[11px] uppercase tracking-wider text-[#F0D878] font-bold">Lokasi Terhubung</p>
+                                <p class="text-2xl font-black text-white">RT {{ $rt }}</p>
                             </div>
                         </div>
-                        <p class="text-[11px] text-white/70 mt-3">Pengaduan Anda otomatis tercatat di wilayah ini</p>
+                        <p class="text-[11px] text-slate-200/80 mt-3 font-medium">Pengaduan Anda otomatis tercatat di wilayah ini</p>
                     </div>
                 </div>
             </div>
@@ -190,7 +190,7 @@
             </div>
             
             <!-- Info Desa -->
-            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.info', ['rt' => $rt, 'rw' => $rw]) }}'">
+            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.info', ['rt' => $rt]) }}'">
                 <div class="flex items-start space-x-4">
                     <div class="bg-blue-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-blue-600 text-2xl">newspaper</span>
@@ -208,7 +208,7 @@
             </div>
             
             <!-- Surat Online -->
-            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) }}'">
+            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt]) }}'">
                 <div class="flex items-start space-x-4">
                     <div class="bg-green-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
                         <span class="material-symbols-outlined text-green-600 text-2xl">edit_note</span>
@@ -301,7 +301,7 @@
                     <h2 class="text-xl md:text-2xl font-bold text-gray-900">Berita Terbaru</h2>
                     <p class="text-sm text-gray-500 mt-1">Informasi terkini untuk warga RT {{ $rt }}</p>
                 </div>
-                <a href="{{ route('warga.rt.info', ['rt' => $rt, 'rw' => $rw]) }}"
+                <a href="{{ route('warga.rt.info', ['rt' => $rt]) }}"
                    class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 whitespace-nowrap">
                     <span>Semua</span>
                     <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -309,7 +309,7 @@
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 @foreach($beritaTerbaru as $berita)
-                <a href="{{ route('informasi.publik', ['rt' => $rt, 'rw' => $rw]) }}" class="group block border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all">
+                <a href="{{ route('informasi.publik', ['rt' => $rt]) }}" class="group block border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all">
                     @if($berita->gambar)
                     <div class="h-28 bg-gray-200 overflow-hidden">
                         <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
@@ -377,7 +377,7 @@
         <div class="flex items-center justify-between mb-5">
             <div>
                 <h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengaduan Terbaru</h2>
-                <p class="text-sm text-gray-500 mt-1">Laporan terkini warga RT {{ $rt }} RW {{ $rw }}</p>
+                <p class="text-sm text-gray-500 mt-1">Laporan terkini warga RT {{ $rt }}</p>
             </div>
         </div>
         <div class="space-y-4">
@@ -438,12 +438,12 @@
             <div class="flex-1">
                 <h3 class="font-bold text-gray-900 mb-2 text-lg">Layanan Terhubung dengan Wilayah Anda</h3>
                 <p class="text-sm text-gray-700 mb-3">
-                    Anda mengakses layanan ini melalui QR Code khas <strong>RT {{ $rt }} RW {{ $rw }}</strong>. 
+                    Anda mengakses layanan ini melalui QR Code khas <strong>RT {{ $rt }}</strong>. 
                     Pengaduan yang Anda kirim akan langsung tercatat di wilayah tersebut dan diproses pemerintah desa.
                 </p>
                 <p class="text-xs text-gray-500 flex items-center">
                     <span class="material-symbols-outlined text-sm mr-1">verified</span>
-                    Data lokasi otomatis terisi — Anda tidak perlu mengisi RT/RW secara manual.
+                    Data lokasi otomatis terisi — Anda tidak perlu mengisi RT secara manual.
                 </p>
             </div>
             <button onclick="showPengaduanModal()"
@@ -467,7 +467,7 @@
                         <span class="material-symbols-outlined">campaign</span>
                         <div>
                             <h3 class="text-lg font-bold">Buat Pengaduan Baru</h3>
-                            <p class="text-sm text-white/80">RT {{ $rt }} RW {{ $rw }}</p>
+                            <p class="text-sm text-white/80">RT {{ $rt }}</p>
                         </div>
                     </div>
                     <button onclick="closePengaduanModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10">

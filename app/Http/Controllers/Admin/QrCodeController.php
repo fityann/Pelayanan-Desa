@@ -27,66 +27,55 @@ class QrCodeController extends Controller
 
     public function index()
     {
-        $qrCodes = RtQrCode::orderBy('rt')->orderBy('rw')->get()
-            ->keyBy(fn($item) => $item->rt . '-' . $item->rw);
+        // Pastikan RT 01 sampai RT 19 terdaftar di database
+        for ($i = 1; $i <= 19; $i++) {
+            $rtStr = str_pad($i, 2, '0', STR_PAD_LEFT);
+            RtQrCode::firstOrCreate(
+                ['rt' => $rtStr],
+                [
+                    'rw' => '01',
+                    'nama_rt' => "RT {$rtStr} Desa Puspamukti",
+                    'deskripsi' => "Akses Layanan Publik RT {$rtStr}",
+                    'status' => 'aktif',
+                    'created_by' => auth()->id(),
+                ]
+            );
+        }
 
-        $list = collect($this->collectRtRwList())->map(function ($item) use ($qrCodes) {
-            $key = $item['rt'] . '-' . $item['rw'];
-            $qr = $qrCodes->get($key);
+        $qrCodes = RtQrCode::orderByRaw('CAST(rt AS UNSIGNED) ASC')
+            ->get()
+            ->keyBy(fn($item) => str_pad($item->rt, 2, '0', STR_PAD_LEFT));
 
-            return [
-                'rt' => $item['rt'],
-                'rw' => $item['rw'],
-                'nama_rt' => $qr?->nama_rt,
+        $list = collect();
+        for ($i = 1; $i <= 19; $i++) {
+            $rtStr = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $qr = $qrCodes->get($rtStr);
+
+            $pendudukCount = Penduduk::where('rt', $rtStr)->orWhere('rt', (string)$i)->count();
+            $pengaduanCount = Pengaduan::where('rt', $rtStr)->orWhere('rt', (string)$i)->count();
+
+            $qrImage = null;
+            if ($qr?->qr_code_path && Storage::disk('public')->exists($qr->qr_code_path)) {
+                $qrImage = asset('storage/' . $qr->qr_code_path) . '?v=' . ($qr->tanggal_generate?->timestamp ?? time());
+            }
+
+            $list->push([
+                'rt' => $rtStr,
+                'rw' => $qr?->rw ?? '01',
+                'nama_rt' => $qr?->nama_rt ?? "RT {$rtStr} Desa Puspamukti",
                 'deskripsi' => $qr?->deskripsi,
-                'url' => route('warga.rt.landing', ['rt' => $item['rt'], 'rw' => $item['rw']]),
-                'pengaduan_count' => Pengaduan::where('rt', $item['rt'])->where('rw', $item['rw'])->count(),
-                'penduduk_count' => $item['penduduk_count'] ?? 0,
+                'url' => route('warga.rt.landing', ['rt' => $rtStr]),
+                'pengaduan_count' => $pengaduanCount,
+                'penduduk_count' => $pendudukCount,
                 'scan_count' => $qr?->scan_count ?? 0,
                 'status' => $qr?->status ?? 'aktif',
                 'qr' => $qr,
-                'qr_image' => $qr?->qr_code_path ? Storage::url($qr->qr_code_path) : null,
+                'qr_image' => $qrImage,
                 'tanggal_generate' => $qr?->tanggal_generate,
-            ];
-        })->sortBy(fn($item) => [(int)$item['rt'], (int)$item['rw']])->values();
+            ]);
+        }
 
         return view('admin.qr-codes.index', compact('list'));
-    }
-
-    private function collectRtRwList()
-    {
-        $list = collect();
-
-        Keluarga::select('rt', 'rw', DB::raw('COUNT(*) as total'))
-            ->whereNotNull('rt')->whereNotNull('rw')
-            ->groupBy('rt', 'rw')
-            ->get()
-            ->each(function ($item) use ($list) {
-                $list->push(['rt' => $item->rt, 'rw' => $item->rw, 'penduduk_count' => 0]);
-            });
-
-        Penduduk::select('rt', 'rw', DB::raw('COUNT(*) as total'))
-            ->whereNotNull('rt')->whereNotNull('rw')
-            ->groupBy('rt', 'rw')
-            ->get()
-            ->each(function ($item) use ($list) {
-                $key = $item->rt . '-' . $item->rw;
-                $existing = $list->first(fn($row) => $row['rt'] . '-' . $row['rw'] === $key);
-                if ($existing) {
-                    $existing['penduduk_count'] = $item->total;
-                } else {
-                    $list->push(['rt' => $item->rt, 'rw' => $item->rw, 'penduduk_count' => $item->total]);
-                }
-            });
-
-        RtQrCode::select('rt', 'rw')->get()->each(function ($item) use ($list) {
-            $key = $item->rt . '-' . $item->rw;
-            if (!$list->contains(fn($row) => $row['rt'] . '-' . $row['rw'] === $key)) {
-                $list->push(['rt' => $item->rt, 'rw' => $item->rw, 'penduduk_count' => 0]);
-            }
-        });
-
-        return $list->unique(fn($item) => $item['rt'] . '-' . $item['rw']);
     }
 
     public function create()
@@ -182,12 +171,12 @@ class QrCodeController extends Controller
 
         $this->generateForRecord($rtQrCode);
 
-        return back()->with('success', "QR Code untuk RT {$rtQrCode->rt} / RW {$rtQrCode->rw} berhasil dibuat.");
+        return back()->with('success', "QR Code untuk RT {$rtQrCode->rt} berhasil dibuat.");
     }
 
     private function generateForRecord(RtQrCode $rtQrCode): void
     {
-        $url = route('warga.rt.landing', ['rt' => $rtQrCode->rt, 'rw' => $rtQrCode->rw]);
+        $url = route('warga.rt.landing', ['rt' => $rtQrCode->rt]);
 
         $writer = new PngWriter();
         $qr = new QrCode(
@@ -220,9 +209,11 @@ class QrCodeController extends Controller
             return redirect()->route('admin.qr-links.index')->with('error', 'QR belum dibuat. Silakan generate terlebih dahulu.');
         }
 
+        $rtPadded = str_pad($rtQrCode->rt, 2, '0', STR_PAD_LEFT);
+
         return Storage::disk('public')->download(
             $rtQrCode->qr_code_path,
-            'qr-rt-' . $rtQrCode->rt . '-rw-' . $rtQrCode->rw . '.png'
+            "QR RT {$rtPadded}.png"
         );
     }
 
@@ -231,24 +222,25 @@ class QrCodeController extends Controller
         $qrCodes = RtQrCode::with('createdBy')
             ->whereNotNull('qr_code_path')
             ->active()
-            ->orderBy('rt')->orderBy('rw')
+            ->orderBy('rt')
             ->get()
             ->filter(fn($item) => $item->qr_code_path && Storage::disk('public')->exists($item->qr_code_path));
 
         return view('admin.qr-codes.cetak', compact('qrCodes'));
     }
 
-    public function toggleStatus(Request $request, $rt, $rw)
+    public function toggleStatus(Request $request, $rt, $rw = '01')
     {
+        $rw = $rw ?: '01';
         $qrCode = RtQrCode::firstOrCreate(
-            ['rt' => $rt, 'rw' => $rw],
-            ['nama_rt' => "RT $rt RW $rw", 'status' => 'aktif', 'created_by' => auth()->id()]
+            ['rt' => $rt],
+            ['rw' => '01', 'nama_rt' => "RT $rt Desa Puspamukti", 'status' => 'aktif', 'created_by' => auth()->id()]
         );
 
         $qrCode->status = $qrCode->status === 'aktif' ? 'nonaktif' : 'aktif';
         $qrCode->save();
 
-        return back()->with('success', "QR RT $rt RW $rw kini " . ($qrCode->status === 'aktif' ? 'aktif' : 'nonaktif'));
+        return back()->with('success', "QR RT $rt kini " . ($qrCode->status === 'aktif' ? 'aktif' : 'nonaktif'));
     }
 
     private function validated(Request $request): array

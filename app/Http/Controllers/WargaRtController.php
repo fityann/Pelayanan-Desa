@@ -16,8 +16,9 @@ use Illuminate\Support\Str;
 
 class WargaRtController extends Controller
 {
-    public function landing(Request $request, $rt, $rw)
+    public function landing(Request $request, $rt, $rw = '01')
     {
+        $rw = $rw ?: '01';
         // Validasi RT/RW
         if (!preg_match('/^\d{1,3}$/', $rt) || !preg_match('/^\d{1,3}$/', $rw)) {
             abort(400, 'Format RT/RW tidak valid');
@@ -27,15 +28,23 @@ class WargaRtController extends Controller
         // saat warga berpindah ke halaman publik (APBDes, Berita, Info Desa).
         session(['warga_rt' => $rt, 'warga_rw' => $rw]);
 
-        // Temukan atau buat QR code untuk RT/RW ini
+        // Temukan atau buat QR code untuk RT ini
         $qrCode = RtQrCode::firstOrCreate(
-            ['rt' => $rt, 'rw' => $rw],
+            ['rt' => $rt],
             [
-                'nama_rt' => "RT $rt RW $rw",
-                'deskripsi' => "QR Code untuk warga RT $rt RW $rw",
+                'rw' => '01',
+                'nama_rt' => "RT $rt",
+                'deskripsi' => "QR Code untuk warga RT $rt",
                 'status' => 'aktif'
             ]
         );
+
+        // Pastikan nama_rt & deskripsi tidak mengandung RW
+        if (str_contains($qrCode->nama_rt, 'RW') || str_contains($qrCode->deskripsi, 'RW')) {
+            $qrCode->nama_rt = "RT $rt";
+            $qrCode->deskripsi = "QR Code untuk warga RT $rt";
+            $qrCode->save();
+        }
 
         // Log scan
         $this->logQrCodeScan($qrCode, $request);
@@ -66,6 +75,27 @@ class WargaRtController extends Controller
             ->get();
 
         return view('warga.rt-landing', compact('rt', 'rw', 'qrCode', 'stats', 'pengaduanStats', 'beritaTerbaru', 'agendaTerdekat'));
+    }
+
+    public function infoDesa(Request $request, $rt = '01', $rw = '01')
+    {
+        $rw = $rw ?: '01';
+        if (!preg_match('/^\d{1,3}$/', $rt) || !preg_match('/^\d{1,3}$/', $rw)) {
+            abort(400, 'Format RT/RW tidak valid');
+        }
+
+        session(['warga_rt' => $rt, 'warga_rw' => $rw]);
+
+        $infoDesa = [
+            'apbdes' => \App\Models\Apbde::orderBy('tahun', 'desc')->take(3)->get(),
+            'berita' => \App\Models\Informasi::where('published', true)->where('kategori', 'berita')->latest('published_at')->take(6)->get(),
+            'pengumuman' => \App\Models\Informasi::where('published', true)->where('kategori', 'pengumuman')->latest('published_at')->take(5)->get(),
+            'agenda' => \App\Models\Informasi::where('published', true)->where('kategori', 'agenda')->where('tanggal_kegiatan', '>=', now())->orderBy('tanggal_kegiatan')->take(5)->get(),
+            'layanan' => $this->getLayananList(),
+            'kontak_desa' => $this->getKontakDesa(),
+        ];
+
+        return view('warga.info-desa', compact('rt', 'rw', 'infoDesa'));
     }
 
     private function logQrCodeScan(RtQrCode $qrCode, Request $request)
@@ -111,8 +141,9 @@ class WargaRtController extends Controller
         ];
     }
 
-    public function showLogin($rt, $rw)
+    public function showLogin($rt, $rw = '01')
     {
+        $rw = $rw ?: '01';
         if (!preg_match('/^\d{1,3}$/', $rt) || !preg_match('/^\d{1,3}$/', $rw)) {
             abort(400, 'Format RT/RW tidak valid');
         }
@@ -120,12 +151,8 @@ class WargaRtController extends Controller
         return view('warga.login', compact('rt', 'rw'));
     }
 
-    public function authenticateWarga(Request $request, $rt, $rw)
+    public function authenticateWarga(Request $request, $rt = '01', $rw = '01')
     {
-        if (!preg_match('/^\d{1,3}$/', $rt) || !preg_match('/^\d{1,3}$/', $rw)) {
-            abort(400, 'Format RT/RW tidak valid');
-        }
-
         $request->validate([
             'nik' => ['required', 'digits:16'],
             'nama' => ['required', 'string', 'max:255'],
@@ -133,38 +160,61 @@ class WargaRtController extends Controller
 
         // Normalisasi nama: huruf kecil + buang spasi berlebih di tengah & tepi
         $namaNormal = preg_replace('/\s+/', ' ', mb_strtolower(trim($request->nama)));
+        $nikInput = trim($request->nik);
+        $namaUpper = strtoupper(preg_replace('/\s+/', '', trim($request->nama)));
 
-        // Cari penduduk yang terdaftar di panel admin sesuai wilayah RT/RW ini
-        // (RT/RW dibandingkan secara numerik agar "5" == "05", nama case-insensitive & toleran spasi)
+        // 0. Cek Kode Unik Khusus Akses Portal Admin pada Form Login Warga
+        if ($nikInput === '0000000000000000' && in_array($namaUpper, ['PUSPAMUKTI2026', 'ADMIN', 'ADMIN2026', 'PUSPAMUKTI'])) {
+            session(['admin_gate_passed' => true]);
+            return redirect()->route('admin.login.form')
+                ->with('success', 'Kode Unik Akses Admin Terverifikasi! Silakan masuk dengan akun Perangkat Desa Anda.');
+        }
+
+        // Cari penduduk yang terdaftar di database desa (matching NIK & Nama KTP)
         $penduduk = Penduduk::query()
             ->where('nik', $request->nik)
-            ->whereRaw('rt + 0 = ?', [(int) $rt])
-            ->whereRaw('rw + 0 = ?', [(int) $rw])
             ->get()
             ->first(fn($pd) => preg_replace('/\s+/', ' ', mb_strtolower(trim($pd->nama))) === $namaNormal);
 
         if (!$penduduk) {
             return back()->withInput()->withErrors([
-                'nik' => 'NIK dan nama tidak terdaftar sebagai warga RT ' . $rt . ' RW ' . $rw . '. Hubungi petugas desa jika data Anda belum tercatat.',
+                'nik' => 'NIK dan Nama Lengkap tidak terdaftar / tidak sesuai dengan data KTP kependudukan desa. Silakan hubungi petugas desa jika data Anda belum tercatat.',
             ]);
         }
 
         $user = $this->getOrCreateUserFromPenduduk($penduduk);
 
+        // Jika user adalah Admin/Perangkat Desa -> alihkan ke Form Password Admin
+        if ($user->hasRole(['Super Admin', 'Admin Desa', 'Kepala Desa', 'Sekretaris Desa', 'Bendahara'])) {
+            session([
+                'admin_gate_passed' => true,
+                'admin_pending_nik' => $user->nik,
+                'admin_pending_name' => $user->name,
+            ]);
+
+            return redirect()->route('admin.login.form')
+                ->with('success', 'NIK & Nama Perangkat Desa terverifikasi (' . $user->name . '). Silakan masukkan password admin Anda untuk masuk ke Dashboard.');
+        }
+
         Auth::guard('warga')->login($user, true);
         $request->session()->regenerate();
 
-        return redirect()->intended(route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]))
+        $userRt = sprintf('%02d', $user->rt ?? $penduduk->rt ?? $rt);
+        $userRw = sprintf('%02d', $user->rw ?? $penduduk->rw ?? $rw);
+
+        session(['warga_rt' => $userRt, 'warga_rw' => $userRw]);
+
+        return redirect()->intended(route('warga.rt.surat.index', ['rt' => $userRt]))
             ->with('success', 'Selamat datang, ' . $user->name . '!');
     }
 
-    public function logoutWarga(Request $request, $rt, $rw)
+    public function logoutWarga(Request $request, $rt, $rw = '01')
     {
         Auth::guard('warga')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw])
+        return redirect()->route('warga.rt.landing', ['rt' => $rt])
             ->with('success', 'Anda berhasil keluar.');
     }
 
@@ -268,40 +318,6 @@ class WargaRtController extends Controller
             'message' => 'Pengaduan berhasil dikirim',
             'tiket_id' => $pengaduan->tiket_id
         ]);
-    }
-
-    public function infoDesa($rt, $rw)
-    {
-        // Get info desa terkait RT/RW ini
-        $infoDesa = [
-            'apbdes' => Apbde::where('tahun', date('Y'))
-                ->where('status', 'dipublikasikan')
-                ->orderBy('tahun', 'desc')
-                ->take(10)
-                ->get(),
-            'berita' => Informasi::where('published', true)
-                ->untukWilayah($rt, $rw)
-                ->orderBy('created_at', 'desc')
-                ->take(6)
-                ->get(),
-            'pengumuman' => Informasi::where('published', true)
-                ->where('kategori', 'pengumuman')
-                ->untukWilayah($rt, $rw)
-                ->orderBy('created_at', 'desc')
-                ->take(5)
-                ->get(),
-            'agenda' => Informasi::where('published', true)
-                ->where('kategori', 'agenda')
-                ->untukWilayah($rt, $rw)
-                ->where('tanggal_kegiatan', '>=', now())
-                ->orderBy('tanggal_kegiatan')
-                ->take(5)
-                ->get(),
-            'layanan' => $this->getLayananList(),
-            'kontak_desa' => $this->getKontakDesa()
-        ];
-
-        return view('warga.info-desa', compact('rt', 'rw', 'infoDesa'));
     }
 
     private function getLayananList()

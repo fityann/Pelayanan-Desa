@@ -1,12 +1,12 @@
 @extends('layouts.warga')
 
-@section('title', "Ajukan Surat - RT $rt RW $rw")
+@section('title', "Ajukan Surat - RT $rt")
 
 @section('content')
 <div class="space-y-6 max-w-3xl">
     <!-- Header -->
     <div>
-        <a href="{{ route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) }}"
+        <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}"
            class="inline-flex items-center space-x-1 text-gray-500 hover:text-gray-700 text-sm font-medium mb-4">
             <span class="material-symbols-outlined text-base">arrow_back</span>
             <span>Pilih jenis surat lain</span>
@@ -17,12 +17,12 @@
             </div>
             <div>
                 <h1 class="text-2xl font-bold text-gray-900">Ajukan Surat</h1>
-                <p class="text-sm text-gray-500">{{ $jenisSurat->nama }} · RT {{ $rt }} RW {{ $rw }}</p>
+                <p class="text-sm text-gray-500">{{ $jenisSurat->nama }} · RT {{ $rt }}</p>
             </div>
         </div>
     </div>
 
-    <form method="POST" action="{{ route('warga.rt.surat.store', ['rt' => $rt, 'rw' => $rw, 'jenisSurat' => $jenisSurat]) }}"
+    <form method="POST" action="{{ route('warga.rt.surat.store', ['rt' => $rt, 'jenisSurat' => $jenisSurat]) }}"
           enctype="multipart/form-data" class="bg-white rounded-2xl shadow-sm p-6 md:p-8 space-y-6">
         @csrf
 
@@ -57,7 +57,7 @@
                 <label class="block text-sm font-medium text-gray-700 mb-2">Alamat</label>
                 <input type="text" name="alamat" value="{{ old('alamat', auth()->check() ? auth()->user()->penduduk?->alamat : '') }}" maxlength="255"
                        class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                       placeholder="Alamat lengkap / RT-RW">
+                       placeholder="Alamat lengkap / RT">
                 @error('alamat') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -96,7 +96,7 @@
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 justify-end pt-4 border-t border-gray-200">
-            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt, 'rw' => $rw]) }}"
+            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}"
                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium text-center hover:bg-gray-50 transition-colors">
                 Batal
             </a>

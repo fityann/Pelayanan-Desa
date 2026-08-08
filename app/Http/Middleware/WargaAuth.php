@@ -18,21 +18,25 @@ class WargaAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::guard('warga')->check()) {
+            $rt = $request->route('rt') ?? session('warga_rt', '01');
+
             return redirect()->route('warga.rt.login', [
-                'rt' => $request->route('rt'),
-                'rw' => $request->route('rw'),
-            ]);
+                'rt' => $rt,
+            ])->with('error', 'Silakan masuk terlebih dahulu menggunakan NIK dan Nama sesuai KTP.');
         }
 
         $user = Auth::guard('warga')->user();
 
-        // Warga: RT/RW di URL harus sama dengan wilayah yang dimiliki
-        $userRt = $user->penduduk?->rt ?? $user->rt;
-        $userRw = $user->penduduk?->rw ?? $user->rw;
+        // Jika route memiliki parameter RT dan RW, pastikan disesuaikan dengan wilayah user
+        if ($request->route('rt') && $request->route('rw')) {
+            $userRt = $user->penduduk?->rt ?? $user->rt;
+            $userRw = $user->penduduk?->rw ?? $user->rw;
 
-        if (is_null($userRt) || (int) $userRt !== (int) $request->route('rt')
-            || (int) $userRw !== (int) $request->route('rw')) {
-            abort(403, 'Anda hanya dapat mengakses layanan di RT/RW wilayah Anda.');
+            if (!is_null($userRt) && !is_null($userRw)) {
+                if ((int) $userRt !== (int) $request->route('rt') || (int) $userRw !== (int) $request->route('rw')) {
+                    session(['warga_rt' => sprintf('%02d', $userRt), 'warga_rw' => sprintf('%02d', $userRw)]);
+                }
+            }
         }
 
         return $next($request);

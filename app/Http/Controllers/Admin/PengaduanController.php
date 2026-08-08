@@ -18,11 +18,20 @@ class PengaduanController extends Controller
         $query = Pengaduan::with(['user', 'processedBy'])
             ->orderBy('tanggal_diterima', 'desc');
         
-        // Apply filters
-        if (!empty($filters['status'])) {
-            $query->whereIn('status', (array)$filters['status']);
+        // Apply search filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('isi', 'like', "%{$search}%")
+                  ->orWhere('nama_pelapor', 'like', "%{$search}%")
+                  ->orWhere('nik_pelapor', 'like', "%{$search}%");
+            });
         } else {
-            $query->whereIn('status', ['diterima', 'diproses']);
+            // Apply status filters if no explicit search
+            if (!empty($filters['status'])) {
+                $query->whereIn('status', (array)$filters['status']);
+            }
         }
         
         if (!empty($filters['kategori'])) {

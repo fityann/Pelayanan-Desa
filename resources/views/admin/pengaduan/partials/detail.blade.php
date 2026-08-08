@@ -108,7 +108,7 @@
                     <h4 class="text-label-md font-medium text-on-surface mb-sm">Lokasi Pengaduan</h4>
                     <div class="space-y-sm">
                         <div class="flex justify-between">
-                            <span class="text-body-sm text-on-surface-variant">RT/RW</span>
+                            <span class="text-body-sm text-on-surface-variant">RT</span>
                             <span class="text-label-sm font-medium text-on-surface">{{ $pengaduan->lokasi_display }}</span>
                         </div>
                         @if($pengaduan->latitude && $pengaduan->longitude)

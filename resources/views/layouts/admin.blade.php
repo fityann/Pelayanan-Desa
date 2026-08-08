@@ -20,14 +20,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 </head>
-<body class="bg-surface font-body-md text-on-surface">
-    <!-- Sidebar -->
-    <aside class="fixed left-0 top-0 h-full w-72 bg-primary-container z-50 flex flex-col shadow-xl sidebar-scrollbar overflow-y-auto">
-        <div class="p-lg flex items-center gap-md border-b border-primary/20 mb-md">
-            <div class="w-10 h-10 rounded-lg bg-on-primary/20 flex items-center justify-center text-on-primary font-bold text-title-md">S</div>
+<body class="bg-slate-50 font-body-md text-slate-800">
+    <!-- Sidebar (Solid #4B5D3A Green Theme) -->
+    <aside class="fixed left-0 top-0 h-full w-72 bg-[#4B5D3A] border-r border-[#D8B84C]/30 z-50 flex flex-col shadow-2xl sidebar-scrollbar overflow-y-auto">
+        <div class="p-lg flex items-center gap-md border-b border-[#D8B84C]/25 mb-md">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] p-0.5 shadow-lg shadow-[#D8B84C]/20 flex items-center justify-center">
+                <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-lg bg-white p-0.5">
+            </div>
             <div class="flex flex-col">
-                <span class="text-on-primary font-headline-sm tracking-tight">SILAPU</span>
-                <span class="text-on-primary-container text-label-sm uppercase opacity-80">Puspamukti Admin</span>
+                <span class="text-white font-black text-headline-sm tracking-tight">SILAPU</span>
+                <span class="text-[#D8B84C] text-label-sm font-black uppercase tracking-widest text-[10px]">Puspamukti Admin</span>
             </div>
         </div>
         <nav class="flex-1 px-md space-y-xs pb-lg">
@@ -44,10 +46,13 @@
                 $isStaff = !$isGuest && ($isSuperAdmin || $isAdmin || $isBendahara || $isKades || $isSekdes);
                 $isWarga = $isGuest || $user->hasRole('Warga');
                 $chatUnread = $isStaff ? \App\Models\Chat::unreadAdminCount() : 0;
+                $activeLinkClass = 'bg-gradient-to-r from-[#D8B84C] via-[#E5C968] to-[#F0D878] text-[#2A3520] font-black shadow-lg shadow-[#D8B84C]/30 border-l-4 border-[#F7F0D4] rounded-xl';
+                $inactiveLinkClass = 'text-slate-200 hover:text-[#D8B84C] hover:bg-gradient-to-r hover:from-[#D8B84C]/20 hover:to-[#E5C968]/10 hover:border-l-4 hover:border-[#D8B84C] rounded-xl transition-all font-semibold';
+                $dropdownHeaderClass = 'text-slate-200 opacity-90 hover:opacity-100 hover:text-[#D8B84C] hover:bg-[#D8B84C]/20 rounded-xl font-bold text-xs uppercase tracking-wider transition-all';
             @endphp
 
             @if (!$isGuest)
-            <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('dashboard') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('dashboard') }}">
+            <a class="flex items-center gap-md px-md py-3 transition-all {{ $isActive('dashboard') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
                 <span class="text-label-md">Dashboard</span>
             </a>
@@ -55,9 +60,9 @@
 
             @if ($isWarga)
                 <div x-data="{ open: {{ $isActive(['layanan/surat', 'pengaduan/buat', 'informasi.publik', 'layanan/musrenbang']) ? 'true' : 'false' }} }" class="rounded-xl">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['layanan/surat', 'pengaduan/buat', 'layanan/musrenbang']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['layanan/surat', 'pengaduan/buat', 'layanan/musrenbang']) ? 'text-white font-bold' : $dropdownHeaderClass }}">
                         <span class="flex items-center gap-md">
-                            <span class="material-symbols-outlined">holiday_village</span>
+                            <span class="material-symbols-outlined text-emerald-400">holiday_village</span>
                             <span class="text-label-md">Layanan Warga</span>
                         </span>
                         <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -70,24 +75,24 @@
                          x-transition:leave="transition ease-in duration-200"
                          x-transition:leave-start="opacity-100 translate-y-0"
                          x-transition:leave-end="opacity-0 -translate-y-1"
-                         class="space-y-xs mt-xs pl-md">
-                        <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('layanan/surat') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('warga.surat.index') }}">
+                         class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                        <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('layanan/surat') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('warga.surat.index') }}">
                             <span class="material-symbols-outlined text-[18px]">edit_note</span>
                             <span class="text-label-md">Ajukan Surat</span>
                         </a>
-                        <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('layanan/surat/cek') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('warga.surat.cek') }}">
+                        <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('layanan/surat/cek') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('warga.surat.cek') }}">
                             <span class="material-symbols-outlined text-[18px]">manage_search</span>
                             <span class="text-label-md">Cek Status Surat</span>
                         </a>
-                        <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('pengaduan/buat') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('pengaduan.buat') }}">
+                        <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('pengaduan/buat') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('pengaduan.buat') }}">
                             <span class="material-symbols-outlined text-[18px]">campaign</span>
                             <span class="text-label-md">Buat Pengaduan</span>
                         </a>
-                        <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('layanan/musrenbang') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('warga.musrenbang.index') }}">
+                        <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('layanan/musrenbang') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('warga.musrenbang.index') }}">
                             <span class="material-symbols-outlined text-[18px]">architecture</span>
                             <span class="text-label-md">Usulan Kegiatan</span>
                         </a>
-                        <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all text-on-primary-container hover:bg-primary/40" href="{{ route('informasi.publik') }}">
+                        <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $inactiveLinkClass }}" href="{{ route('informasi.publik') }}">
                             <span class="material-symbols-outlined text-[18px]">newspaper</span>
                             <span class="text-label-md">Info Desa</span>
                         </a>
@@ -98,9 +103,9 @@
             @if ($isStaff)
             {{-- ===================== KEPENDUDUKAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'text-white font-bold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
-                        <span class="material-symbols-outlined">group</span>
+                        <span class="material-symbols-outlined text-amber-400">group</span>
                         <span class="text-label-md">Kependudukan</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -113,12 +118,12 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="space-y-xs mt-xs pl-md">
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/penduduk') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.penduduk.index') }}">
+                     class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/penduduk') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.penduduk.index') }}">
                         <span class="material-symbols-outlined text-[18px]">groups</span>
                         <span class="text-label-md">Data Penduduk</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/keluarga') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.keluarga.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/keluarga') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.keluarga.index') }}">
                         <span class="material-symbols-outlined text-[18px]">family_restroom</span>
                         <span class="text-label-md">Data Keluarga</span>
                     </a>
@@ -127,9 +132,9 @@
 
             {{-- ===================== LAYANAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/surat']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['admin/surat']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/surat']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
-                        <span class="material-symbols-outlined">description</span>
+                        <span class="material-symbols-outlined text-amber-400">description</span>
                         <span class="text-label-md">Layanan Surat</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -142,20 +147,20 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="space-y-xs mt-xs pl-md">
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/surat/jenis') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.surat.jenis') }}">
+                     class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/surat/jenis') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.surat.jenis') }}">
                         <span class="material-symbols-outlined text-[18px]">description</span>
                         <span class="text-label-md">Jenis Surat</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/surat/pengajuan') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.surat.pengajuan') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/surat/pengajuan') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.surat.pengajuan') }}">
                         <span class="material-symbols-outlined text-[18px]">forward_to_inbox</span>
                         <span class="text-label-md">Pengajuan Masuk</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/surat/arsip') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.surat.arsip') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/surat/arsip') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.surat.arsip') }}">
                         <span class="material-symbols-outlined text-[18px]">inventory_2</span>
                         <span class="text-label-md">Arsip Surat</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/surat/tracking') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.surat.tracking') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/surat/tracking') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.surat.tracking') }}">
                         <span class="material-symbols-outlined text-[18px]">lan</span>
                         <span class="text-label-md">Tracking</span>
                     </a>
@@ -164,9 +169,9 @@
 
             {{-- ===================== PERENCANAAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/musrenbang']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['admin/musrenbang']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/musrenbang']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
-                        <span class="material-symbols-outlined">how_to_vote</span>
+                        <span class="material-symbols-outlined text-amber-400">how_to_vote</span>
                         <span class="text-label-md">Perencanaan</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -179,8 +184,8 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="space-y-xs mt-xs pl-md">
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/musrenbang') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.musrenbang.index') }}">
+                     class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/musrenbang') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.musrenbang.index') }}">
                         <span class="material-symbols-outlined text-[18px]">how_to_vote</span>
                         <span class="text-label-md">Musrenbang</span>
                     </a>
@@ -189,9 +194,9 @@
 
             {{-- ===================== KEUANGAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
-                        <span class="material-symbols-outlined">account_balance</span>
+                        <span class="material-symbols-outlined text-amber-400">account_balance</span>
                         <span class="text-label-md">Keuangan</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -204,20 +209,20 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="space-y-xs mt-xs pl-md">
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/apbdes') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.apbdes.index') }}">
+                     class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/apbdes') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.apbdes.index') }}">
                         <span class="material-symbols-outlined text-[18px]">account_balance</span>
                         <span class="text-label-md">APBDes Ringkasan</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/apbdes/dashboard') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.apbdes.dashboard') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/apbdes/dashboard') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.apbdes.dashboard') }}">
                         <span class="material-symbols-outlined text-[18px]">analytics</span>
                         <span class="text-label-md">Laporan Keuangan</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/pencairan-dana') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.pencairan-dana.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/pencairan-dana') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.pencairan-dana.index') }}">
                         <span class="material-symbols-outlined text-[18px]">payments</span>
                         <span class="text-label-md">Pencairan Dana</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/belanja') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.belanja.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/belanja') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.belanja.index') }}">
                         <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                         <span class="text-label-md">Belanja Desa</span>
                     </a>
@@ -226,9 +231,9 @@
 
             {{-- ===================== KOMUNIKASI ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 rounded-lg transition-all {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'text-on-primary-container' : 'text-on-primary-container opacity-70 hover:opacity-100 hover:bg-primary/40' }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
-                        <span class="material-symbols-outlined">campaign</span>
+                        <span class="material-symbols-outlined text-amber-400">campaign</span>
                         <span class="text-label-md">Komunikasi</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
@@ -241,35 +246,35 @@
                      x-transition:leave="transition ease-in duration-200"
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
-                     class="space-y-xs mt-xs pl-md">
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/pengaduan') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.pengaduan.index') }}">
+                     class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/pengaduan') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.pengaduan.index') }}">
                         <span class="material-symbols-outlined text-[18px]">campaign</span>
                         <span class="text-label-md">Pengaduan</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/chat') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.chat.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/chat') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.chat.index') }}">
                         <span class="material-symbols-outlined text-[18px]">forum</span>
                         <span class="text-label-md">Chat Warga</span>
                         <span x-data="chatUnread()" x-init="init()" class="ml-auto">
-                            <span x-show="count > 0" x-cloak class="min-w-[20px] h-5 px-1.5 rounded-full bg-error text-on-error text-[11px] font-bold flex items-center justify-center">
+                            <span x-show="count > 0" x-cloak class="min-w-[20px] h-5 px-1.5 rounded-full bg-rose-600 text-white text-[11px] font-bold flex items-center justify-center">
                                 <span x-text="count"></span>
                             </span>
                         </span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/informasi') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.informasi.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/informasi') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.informasi.index') }}">
                         <span class="material-symbols-outlined text-[18px]">newspaper</span>
                         <span class="text-label-md">Berita & Agenda</span>
                     </a>
-                    <a class="flex items-center gap-md px-md py-2.5 rounded-lg transition-all {{ $isActive('admin/qr-links') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.qr-links.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/qr-links') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.qr-links.index') }}">
                         <span class="material-symbols-outlined text-[18px]">qr_code_2</span>
-                        <span class="text-label-md">QR & Link Wilayah</span>
+                        <span class="text-label-md">QR & Link RT</span>
                     </a>
                 </div>
             </div>
             @endif
 
-            <div class="pt-md border-t border-primary/20 mt-md">
+            <div class="pt-md border-t border-slate-800/80 mt-md">
                 @if($isAdmin)
-                <a class="flex items-center gap-md px-md py-3 rounded-lg transition-all {{ $isActive('admin/roles') ? 'bg-secondary-container text-on-secondary-container font-semibold border-l-4 border-on-tertiary-container' : 'text-on-primary-container hover:bg-primary/40' }}" href="{{ route('admin.roles.index') }}">
+                <a class="flex items-center gap-md px-md py-3 transition-all {{ $isActive('admin/roles') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.roles.index') }}">
                     <span class="material-symbols-outlined">manage_accounts</span>
                     <span class="text-label-md">User & Role</span>
                 </a>
@@ -279,20 +284,94 @@
     </aside>
 
     <!-- Main Content Wrapper -->
-    <div class="pl-72 flex flex-col min-h-screen bg-gradient-to-br from-surface-container-low via-surface to-surface-container-low">
+    <div class="pl-72 flex flex-col min-h-screen bg-slate-50">
         <!-- Header -->
-        <header class="fixed top-0 right-0 left-72 h-16 bg-surface/80 backdrop-blur-lg shadow-[0_1px_8px_rgba(39,0,90,0.05)] z-40 px-lg flex items-center justify-between border-b border-outline-variant/10">
-            <div class="flex-1 max-w-xl relative group">
-                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant group-focus-within:text-primary transition-colors">search</span>
-                <input class="w-full bg-surface-container border-none rounded-full py-2 pl-10 pr-4 text-body-sm focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Cari data penduduk atau layanan..." type="text"/>
+        <header class="fixed top-0 right-0 left-72 h-16 bg-white/85 backdrop-blur-xl border-b border-slate-200/80 z-40 px-lg flex items-center justify-between shadow-xs">
+            <div x-data="globalLiveSearch()" class="flex-1 max-w-xl relative group">
+                <span class="material-symbols-outlined absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-600 transition-colors pointer-events-none text-xl">search</span>
+                <input x-model="q"
+                       @input.debounce.250ms="doSearch()"
+                       @focus="open = true"
+                       @keydown.escape="open = false"
+                       class="w-full bg-slate-100/90 border border-slate-200/80 rounded-full py-2 pl-11 pr-10 text-body-sm text-slate-900 focus:bg-white focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all placeholder-slate-400 font-medium"
+                       placeholder="Cari NIK, Nama Penduduk, Surat, Pengaduan, Berita, APBDes..."
+                       type="text"/>
+                <button x-show="q.length > 0"
+                        @click="q = ''; results = []; open = false"
+                        x-cloak
+                        class="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 flex items-center justify-center w-5 h-5 rounded-full hover:bg-slate-200/60 transition-colors">
+                    <span class="material-symbols-outlined text-base">close</span>
+                </button>
+
+                {{-- Live Search Result Dropdown Card --}}
+                <div x-show="open && (loading || results.length > 0 || (q.length >= 2 && results.length === 0))"
+                     x-transition:enter="transition ease-out duration-200"
+                     x-transition:enter-start="opacity-0 scale-95 -translate-y-1"
+                     x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+                     x-transition:leave="transition ease-in duration-150"
+                     x-transition:leave-start="opacity-100 scale-100"
+                     x-transition:leave-end="opacity-0 scale-95"
+                     @click.outside="open = false"
+                     x-cloak
+                     class="absolute left-0 right-0 mt-2 bg-white shadow-2xl rounded-2xl border border-slate-200/90 overflow-hidden z-50 max-h-[75vh] flex flex-col backdrop-blur-2xl">
+
+                    <div class="px-4 py-2.5 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-emerald-600 text-base">manage_search</span>
+                            Hasil Pencarian Real-Time
+                        </span>
+                        <span x-show="!loading" class="text-[11px] font-semibold text-slate-400" x-text="results.length + ' hasil ditemukan'"></span>
+                    </div>
+
+                    <div class="overflow-y-auto flex-1 divide-y divide-slate-100">
+                        {{-- Loading State --}}
+                        <template x-if="loading">
+                            <div class="p-6 text-center text-slate-500">
+                                <span class="material-symbols-outlined animate-spin block text-2xl text-emerald-600 mb-2">progress_activity</span>
+                                <span class="text-xs font-semibold">Mencari data di seluruh sistem...</span>
+                            </div>
+                        </template>
+
+                        {{-- Empty State --}}
+                        <template x-if="!loading && q.length >= 2 && results.length === 0">
+                            <div class="p-8 text-center text-slate-400">
+                                <span class="material-symbols-outlined text-4xl block mb-2 text-slate-300">search_off</span>
+                                <p class="text-xs font-bold text-slate-600">Tidak ada data yang cocok dengan "<span x-text="q"></span>"</p>
+                                <p class="text-[11px] text-slate-400 mt-1">Coba kata kunci lain seperti NIK, Nama Penduduk, Kode Surat, atau Kata Kunci Pengaduan.</p>
+                            </div>
+                        </template>
+
+                        {{-- Result Items --}}
+                        <template x-for="(item, idx) in results" :key="idx">
+                            <a :href="item.url"
+                               class="flex items-start gap-3.5 px-4 py-3 hover:bg-slate-50 transition-colors group/item">
+                                <div class="w-9 h-9 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 flex items-center justify-center flex-shrink-0 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shadow-xs">
+                                    <span class="material-symbols-outlined text-lg" x-text="item.icon"></span>
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <div class="flex items-center justify-between gap-2 mb-0.5">
+                                        <h4 class="text-xs font-bold text-slate-900 truncate group-hover/item:text-emerald-700 transition-colors" x-text="item.title"></h4>
+                                        <span class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider shrink-0" :class="item.badge_color" x-text="item.category"></span>
+                                    </div>
+                                    <p class="text-[11px] text-slate-500 line-clamp-1 font-medium" x-text="item.subtitle"></p>
+                                </div>
+                                <span class="material-symbols-outlined text-slate-300 group-hover/item:text-emerald-600 text-base self-center opacity-0 group-hover/item:opacity-100 transition-all -translate-x-1 group-hover/item:translate-x-0">chevron_right</span>
+                            </a>
+                        </template>
+                    </div>
+
+                    <div class="px-4 py-2 bg-slate-50 border-t border-slate-100 text-center text-[10px] text-slate-400 font-semibold">
+                        Tekan <kbd class="px-1.5 py-0.5 bg-white border border-slate-200 rounded text-[9px] font-mono text-slate-600 shadow-2xs">ESC</kbd> untuk menutup
+                    </div>
+                </div>
             </div>
             <div class="flex items-center gap-md">
                 @auth
                 <div x-data="notificationBell()" class="relative">
-                    <button @click="toggle(); load()" class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-surface-container transition-colors relative">
+                    <button @click="toggle(); load()" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 hover:bg-slate-100 transition-colors relative">
                         <span class="material-symbols-outlined">notifications</span>
                         <span x-show="unread > 0" x-cloak
-                              class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-error text-on-error text-[10px] font-bold flex items-center justify-center">
+                              class="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-600 text-white text-[10px] font-bold flex items-center justify-center">
                             <span x-text="unread > 99 ? '99+' : unread"></span>
                         </span>
                     </button>
@@ -305,12 +384,12 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click.outside="open = false"
-                         class="absolute right-0 mt-2 w-80 max-h-[70vh] flex flex-col bg-surface-container shadow-lg rounded-xl border border-outline-variant overflow-hidden z-50">
-                        <div class="flex items-center justify-between px-lg py-3 border-b border-outline-variant/20">
-                            <h3 class="text-label-md font-bold text-on-surface">Notifikasi</h3>
+                         class="absolute right-0 mt-2 w-80 max-h-[70vh] flex flex-col bg-white shadow-xl rounded-2xl border border-slate-200/80 overflow-hidden z-50">
+                        <div class="flex items-center justify-between px-lg py-3 border-b border-slate-100 bg-slate-50/80">
+                            <h3 class="text-label-md font-bold text-slate-900">Notifikasi</h3>
                             <button @click="markAll(); $event.stopPropagation()"
                                     x-show="unread > 0"
-                                    class="text-label-sm font-semibold text-primary hover:underline">
+                                    class="text-label-sm font-semibold text-emerald-600 hover:underline">
                                 Tandai semua
                             </button>
                         </div>
@@ -350,23 +429,21 @@
                         </div>
 
                         <a href="{{ route('admin.notifications.index') }}"
-                           class="block text-center py-3 text-label-sm font-bold text-primary border-t border-outline-variant/20 hover:bg-surface-container-high transition-colors">
+                           class="block text-center py-3 text-label-sm font-bold text-emerald-600 border-t border-slate-100 hover:bg-slate-50 transition-colors">
                             Lihat Semua Notifikasi
                         </a>
                     </div>
                 </div>
                 <div x-data="{ open: false }" class="relative">
-                    <button @click="open = !open" class="flex items-center gap-sm bg-surface-container-high/50 px-3 py-1.5 rounded-full border border-outline-variant hover:bg-surface-container transition-colors">
-                        <div class="flex flex-col items-end hidden md:flex">
-                            <span class="text-label-sm text-on-surface">{{ auth()->user()->name }}</span>
-                            <span class="text-[10px] uppercase text-on-surface-variant font-bold tracking-tighter">{{ auth()->user()->roles->first()?->name ?? 'Warga' }}</span>
-                        </div>
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-label-sm font-bold">
+                    <button @click="open = !open" class="flex items-center gap-2.5 bg-slate-100/90 hover:bg-slate-200/80 px-3.5 py-1.5 rounded-full border border-slate-200/80 transition-colors">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-600 to-teal-500 flex items-center justify-center text-white text-label-sm font-extrabold shadow-sm">
                             {{ substr(auth()->user()->name, 0, 1) }}
                         </div>
-                        <svg class="w-4 h-4 text-on-surface-variant" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
+                        <div class="flex flex-col items-start hidden md:flex">
+                            <span class="text-label-sm font-bold text-slate-900 leading-tight">{{ auth()->user()->name }}</span>
+                            <span class="text-[10px] uppercase text-emerald-700 font-extrabold tracking-wider leading-tight">{{ auth()->user()->roles->first()?->name ?? 'Warga' }}</span>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-500 text-base">expand_more</span>
                     </button>
                     
                     <div x-show="open" 
@@ -377,19 +454,15 @@
                          x-transition:leave-start="opacity-100 scale-100"
                          x-transition:leave-end="opacity-0 scale-95"
                          @click.outside="open = false"
-                         class="absolute right-0 mt-2 w-56 bg-surface-container shadow-lg rounded-lg border border-outline-variant py-2 z-50">
-                        <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2 text-on-surface hover:bg-surface-container-high text-label-sm">
-                            <span class="material-symbols-outlined mr-3 text-on-surface-variant text-base">person</span>
-                            <span>Profile</span>
+                         class="absolute right-0 mt-2 w-56 bg-white shadow-xl rounded-2xl border border-slate-200/80 py-2 z-50">
+                        <a href="{{ route('profile.edit') }}" class="flex items-center px-4 py-2.5 text-slate-700 hover:bg-slate-50 font-semibold text-label-sm transition-colors">
+                            <span class="material-symbols-outlined mr-3 text-slate-400 text-base">person</span>
+                            <span>Profil Saya</span>
                         </a>
-                        <a href="#" class="flex items-center px-4 py-2 text-on-surface hover:bg-surface-container-high text-label-sm">
-                            <span class="material-symbols-outlined mr-3 text-on-surface-variant text-base">settings</span>
-                            <span>Pengaturan</span>
-                        </a>
-                        <div class="border-t border-outline-variant my-1"></div>
+                        <div class="border-t border-slate-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}" class="inline w-full">
                             @csrf
-                            <button type="submit" class="flex items-center px-4 py-2 text-error hover:bg-error-container text-label-sm w-full text-left">
+                            <button type="submit" class="flex items-center px-4 py-2.5 text-rose-600 hover:bg-rose-50 font-semibold text-label-sm w-full text-left transition-colors">
                                 <span class="material-symbols-outlined mr-3 text-base">logout</span>
                                 <span>Keluar</span>
                             </button>
@@ -397,7 +470,7 @@
                     </div>
                 </div>
                 @else
-                    <a href="{{ route('login') }}" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all">Masuk</a>
+                    <a href="{{ route('login') }}" class="bg-gradient-to-r from-emerald-600 to-teal-500 text-white px-lg py-2 rounded-full text-label-md font-bold hover:from-emerald-700 hover:to-teal-600 transition-all shadow-md">Masuk</a>
                 @endauth
             </div>
         </header>
@@ -474,6 +547,33 @@
                     .then(r => r.json())
                     .then(d => { this.count = d.count || 0; })
                     .catch(() => {});
+                }
+            };
+        }
+
+        function globalLiveSearch() {
+            return {
+                q: '',
+                open: false,
+                loading: false,
+                results: [],
+                doSearch() {
+                    if (this.q.trim().length < 2) {
+                        this.results = [];
+                        this.open = false;
+                        return;
+                    }
+                    this.loading = true;
+                    this.open = true;
+                    fetch('{{ route('admin.search') }}?q=' + encodeURIComponent(this.q), {
+                        headers: { 'Accept': 'application/json' }
+                    })
+                    .then(r => r.json())
+                    .then(data => {
+                        this.results = data.results || [];
+                    })
+                    .catch(() => { this.results = []; })
+                    .finally(() => { this.loading = false; });
                 }
             };
         }

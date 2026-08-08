@@ -3,26 +3,44 @@
 @section('title', 'Cek Status Surat - SILAPU')
 
 @section('content')
-<div class="space-y-6 max-w-3xl mx-auto py-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900">Cek Status Pengajuan Surat</h1>
-            <p class="text-sm text-gray-500 mt-1">Masukkan kode tracking yang Anda terima saat mengajukan surat.</p>
+<div class="space-y-6 max-w-3xl mx-auto py-6">
+    <!-- Hero Header -->
+    <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-900 via-teal-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-white/10">
+        <div class="absolute -top-24 -right-24 w-72 h-72 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 bg-gradient-to-tr from-emerald-500 to-teal-400 rounded-2xl flex items-center justify-center shadow-lg shadow-emerald-500/30 flex-shrink-0">
+                    <span class="material-symbols-outlined text-white text-3xl">search</span>
+                </div>
+                <div>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">Cek Status Surat</h1>
+                    <p class="text-sm text-emerald-200/80 mt-1">Masukkan kode tracking untuk memantau pengajuan surat Anda.</p>
+                </div>
+            </div>
+            <a href="{{ route('warga.surat.index') }}" class="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur text-white px-5 py-3 rounded-xl font-semibold transition-all border border-white/20 shadow-md">
+                <span class="material-symbols-outlined text-xl">add</span>
+                <span>Ajukan Surat</span>
+            </a>
         </div>
-        <a href="{{ route('warga.surat.index') }}" class="inline-flex items-center space-x-2 bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition-colors">
-            <span class="material-symbols-outlined text-[18px]">add</span>
-            <span>Ajukan Surat</span>
-        </a>
     </div>
 
-    <form method="GET" action="{{ route('warga.surat.cek') }}" class="bg-white rounded-2xl shadow-sm p-6 space-y-4">
+    <!-- Search Form -->
+    <form method="GET" action="{{ route('warga.surat.cek') }}" class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-lg border border-gray-100 p-6 space-y-4">
         <div>
-            <label class="text-sm font-bold text-gray-900 block mb-2">Kode Tracking</label>
+            <label class="text-sm font-extrabold text-gray-800 block mb-2">Kode Tracking Surat</label>
             <div class="flex flex-col sm:flex-row gap-3">
-                <input type="text" name="kode" value="{{ $kode }}" required class="flex-1 bg-gray-50 rounded-xl px-4 py-3 text-base font-mono uppercase outline-none focus:ring-2 focus:ring-emerald-500/20 border border-gray-200" placeholder="Contoh: SRT-04082026-XXXX">
-                <button type="submit" class="bg-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-emerald-700 transition-all flex items-center justify-center gap-2">
-                    <span class="material-symbols-outlined text-[18px]">search</span>
-                    Cari
+                <div class="relative flex-1">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-gray-400">
+                        <span class="material-symbols-outlined text-xl">qr_code</span>
+                    </div>
+                    <input type="text" name="kode" value="{{ $kode }}" required
+                           class="w-full pl-11 pr-4 py-3.5 bg-gray-50/80 border border-gray-200 rounded-xl text-gray-900 text-base font-mono uppercase font-bold placeholder-gray-400 focus:bg-white focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all"
+                           placeholder="Contoh: SRT-04082026-XXXX">
+                </div>
+                <button type="submit"
+                        class="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 hover:from-emerald-700 hover:to-cyan-700 text-white font-bold px-7 py-3.5 rounded-xl shadow-lg shadow-emerald-600/25 hover:shadow-emerald-600/40 transition-all flex items-center justify-center space-x-2 text-base">
+                    <span class="material-symbols-outlined text-xl">search</span>
+                    <span>Cari Status</span>
                 </button>
             </div>
         </div>
@@ -30,46 +48,55 @@
 
     @if ($kode)
         @if ($pengajuan)
-            <div class="bg-white rounded-2xl shadow-sm p-6 border-l-4 border-emerald-500">
-                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+            <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-xl border border-gray-100 p-6 md:p-8 relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-2 h-full bg-gradient-to-b from-emerald-500 to-teal-500"></div>
+
+                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
                     <div>
-                        <p class="text-xs text-gray-500 mb-1">Jenis Surat</p>
-                        <p class="text-lg font-bold text-gray-900">{{ $pengajuan->jenisSurat->nama }}</p>
+                        <span class="text-xs text-gray-400 font-bold uppercase tracking-wider block mb-1">Jenis Surat</span>
+                        <h2 class="text-xl font-black text-gray-900">{{ $pengajuan->jenisSurat->nama }}</h2>
                     </div>
                     @php
                         $statusClass = match($pengajuan->status) {
-                            'diajukan' => 'bg-blue-50 text-blue-700',
-                            'diverifikasi_admin' => 'bg-purple-50 text-purple-700',
-                            'ditolak' => 'bg-red-50 text-red-700',
-                            'disetujui_kades' => 'bg-emerald-50 text-emerald-700',
-                            'menunggu_ttd_fisik' => 'bg-amber-50 text-amber-700',
-                            'selesai' => 'bg-gray-100 text-gray-700',
-                            default => 'bg-gray-100 text-gray-700',
+                            'diajukan' => 'bg-blue-50 text-blue-700 border-blue-200',
+                            'diverifikasi_admin' => 'bg-purple-50 text-purple-700 border-purple-200',
+                            'ditolak' => 'bg-red-50 text-red-700 border-red-200',
+                            'disetujui_kades' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'menunggu_ttd_fisik' => 'bg-amber-50 text-amber-700 border-amber-200',
+                            'selesai' => 'bg-emerald-100 text-emerald-800 border-emerald-300',
+                            default => 'bg-gray-100 text-gray-700 border-gray-200',
                         };
                     @endphp
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap {{ $statusClass }}">{{ str_replace('_', ' ', $pengajuan->status) }}</span>
+                    <span class="px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider border whitespace-nowrap shadow-sm {{ $statusClass }}">
+                        {{ str_replace('_', ' ', $pengajuan->status) }}
+                    </span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 bg-gray-50/80 rounded-2xl p-4 border border-gray-100">
                     <div>
-                        <p class="text-xs text-gray-500 mb-1">Nomor Surat</p>
-                        <p class="text-base font-mono text-gray-900">{{ $pengajuan->nomor_surat ?? '-' }}</p>
+                        <span class="text-xs text-gray-400 font-bold block mb-1">Nomor Surat</span>
+                        <p class="text-base font-mono font-bold text-gray-900">{{ $pengajuan->nomor_surat ?? '-' }}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-500 mb-1">Nama Pemohon</p>
-                        <p class="text-base text-gray-900">{{ $pengajuan->pemohon_name }}</p>
+                        <span class="text-xs text-gray-400 font-bold block mb-1">Nama Pemohon</span>
+                        <p class="text-base font-semibold text-gray-900">{{ $pengajuan->pemohon_name }}</p>
                     </div>
                 </div>
-                <a href="{{ route('warga.surat.status', $pengajuan->kode_tracking) }}" class="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl text-sm font-bold hover:bg-emerald-100 transition-all w-full sm:w-auto justify-center">
-                    <span class="material-symbols-outlined text-[18px]">visibility</span>
-                    Lihat Detail Status
+
+                <a href="{{ route('warga.surat.status', $pengajuan->kode_tracking) }}"
+                   class="inline-flex items-center space-x-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold px-6 py-3 rounded-xl shadow-md shadow-emerald-600/20 hover:shadow-emerald-600/40 transition-all w-full sm:w-auto justify-center">
+                    <span class="material-symbols-outlined text-lg">visibility</span>
+                    <span>Lihat Rincian Status Lengkap</span>
                 </a>
             </div>
         @else
-            <div class="bg-red-50 border border-red-200 rounded-2xl p-4 flex gap-3 items-start">
-                <span class="material-symbols-outlined text-red-500">search_off</span>
+            <div class="bg-red-50/90 border border-red-200 rounded-3xl p-6 flex gap-4 items-start shadow-sm">
+                <div class="w-10 h-10 rounded-xl bg-red-100 flex items-center justify-center text-red-600 flex-shrink-0">
+                    <span class="material-symbols-outlined text-2xl">search_off</span>
+                </div>
                 <div>
-                    <p class="text-sm font-bold text-red-700 mb-1">Kode Tidak Ditemukan</p>
-                    <p class="text-sm text-red-600">Pastikan kode tracking benar, atau hubungi kantor desa jika mengalami kendala.</p>
+                    <h3 class="text-base font-extrabold text-red-800 mb-1">Kode Tracking Tidak Ditemukan</h3>
+                    <p class="text-xs sm:text-sm text-red-700 leading-relaxed">Pastikan kode tracking yang Anda ketik sudah benar, atau hubungi kantor desa apabila memerlukan kendala teknis.</p>
                 </div>
             </div>
         @endif

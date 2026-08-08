@@ -10,9 +10,20 @@ use Illuminate\View\View;
 
 class InformasiController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $informasi = Informasi::with('user')->latest()->paginate(15);
+        $query = Informasi::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('ringkasan', 'like', "%{$search}%")
+                  ->orWhere('konten', 'like', "%{$search}%");
+            });
+        }
+
+        $informasi = $query->latest()->paginate(15)->withQueryString();
         return view('admin.informasi.index', compact('informasi'));
     }
 

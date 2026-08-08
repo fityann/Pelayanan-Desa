@@ -4,8 +4,8 @@
 
 @section('content')
 @php
-    $chatRoute = route('warga.rt.chat.data', ['rt' => $rt, 'rw' => $rw]);
-    $kirimRoute = route('warga.rt.chat.store', ['rt' => $rt, 'rw' => $rw]);
+    $chatRoute = route('warga.rt.chat.data', ['rt' => $rt]);
+    $kirimRoute = route('warga.rt.chat.store', ['rt' => $rt]);
 @endphp
 
 <div x-data="wargaChat()" x-init="init()" class="max-w-3xl mx-auto">
@@ -18,7 +18,7 @@
                 <h1 class="text-base font-bold">Chat dengan Admin Desa</h1>
                 <p class="text-xs text-white/80">Puspamukti · Balasan biasanya dalam jam kerja</p>
             </div>
-            <span class="text-xs bg-white/20 px-3 py-1 rounded-full">RT {{ $rt }} / RW {{ $rw }}</span>
+            <span class="text-xs bg-white/20 px-3 py-1 rounded-full">RT {{ $rt }}</span>
         </div>
 
         <div class="flex flex-col" style="height: 60vh;">

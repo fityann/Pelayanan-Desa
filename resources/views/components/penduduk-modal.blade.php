@@ -142,19 +142,12 @@
                     </div>
                     
                     <div>
-                        <div class="grid grid-cols-2 gap-sm mb-md">
-                            <div>
-                                <label class="block text-label-sm font-medium text-on-surface mb-xs">RT</label>
-                                <input type="number" name="rt" id="rt" 
-                                       min="1" max="99"
-                                       class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm">
-                            </div>
-                            <div>
-                                <label class="block text-label-sm font-medium text-on-surface mb-xs">RW</label>
-                                <input type="number" name="rw" id="rw" 
-                                       min="1" max="99"
-                                       class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm">
-                            </div>
+                        <div class="mb-md">
+                            <label class="block text-label-sm font-medium text-on-surface mb-xs">RT</label>
+                            <input type="number" name="rt" id="rt" 
+                                   min="1" max="99" placeholder="cth: 01"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm">
+                            <input type="hidden" name="rw" id="rw" value="01">
                         </div>
                         
                         <div class="mb-md">

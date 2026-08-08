@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Tambah Informasi - SILAPU')
 
@@ -59,28 +59,18 @@
             </div>
         </div>
         <div>
-            <label class="text-label-sm font-bold text-on-surface block mb-xs">Target Wilayah RT/RW (opsional)</label>
-            <div class="grid grid-cols-2 gap-md">
-                <div>
-                    <select name="rt" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
-                        <option value="">Seluruh RT (Desa)</option>
-                        @for ($i = 1; $i <= 10; $i++)
-                            <option value="{{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}" {{ old('rt') == str_pad((string) $i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>RT {{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}</option>
-                        @endfor
-                    </select>
-                    @error('rt') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
-                </div>
-                <div>
-                    <select name="rw" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
-                        <option value="">Seluruh RW</option>
-                        @for ($i = 1; $i <= 4; $i++)
-                            <option value="{{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}" {{ old('rw') == str_pad((string) $i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>RW {{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}</option>
-                        @endfor
-                    </select>
-                    @error('rw') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
-                </div>
+            <label class="text-label-sm font-bold text-on-surface block mb-xs">Target Wilayah RT (opsional)</label>
+            <div>
+                <select name="rt" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
+                    <option value="">Seluruh RT (Seluruh Desa)</option>
+                    @for ($i = 1; $i <= 19; $i++)
+                        <option value="{{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}" {{ old('rt') == str_pad((string) $i, 2, '0', STR_PAD_LEFT) ? 'selected' : '' }}>RT {{ str_pad((string) $i, 2, '0', STR_PAD_LEFT) }}</option>
+                    @endfor
+                </select>
+                <input type="hidden" name="rw" value="01">
+                @error('rt') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
-            <p class="text-[10px] text-on-surface-variant mt-xs">Kosongkan jika informasi berlaku untuk seluruh desa. Isi RT/RW jika hanya untuk wilayah tertentu.</p>
+            <p class="text-[10px] text-on-surface-variant mt-xs">Kosongkan jika informasi berlaku untuk seluruh desa. Pilih RT jika hanya untuk wilayah tertentu.</p>
         </div>
         <div class="flex items-center gap-md">
             <input type="checkbox" name="publish" id="publish" value="1" {{ old('publish') ? 'checked' : '' }} class="rounded border-outline-variant text-primary focus:ring-primary">

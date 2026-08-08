@@ -175,7 +175,7 @@
                     </div>
                     <div id="locationDetails" class="space-y-xs">
                         <div class="flex justify-between">
-                            <span class="text-body-sm text-on-surface-variant">RT/RW</span>
+                            <span class="text-body-sm text-on-surface-variant">RT</span>
                             <span id="rtRwDisplay" class="text-label-sm font-medium text-on-surface">-</span>
                         </div>
                         <div class="flex justify-between">
@@ -330,7 +330,6 @@
             
             if (data.RW) {
                 document.getElementById('rwInput').value = data.RW;
-                document.getElementById('rtRwDisplay').textContent += ` / RW ${data.RW}`;
             }
             
             if (data.Lokasi) {
@@ -418,7 +417,7 @@
                 // Update form fields
                 document.getElementById('rtInput').value = rt;
                 document.getElementById('rwInput').value = rw;
-                document.getElementById('rtRwDisplay').textContent = `RT ${rt} / RW ${rw}`;
+                document.getElementById('rtRwDisplay').textContent = `RT ${rt}`;
                 document.getElementById('addressDisplay').textContent = currentAddress;
                 
                 // Update current location display
@@ -497,7 +496,7 @@
         if (rt && rw && address) {
             document.getElementById('rtInput').value = rt;
             document.getElementById('rwInput').value = rw;
-            document.getElementById('rtRwDisplay').textContent = `RT ${rt} / RW ${rw}`;
+            document.getElementById('rtRwDisplay').textContent = `RT ${rt}`;
             document.getElementById('addressDisplay').textContent = address;
             
             closeLocationModal();

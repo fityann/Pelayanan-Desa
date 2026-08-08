@@ -12,8 +12,9 @@ use Illuminate\View\View;
 
 class ChatController extends Controller
 {
-    public function index(string $rt, string $rw): View
+    public function index(string $rt, string $rw = '01'): View
     {
+        $rw = $rw ?: '01';
         $chat = $this->getChat($rt, $rw);
 
         return view('warga.chat', compact('chat', 'rt', 'rw'));
@@ -22,8 +23,9 @@ class ChatController extends Controller
     /**
      * Data JSON untuk polling (pesan terbaru + tandai sudah dibaca).
      */
-    public function data(Request $request, string $rt, string $rw): JsonResponse
+    public function data(Request $request, string $rt, string $rw = '01'): JsonResponse
     {
+        $rw = $rw ?: '01';
         $chat = $this->getChat($rt, $rw);
         $chat->tandaiDibacaWarga();
 
@@ -32,8 +34,9 @@ class ChatController extends Controller
         ]);
     }
 
-    public function kirim(Request $request, string $rt, string $rw): JsonResponse
+    public function kirim(Request $request, string $rt, string $rw = '01'): JsonResponse
     {
+        $rw = $rw ?: '01';
         $request->validate([
             'isi' => ['required', 'string', 'max:2000'],
         ]);
@@ -61,8 +64,9 @@ class ChatController extends Controller
         return response()->json(['success' => true]);
     }
 
-    private function getChat(string $rt, string $rw): Chat
+    private function getChat(string $rt, string $rw = '01'): Chat
     {
+        $rw = $rw ?: '01';
         return Chat::untukWarga(auth('warga')->id(), $rt, $rw);
     }
 

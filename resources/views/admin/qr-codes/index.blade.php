@@ -1,25 +1,25 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
-@section('title', 'QR & Link Wilayah - SILAPU')
+@section('title', 'QR & Link RT - SILAPU')
 
 @section('content')
 <div class="flex flex-col gap-lg">
     <!-- Header -->
     <div class="flex items-center justify-between flex-wrap gap-md">
         <div>
-            <h1 class="text-headline-md font-bold text-on-surface">QR & Link Wilayah (RT/RW)</h1>
-            <p class="text-body-sm text-on-surface-variant">Buat QR Code, kelola wilayah, dan cetak untuk setiap RT/RW</p>
+            <h1 class="text-headline-md font-bold text-on-surface">QR & Link RT Desa Puspamukti</h1>
+            <p class="text-body-sm text-on-surface-variant">Buat QR Code, kelola, dan cetak untuk 19 RT di Desa Puspamukti</p>
         </div>
         <div class="flex items-center gap-sm">
             <div class="bg-primary-container/40 text-on-primary-container px-md py-2 rounded-lg text-label-sm flex items-center gap-sm">
                 <span class="material-symbols-outlined text-base">info</span>
-                Total {{ $list->count() }} wilayah
+                Total {{ $list->count() }} RT
             </div>
             <a href="{{ route('admin.qr-links.cetak') }}" class="bg-surface-container-low text-on-surface px-md py-2 rounded-lg text-label-sm font-bold flex items-center gap-xs hover:bg-surface-container transition-all">
-                <span class="material-symbols-outlined text-base">print</span> Cetak Semua
+                <span class="material-symbols-outlined text-base">print</span> Cetak Semua QR
             </a>
             <a href="{{ route('admin.qr-links.create') }}" class="bg-primary text-on-primary px-md py-2 rounded-lg text-label-sm font-bold flex items-center gap-xs hover:bg-primary/90 transition-all">
-                <span class="material-symbols-outlined text-base">add</span> Tambah Wilayah
+                <span class="material-symbols-outlined text-base">add</span> Tambah RT Baru
             </a>
         </div>
     </div>
@@ -42,7 +42,7 @@
             <table class="w-full">
                 <thead>
                     <tr class="bg-surface-container/50">
-                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">RT/RW</th>
+                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Wilayah RT</th>
                         <th class="text-center px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">QR Code</th>
                         <th class="text-center px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Statistik</th>
                         <th class="text-center px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Status</th>
@@ -58,8 +58,8 @@
                                         {{ $item['rt'] }}
                                     </div>
                                     <div class="min-w-0">
-                                        <p class="text-body-sm font-semibold text-on-surface">RT {{ $item['rt'] }} / RW {{ $item['rw'] }}</p>
-                                        <p class="text-[11px] text-on-surface-variant truncate">{{ $item['nama_rt'] ?? 'Wilayah RT' }}</p>
+                                        <p class="text-body-sm font-bold text-on-surface">RT {{ $item['rt'] }}</p>
+                                        <p class="text-[11px] text-on-surface-variant truncate">{{ $item['nama_rt'] ?? "RT {$item['rt']} Desa Puspamukti" }}</p>
                                         @if ($item['status'] === 'nonaktif')
                                             <span class="inline-flex items-center gap-1 mt-1 bg-error/10 text-error text-[10px] font-bold px-2 py-0.5 rounded-full">
                                                 <span class="material-symbols-outlined text-[11px]">block</span> Nonaktif
@@ -93,7 +93,7 @@
                                 </div>
                             </td>
                             <td class="px-lg py-4 text-center align-top">
-                                <form method="POST" action="{{ route('admin.qr-links.status', ['rt' => $item['rt'], 'rw' => $item['rw']]) }}">
+                                <form method="POST" action="{{ route('admin.qr-links.status', ['rt' => $item['rt']]) }}">
                                     @csrf
                                     <button type="submit"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all {{ $item['status'] === 'aktif' ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-error/10 text-error hover:bg-error/20' }}"
@@ -128,7 +128,7 @@
                                                 <span class="material-symbols-outlined text-[13px] align-middle">edit</span>
                                             </a>
                                             <form method="POST" action="{{ route('admin.qr-links.destroy', $item['qr']->id) }}" class="flex-1"
-                                                  onsubmit="return confirm('Hapus wilayah RT {{ $item['rt'] }} / RW {{ $item['rw'] }} beserta QR-nya?');">
+                                                  onsubmit="return confirm('Hapus wilayah RT {{ $item['rt'] }} beserta QR-nya?');">
                                                 @csrf @method('DELETE')
                                                 <button type="submit" class="w-full text-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-error bg-error/5 hover:bg-error/10 transition-colors" title="Hapus">
                                                     <span class="material-symbols-outlined text-[13px] align-middle">delete</span>
@@ -136,13 +136,13 @@
                                             </form>
                                         </div>
                                     @else
-                                        <form method="POST" action="{{ route('admin.qr-links.generateByRtRw', ['rt' => $item['rt'], 'rw' => $item['rw']]) }}" class="w-full">
+                                        <form method="POST" action="{{ route('admin.qr-links.generateByRtRw', ['rt' => $item['rt']]) }}" class="w-full">
                                             @csrf
                                             <button type="submit" class="w-full px-3 py-1.5 rounded-lg text-[11px] font-bold text-on-primary bg-primary hover:bg-primary/90 transition-colors">
                                                 Generate QR
                                             </button>
                                         </form>
-                                        <a href="{{ route('admin.qr-links.create') }}?rt={{ $item['rt'] }}&rw={{ $item['rw'] }}" class="w-full text-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors" title="Tambah detail wilayah">
+                                        <a href="{{ route('admin.qr-links.create') }}?rt={{ $item['rt'] }}" class="w-full text-center px-3 py-1.5 rounded-lg text-[11px] font-bold text-on-surface-variant bg-surface-container hover:bg-surface-container-high transition-colors" title="Tambah detail wilayah">
                                             Kelola Wilayah
                                         </a>
                                     @endif

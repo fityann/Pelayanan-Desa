@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
@@ -51,9 +51,14 @@
             margin-top: 64px; text-align: center; color: #666; font-size: 14px; padding: 40px;
         }
         @media print {
-            .toolbar { display: none; }
-            .grid { margin-top: 0; }
-            body { padding: 0; }
+            @page {
+                size: A4 portrait;
+                margin: 1.5cm;
+            }
+            .toolbar { display: none !important; }
+            .grid { margin-top: 0 !important; }
+            body { padding: 0 !important; }
+            .card { break-inside: avoid; page-break-inside: avoid; }
         }
     </style>
 </head>
@@ -67,14 +72,14 @@
     </div>
 
     @if ($qrCodes->isEmpty())
-        <div class="empty">Belum ada QR Code yang dibuat. Silakan generate QR terlebih dahulu di halaman QR &amp; Link Wilayah.</div>
+        <div class="empty">Belum ada QR Code yang dibuat. Silakan generate QR terlebih dahulu di halaman QR &amp; Link RT.</div>
     @else
         <div class="grid">
             @foreach ($qrCodes as $qrCode)
                 <div class="card">
-                    <div class="label">RT {{ $qrCode->rt }} / RW {{ $qrCode->rw }}</div>
-                    <div class="sub">{{ $qrCode->nama_rt ?? 'Wilayah RT' }}</div>
-                    <img src="{{ Storage::url($qrCode->qr_code_path) }}" alt="QR RT {{ $qrCode->rt }} RW {{ $qrCode->rw }}">
+                    <div class="label">RT {{ $qrCode->rt }}</div>
+                    <div class="sub">{{ $qrCode->nama_rt ?? "RT {$qrCode->rt} Desa Puspamukti" }}</div>
+                    <img src="{{ Storage::url($qrCode->qr_code_path) }}" alt="QR RT {{ $qrCode->rt }}">
                     <div class="link">{{ $qrCode->qr_code_url }}</div>
                 </div>
             @endforeach

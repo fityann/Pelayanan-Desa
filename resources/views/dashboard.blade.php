@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Dashboard - Puspamukti Smart Village')
 
@@ -125,19 +125,31 @@
                     <h3 class="text-label-md text-on-surface uppercase tracking-widest font-semibold">Surat Per Status</h3>
                     <a href="{{ route('admin.surat.pengajuan') }}" class="text-label-sm text-primary font-semibold hover:underline">Lihat semua</a>
                 </div>
-                <div class="grid grid-cols-3 md:grid-cols-6 gap-md">
+                @php
+                    $statusLabels = [
+                        'diajukan' => 'Diajukan',
+                        'diverifikasi_admin' => 'Verifikasi',
+                        'ditolak' => 'Ditolak',
+                        'disetujui_kades' => 'Disetujui',
+                        'menunggu_ttd_fisik' => 'Menunggu TTD',
+                        'selesai' => 'Selesai',
+                    ];
+                @endphp
+                <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
                     @foreach ([
-                        'diajukan' => ['bg-amber-50 text-amber-700', 'pending'],
-                        'diverifikasi_admin' => ['bg-blue-50 text-blue-700', 'fact_check'],
-                        'ditolak' => ['bg-red-50 text-red-700', 'cancel'],
-                        'disetujui_kades' => ['bg-emerald-50 text-emerald-700', 'check_circle'],
-                        'menunggu_ttd_fisik' => ['bg-purple-50 text-purple-700', 'ink_pen'],
-                        'selesai' => ['bg-gray-100 text-gray-700', 'task_alt'],
+                        'diajukan' => ['bg-amber-50 text-amber-700 border border-amber-200/50', 'pending'],
+                        'diverifikasi_admin' => ['bg-blue-50 text-blue-700 border border-blue-200/50', 'fact_check'],
+                        'ditolak' => ['bg-red-50 text-red-700 border border-red-200/50', 'cancel'],
+                        'disetujui_kades' => ['bg-emerald-50 text-emerald-700 border border-emerald-200/50', 'check_circle'],
+                        'menunggu_ttd_fisik' => ['bg-purple-50 text-purple-700 border border-purple-200/50', 'ink_pen'],
+                        'selesai' => ['bg-gray-100 text-gray-700 border border-gray-200/50', 'task_alt'],
                     ] as $sts => $cfg)
-                        <div class="flex flex-col items-center gap-1.5 p-3 rounded-xl {{ $cfg[0] }}">
+                        <div class="flex flex-col items-center justify-center gap-1 p-2.5 rounded-xl min-w-0 text-center shadow-xs transition-all hover:scale-[1.02] {{ $cfg[0] }}">
                             <span class="material-symbols-outlined text-[18px]">{{ $cfg[1] }}</span>
-                            <span class="font-headline-sm font-bold">{{ $suratPerStatus[$sts] ?? 0 }}</span>
-                            <span class="text-[9px] uppercase tracking-widest font-semibold opacity-80">{{ $sts }}</span>
+                            <span class="text-lg font-black leading-none">{{ $suratPerStatus[$sts] ?? 0 }}</span>
+                            <span class="text-[9px] font-bold uppercase tracking-tight truncate w-full text-center opacity-90" title="{{ $statusLabels[$sts] ?? $sts }}">
+                                {{ $statusLabels[$sts] ?? $sts }}
+                            </span>
                         </div>
                     @endforeach
                 </div>
@@ -147,45 +159,51 @@
             <div class="bg-surface-container-lowest p-lg rounded-2xl shadow-sm border border-outline-variant/10">
                 <div class="flex items-center justify-between mb-lg">
                     <h3 class="text-label-md text-on-surface uppercase tracking-widest font-semibold">Pendapatan vs Belanja</h3>
-                    <span class="text-label-sm text-on-surface-variant">{{ date('Y') }}</span>
+                    <span class="text-label-sm text-on-surface-variant font-bold bg-surface-container px-3 py-1 rounded-full">{{ $latestTahun ?? date('Y') }}</span>
                 </div>
-                @php $maxVal = max($pendapatan, $belanja, 1); @endphp
-                <div class="flex items-end justify-center gap-xl h-56 px-lg">
-                    <div class="flex flex-col items-center gap-3 w-28">
-                        <div class="flex-1 flex items-end">
-                            <div class="w-full bg-gradient-to-t from-on-tertiary-container to-tertiary rounded-t-xl relative group/bar transition-all hover:brightness-110" style="height: {{ ($pendapatan / $maxVal) * 100 }}%">
-                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap">
+                @php
+                    $maxVal = max($pendapatan, $belanja, 1);
+                    $pHeight = $pendapatan > 0 ? max(round(($pendapatan / $maxVal) * 100), 12) : 10;
+                    $bHeight = $belanja > 0 ? max(round(($belanja / $maxVal) * 100), 12) : 10;
+                @endphp
+                <div class="flex items-end justify-center gap-12 py-4 px-lg">
+                    <!-- Bar Pendapatan -->
+                    <div class="flex flex-col items-center gap-3 w-32">
+                        <div class="h-40 w-full flex items-end justify-center bg-surface-container/40 rounded-xl p-1.5 relative border border-outline-variant/10">
+                            <div class="w-full bg-gradient-to-t from-emerald-600 to-teal-400 rounded-lg relative group/bar transition-all duration-500 hover:brightness-110 shadow-sm flex items-start justify-center pt-1" style="height: {{ $pHeight }}%">
+                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-lg opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-30">
                                     Rp {{ number_format($pendapatan, 0, ',', '.') }}
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-label-sm font-bold text-on-surface">Rp {{ number_format($pendapatan / 1000000, 1) }}jt</span>
-                            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant/70 font-semibold">Pendapatan</span>
+                        <div class="flex flex-col items-center text-center">
+                            <span class="text-xs font-black text-emerald-700">Rp {{ number_format($pendapatan / 1000000, 1) }} jt</span>
+                            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Pendapatan</span>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center gap-3 w-28">
-                        <div class="flex-1 flex items-end">
-                            <div class="w-full bg-gradient-to-t from-secondary to-secondary/70 rounded-t-xl relative group/bar transition-all hover:brightness-110" style="height: {{ ($belanja / $maxVal) * 100 }}%">
-                                <div class="absolute -top-8 left-1/2 -translate-x-1/2 bg-on-surface text-surface text-[10px] font-bold px-2 py-1 rounded opacity-0 group-hover/bar:opacity-100 transition whitespace-nowrap">
+                    <!-- Bar Belanja -->
+                    <div class="flex flex-col items-center gap-3 w-32">
+                        <div class="h-40 w-full flex items-end justify-center bg-surface-container/40 rounded-xl p-1.5 relative border border-outline-variant/10">
+                            <div class="w-full bg-gradient-to-t from-blue-600 to-indigo-400 rounded-lg relative group/bar transition-all duration-500 hover:brightness-110 shadow-sm flex items-start justify-center pt-1" style="height: {{ $bHeight }}%">
+                                <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-lg opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-30">
                                     Rp {{ number_format($belanja, 0, ',', '.') }}
                                 </div>
                             </div>
                         </div>
-                        <div class="flex flex-col items-center">
-                            <span class="text-label-sm font-bold text-on-surface">Rp {{ number_format($belanja / 1000000, 1) }}jt</span>
-                            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant/70 font-semibold">Belanja</span>
+                        <div class="flex flex-col items-center text-center">
+                            <span class="text-xs font-black text-blue-700">Rp {{ number_format($belanja / 1000000, 1) }} jt</span>
+                            <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Belanja</span>
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center justify-center gap-lg mt-lg pt-lg border-t border-surface-variant/20 text-[10px] uppercase tracking-wider">
+                <div class="flex items-center justify-center gap-lg mt-md pt-md border-t border-surface-variant/20 text-[10px] uppercase tracking-wider">
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-on-tertiary-container to-tertiary"></div>
-                        <span class="font-semibold text-on-surface-variant">Pendapatan</span>
+                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-emerald-600 to-teal-400"></div>
+                        <span class="font-bold text-on-surface-variant">Pendapatan</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-secondary to-secondary/70"></div>
-                        <span class="font-semibold text-on-surface-variant">Belanja</span>
+                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-blue-600 to-indigo-400"></div>
+                        <span class="font-bold text-on-surface-variant">Belanja</span>
                     </div>
                 </div>
             </div>
@@ -318,7 +336,7 @@
             </div>
 
             {{-- Quick Links --}}
-            <div class="bg-gradient-to-br from-[#27005a] via-[#51007a] to-[#9400ff] p-xl rounded-2xl shadow-xl relative overflow-hidden text-on-primary">
+            <div class="bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 p-xl rounded-2xl shadow-xl relative overflow-hidden text-white border border-emerald-500/20">
                 <div class="absolute -right-6 -bottom-6 opacity-[0.06]">
                     <span class="material-symbols-outlined text-[160px]">rocket_launch</span>
                 </div>

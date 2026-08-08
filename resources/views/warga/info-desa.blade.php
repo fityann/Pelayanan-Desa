@@ -1,6 +1,6 @@
 @extends('layouts.warga')
 
-@section('title', "Info Desa - RT $rt RW $rw")
+@section('title', "Info Desa - RT $rt")
 
 @section('content')
 <div class="space-y-8">
@@ -8,7 +8,7 @@
     <div class="flex items-center justify-between mb-8">
         <div>
             <h1 class="text-2xl font-bold text-gray-900">Informasi Desa Puspamukti</h1>
-            <p class="text-gray-600 mt-2">Berita, APBDes, dan informasi penting untuk warga RT {{ $rt }} RW {{ $rw }}</p>
+            <p class="text-gray-600 mt-2">Berita, APBDes, dan informasi penting untuk warga RT {{ $rt }}</p>
         </div>
         <button onclick="window.history.back()" 
                 class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2">
@@ -24,7 +24,7 @@
                 <h2 class="text-xl font-bold text-gray-900">Anggaran Desa (APBDes)</h2>
                 <p class="text-gray-600 text-sm">Transparansi penggunaan anggaran desa</p>
             </div>
-            <a href="{{ route('apbdes.publik', ['rt' => $rt, 'rw' => $rw]) }}" 
+            <a href="{{ route('apbdes.publik', ['rt' => $rt]) }}" 
                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1">
                 <span>Lihat Detail</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -77,7 +77,7 @@
                 <h2 class="text-xl font-bold text-gray-900">Berita & Pengumuman</h2>
                 <p class="text-gray-600 text-sm">Informasi terbaru dari pemerintah desa</p>
             </div>
-            <a href="{{ route('informasi.publik', ['rt' => $rt, 'rw' => $rw]) }}" 
+            <a href="{{ route('informasi.publik', ['rt' => $rt]) }}" 
                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1">
                 <span>Semua Berita</span>
                 <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -98,7 +98,7 @@
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-[10px] uppercase tracking-wider font-semibold bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">{{ $berita->kategori }}</span>
                             @if($berita->rt)
-                            <span class="text-[10px] uppercase tracking-wider font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">RT {{ $berita->rt }} RW {{ $berita->rw }}</span>
+                            <span class="text-[10px] uppercase tracking-wider font-semibold bg-blue-50 text-blue-700 px-2 py-0.5 rounded-full">RT {{ $berita->rt }}</span>
                             @endif
                         </div>
                         <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">{{ $berita->judul }}</h3>
@@ -197,7 +197,7 @@
                         <h3 class="font-bold text-gray-900 mb-2">{{ $layanan['nama'] }}</h3>
                         <p class="text-sm text-gray-600 mb-3">{{ $layanan['desc'] }}</p>
                         @if($layanan['nama'] == 'Pengaduan')
-                        <button onclick="window.location.href='{{ route('warga.rt.landing', ['rt' => $rt, 'rw' => $rw]) }}'"
+                        <button onclick="window.location.href='{{ route('warga.rt.landing', ['rt' => $rt]) }}'"
                                 class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1">
                             <span>Akses Layanan</span>
                             <span class="material-symbols-outlined text-sm">arrow_forward</span>
@@ -262,7 +262,7 @@
                         <span class="text-gray-700">{{ $infoDesa['kontak_desa']['jam_operasional'] }}</span>
                     </div>
                     <div class="border-t border-gray-200 pt-3">
-                        <p class="text-sm font-medium text-gray-900 mb-2">Kontak RT/RW</p>
+                        <p class="text-sm font-medium text-gray-900 mb-2">Kontak RT</p>
                         <div class="space-y-2">
                             <div class="flex items-center text-sm">
                                 <span class="material-symbols-outlined text-gray-500 text-base mr-2">person</span>

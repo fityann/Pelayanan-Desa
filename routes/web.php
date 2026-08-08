@@ -19,7 +19,15 @@ use App\Models\Penduduk;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('warga.rt.landing', ['rt' => '01']);
+});
+
+// ==== Portal Akses 2-Step Perangkat Desa / Admin ====
+Route::middleware('guest')->group(function () {
+    Route::get('/admin-gate', [\App\Http\Controllers\Auth\AdminGateController::class, 'showGate'])->name('admin.gate.show');
+    Route::post('/admin-gate', [\App\Http\Controllers\Auth\AdminGateController::class, 'verifyGate'])->name('admin.gate.verify');
+    Route::get('/admin-login', [\App\Http\Controllers\Auth\AdminGateController::class, 'showAdminLogin'])->name('admin.login.form');
+    Route::post('/admin-login', [\App\Http\Controllers\Auth\AdminGateController::class, 'authenticateAdmin'])->name('admin.login.authenticate');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
@@ -42,7 +50,7 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
             'nama' => $penduduk->nama,
             'alamat' => $penduduk->alamat,
             'rt' => $penduduk->rt,
-            'rw' => $penduduk->rw,
+            'rw' => $penduduk->rw ?? '01',
         ],
     ]);
 })->name('cek-nik');
@@ -50,24 +58,27 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
 Route::get('/apbdes-publik', [ApbdesController::class, 'publik'])->name('apbdes.publik');
 
-// ==== QR Code untuk Warga per RT (Fase 2 - Tanpa Login) ====
-Route::prefix('rt/{rt}/rw/{rw}')->name('warga.rt.')->group(function () {
+// ==== QR Code untuk Warga per RT ====
+Route::prefix('rt/{rt}')->name('warga.rt.')->group(function () {
     Route::get('/', [\App\Http\Controllers\WargaRtController::class, 'landing'])->name('landing');
     Route::get('/info', [\App\Http\Controllers\WargaRtController::class, 'infoDesa'])->name('info');
-    Route::post('/pengaduan', [\App\Http\Controllers\WargaRtController::class, 'createPengaduan'])->name('createPengaduan');
 
     // Login warga (NIK + Nama) — khusus warga yang terdaftar di panel admin
     Route::get('/login', [\App\Http\Controllers\WargaRtController::class, 'showLogin'])->name('login');
     Route::post('/login', [\App\Http\Controllers\WargaRtController::class, 'authenticateWarga'])->name('login.authenticate');
+    Route::post('/login-submit', [\App\Http\Controllers\WargaRtController::class, 'authenticateWarga'])->name('login.submit');
     Route::post('/logout', [\App\Http\Controllers\WargaRtController::class, 'logoutWarga'])->name('logout');
 
-    // Surat warga (hanya warga yang sudah login dengan NIK)
+    // Layanan warga yang wajib login (NIK & Nama KTP)
     Route::middleware('warga.auth')->group(function () {
         Route::get('/surat', [WargaSuratController::class, 'indexRt'])->name('surat.index');
+        Route::get('/surat/riwayat', [WargaSuratController::class, 'riwayatRt'])->name('surat.riwayat');
         Route::get('/surat/status/{kode}', [WargaSuratController::class, 'statusRt'])->name('surat.status');
         Route::get('/surat/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('surat.pdf');
         Route::get('/surat/{jenisSurat}/buat', [WargaSuratController::class, 'createRt'])->name('surat.create');
         Route::post('/surat/{jenisSurat}', [WargaSuratController::class, 'storeRt'])->name('surat.store');
+
+        Route::post('/pengaduan', [\App\Http\Controllers\WargaRtController::class, 'createPengaduan'])->name('createPengaduan');
 
         // Chat warga dengan admin desa (hanya warga yang sudah login)
         Route::get('/chat', [WargaChatController::class, 'index'])->name('chat');
@@ -81,26 +92,39 @@ Route::prefix('rt/{rt}/rw/{rw}')->name('warga.rt.')->group(function () {
     });
 });
 
-// ==== Layanan Warga (Fase 1) — publik tanpa login ====
-Route::prefix('layanan/surat')->name('warga.surat.')->group(function () {
-    Route::get('/', [WargaSuratController::class, 'index'])->name('index');
-    Route::get('/cek', [WargaSuratController::class, 'cek'])->name('cek');
-    Route::get('/status/{kode}', [WargaSuratController::class, 'status'])->name('status');
-    Route::get('/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('pdf');
-    Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
-    Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
+// Legacy route alias for /rt/{rt}/rw/{rw}
+Route::prefix('rt/{rt}/rw/{rw}')->group(function () {
+    Route::get('/', [\App\Http\Controllers\WargaRtController::class, 'landing']);
+    Route::get('/info', [\App\Http\Controllers\WargaRtController::class, 'infoDesa']);
+    Route::get('/login', [\App\Http\Controllers\WargaRtController::class, 'showLogin']);
+    Route::post('/login', [\App\Http\Controllers\WargaRtController::class, 'authenticateWarga']);
+    Route::post('/logout', [\App\Http\Controllers\WargaRtController::class, 'logoutWarga']);
 });
 
-// Layanan Warga - Usulan Kegiatan (Musrenbang)
-Route::prefix('layanan/musrenbang')->name('warga.musrenbang.')->group(function () {
-    Route::get('/', [\App\Http\Controllers\Warga\MusrenbangController::class, 'index'])->name('index');
-    Route::get('/{musrenbang}', [\App\Http\Controllers\Warga\MusrenbangController::class, 'show'])->name('show');
-    Route::post('/{musrenbang}/support', [\App\Http\Controllers\Warga\MusrenbangController::class, 'support'])->middleware('auth:warga')->name('support');
+// ==== Layanan Warga (Wajib Login Warga NIK & Nama) ====
+Route::middleware('warga.auth')->group(function () {
+    Route::prefix('layanan/surat')->name('warga.surat.')->group(function () {
+        Route::get('/', [WargaSuratController::class, 'index'])->name('index');
+        Route::get('/cek', [WargaSuratController::class, 'cek'])->name('cek');
+        Route::get('/status/{kode}', [WargaSuratController::class, 'status'])->name('status');
+        Route::get('/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('pdf');
+        Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
+        Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
+    });
+
+    // Layanan Warga - Usulan Kegiatan (Musrenbang)
+    Route::prefix('layanan/musrenbang')->name('warga.musrenbang.')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Warga\MusrenbangController::class, 'index'])->name('index');
+        Route::get('/{musrenbang}', [\App\Http\Controllers\Warga\MusrenbangController::class, 'show'])->name('show');
+        Route::post('/{musrenbang}/support', [\App\Http\Controllers\Warga\MusrenbangController::class, 'support'])->name('support');
+    });
 });
 
-// QR Code pengaduan (PRD 1.5): /pengaduan/buat — publik tanpa login
-Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
-Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
+Route::middleware('warga.auth')->group(function () {
+    // QR Code pengaduan: /pengaduan/buat
+    Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
+    Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -253,6 +277,9 @@ Route::prefix('admin')->name('admin.')
         Route::get('qr-links/{rtQrCode}/download', [\App\Http\Controllers\Admin\QrCodeController::class, 'download'])->name('qr-links.download');
         Route::get('qr-links/cetak', [\App\Http\Controllers\Admin\QrCodeController::class, 'cetak'])->name('qr-links.cetak');
         Route::post('qr-links/{rt}/{rw}/status', [\App\Http\Controllers\Admin\QrCodeController::class, 'toggleStatus'])->name('qr-links.status');
+
+        // Global Live Search API
+        Route::get('search', [\App\Http\Controllers\Admin\SearchController::class, 'search'])->name('search');
     });
 
 require __DIR__.'/auth.php';

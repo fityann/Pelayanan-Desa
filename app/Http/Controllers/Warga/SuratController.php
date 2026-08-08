@@ -31,8 +31,9 @@ class SuratController extends Controller
     /**
      * Daftar jenis surat dalam lingkar warga RT/RW (layout warga).
      */
-    public function indexRt(string $rt, string $rw): View
+    public function indexRt(string $rt, string $rw = '01'): View
     {
+        $rw = $rw ?: '01';
         $jenisSurat = JenisSurat::where('aktif', true)->get();
 
         return view('warga.surat.index-rt', compact('jenisSurat', 'rt', 'rw'));
@@ -41,8 +42,9 @@ class SuratController extends Controller
     /**
      * Form pembuatan surat dalam lingkar warga RT/RW (layout warga).
      */
-    public function createRt(string $rt, string $rw, JenisSurat $jenisSurat): View
+    public function createRt(string $rt, JenisSurat $jenisSurat, string $rw = '01'): View
     {
+        $rw = $rw ?: '01';
         abort_if(!$jenisSurat->aktif, 404);
 
         return view('warga.surat.create-rt', compact('jenisSurat', 'rt', 'rw'));
@@ -51,8 +53,9 @@ class SuratController extends Controller
     /**
      * Simpan pengajuan surat dari lingkar warga RT/RW.
      */
-    public function storeRt(string $rt, string $rw, Request $request, JenisSurat $jenisSurat): RedirectResponse
+    public function storeRt(string $rt, Request $request, JenisSurat $jenisSurat, string $rw = '01'): RedirectResponse
     {
+        $rw = $rw ?: '01';
         abort_if(!$jenisSurat->aktif, 404);
 
         $request->validate([
@@ -66,20 +69,63 @@ class SuratController extends Controller
 
         $pengajuan = $this->buatPengajuan($request, $jenisSurat);
 
-        return redirect()->route('warga.rt.surat.status', ['rt' => $rt, 'rw' => $rw, 'kode' => $pengajuan->kode_tracking])
+        return redirect()->route('warga.rt.surat.status', ['rt' => $rt, 'kode' => $pengajuan->kode_tracking])
             ->with('success', 'Pengajuan surat berhasil dikirim. Simpan kode tracking Anda untuk memantau status.');
     }
 
     /**
      * Status pengajuan surat dalam lingkar warga RT/RW (layout warga).
      */
-    public function statusRt(string $rt, string $rw, string $kode): View
+    public function statusRt(string $rt, string $kode, string $rw = '01'): View
     {
+        $rw = $rw ?: '01';
+        $cleanId = (int) str_replace('SRT-', '', $kode);
         $pengajuan = PengajuanSurat::with(['jenisSurat', 'riwayatStatus.olehUser'])
             ->where('kode_tracking', $kode)
+            ->when($cleanId > 0, fn($q) => $q->orWhere('id', $cleanId))
             ->firstOrFail();
 
         return view('warga.surat.status-rt', compact('pengajuan', 'rt', 'rw'));
+    }
+
+    /**
+     * Halaman Riwayat & Tracking Surat Saya (layout warga).
+     */
+    public function riwayatRt(Request $request, string $rt, string $rw = '01'): View
+    {
+        $rw = $rw ?: '01';
+        $wargaUser = auth('warga')->user();
+
+        $query = PengajuanSurat::with(['jenisSurat', 'riwayatStatus']);
+
+        // Filter pengajuan milik warga yang sedang login (by user_id atau NIK)
+        if ($wargaUser) {
+            $query->where(function($q) use ($wargaUser) {
+                $q->where('user_id', $wargaUser->id);
+                if ($wargaUser->nik) {
+                    $q->orWhere('nik_pemohon', $wargaUser->nik);
+                }
+            });
+        }
+
+        // Search by tracking code / nama jenis surat / nomor surat
+        if ($request->filled('search')) {
+            $search = trim($request->search);
+            $query->where(function($q) use ($search) {
+                $q->where('kode_tracking', 'like', "%{$search}%")
+                  ->orWhere('nomor_surat', 'like', "%{$search}%")
+                  ->orWhereHas('jenisSurat', fn($j) => $j->where('nama', 'like', "%{$search}%"));
+            });
+        }
+
+        // Filter by status tab
+        if ($request->filled('status') && $request->status !== 'semua') {
+            $query->where('status', $request->status);
+        }
+
+        $pengajuanList = $query->latest()->paginate(10)->withQueryString();
+
+        return view('warga.surat.riwayat-rt', compact('pengajuanList', 'rt', 'rw'));
     }
 
     public function store(Request $request, JenisSurat $jenisSurat): RedirectResponse
@@ -111,14 +157,37 @@ class SuratController extends Controller
             $filePath = $request->file('file_pendukung')->store('pengajuan-surat', 'public');
         }
 
-        $user = $request->user();
+        $wargaUser = auth('warga')->user();
+        $nik = trim($request->nik);
+        $nama = trim($request->nama);
+
+        if (!$wargaUser || $wargaUser->hasAnyRole(['Super Admin', 'Admin Desa', 'Kepala Desa', 'Sekretaris Desa', 'Bendahara'])) {
+            if ($nik) {
+                $wargaUser = \App\Models\User::where('nik', $nik)->first();
+                if (!$wargaUser) {
+                    $pd = \App\Models\Penduduk::where('nik', $nik)->first();
+                    if ($pd) {
+                        $wargaUser = \App\Models\User::firstOrCreate(
+                            ['nik' => $pd->nik],
+                            [
+                                'name' => $pd->nama,
+                                'email' => $pd->nik . '@puspamukti.local',
+                                'password' => bcrypt('password'),
+                                'rt' => $pd->rt,
+                                'rw' => $pd->rw,
+                            ]
+                        );
+                    }
+                }
+            }
+        }
 
         $pengajuan = PengajuanSurat::create([
-            'user_id' => $user?->id,
+            'user_id' => $wargaUser?->id,
             'jenis_surat_id' => $jenisSurat->id,
             'status' => 'diajukan',
-            'nama_pemohon' => $request->nama,
-            'nik_pemohon' => $request->nik,
+            'nama_pemohon' => $nama,
+            'nik_pemohon' => $nik,
             'alamat_pemohon' => $request->alamat,
             'no_whatsapp' => $request->no_whatsapp,
             'kode_tracking' => $this->generateTracking(),
@@ -139,6 +208,19 @@ class SuratController extends Controller
             'warna' => 'bg-primary/10 text-primary',
             'link' => route('admin.surat.pengajuan'),
         ]);
+
+        // Kirim notifikasi bukti pengajuan ke Warga
+        $userId = $user?->id ?? \App\Models\User::where('nik', $request->nik)->value('id');
+        if ($userId) {
+            Notification::buat($userId, [
+                'judul' => 'Pengajuan Surat Terkirim 📬',
+                'pesan' => "Pengajuan '{$jenisSurat->nama}' Anda telah berhasil dikirim dengan Kode Tracking: {$pengajuan->kode_tracking}.",
+                'tipe' => 'surat',
+                'icon' => 'mark_email_read',
+                'warna' => 'bg-blue-100 text-blue-800',
+                'link' => route('warga.surat.status', $pengajuan->kode_tracking),
+            ]);
+        }
 
         return $pengajuan;
     }
@@ -165,7 +247,10 @@ class SuratController extends Controller
 
     public function pdf(string $kode): \Illuminate\Http\Response
     {
-        $pengajuan = PengajuanSurat::where('kode_tracking', $kode)->firstOrFail();
+        $cleanId = (int) str_replace('SRT-', '', $kode);
+        $pengajuan = PengajuanSurat::where('kode_tracking', $kode)
+            ->when($cleanId > 0, fn($q) => $q->orWhere('id', $cleanId))
+            ->firstOrFail();
 
         abort_unless(in_array($pengajuan->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']), 403);
 

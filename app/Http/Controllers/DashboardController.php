@@ -28,20 +28,22 @@ class DashboardController extends Controller
             'selesai' => PengajuanSurat::where('status', 'selesai')->count(),
         ];
 
-        $totalAnggaran = Apbde::where('tahun', date('Y'))
+        $latestTahun = Apbde::where('status', 'dipublikasikan')->max('tahun') ?? date('Y');
+
+        $totalAnggaran = Apbde::where('tahun', $latestTahun)
             ->where('status', 'dipublikasikan')
             ->sum('anggaran');
 
-        $totalRealisasi = Apbde::where('tahun', date('Y'))
+        $totalRealisasi = Apbde::where('tahun', $latestTahun)
             ->where('status', 'dipublikasikan')
             ->sum('realisasi');
 
-        $pendapatan = Apbde::where('tahun', date('Y'))
+        $pendapatan = Apbde::where('tahun', $latestTahun)
             ->where('kategori', 'Pendapatan')
             ->where('status', 'dipublikasikan')
             ->sum('anggaran');
 
-        $belanja = Apbde::where('tahun', date('Y'))
+        $belanja = Apbde::where('tahun', $latestTahun)
             ->where('kategori', 'Belanja')
             ->where('status', 'dipublikasikan')
             ->sum('anggaran');

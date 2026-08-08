@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Data Penduduk - SILAPU')
 
@@ -46,30 +46,17 @@
                 </div>
             </div>
             
-            <!-- RT/RW Filter -->
-            <div class="grid grid-cols-2 gap-md">
-                <div>
-                    <label class="block text-label-sm font-medium text-on-surface mb-xs">RT</label>
-                    <select name="rt" class="w-full bg-surface border border-outline-variant rounded-lg px-md py-2 text-body-sm">
-                        <option value="">Semua RT</option>
-                        @foreach($rtList ?? [] as $rt)
-                            <option value="{{ $rt }}" {{ request('rt') == $rt ? 'selected' : '' }}>
-                                RT {{ $rt }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <label class="block text-label-sm font-medium text-on-surface mb-xs">RW</label>
-                    <select name="rw" class="w-full bg-surface border border-outline-variant rounded-lg px-md py-2 text-body-sm">
-                        <option value="">Semua RW</option>
-                        @foreach($rwList ?? [] as $rw)
-                            <option value="{{ $rw }}" {{ request('rw') == $rw ? 'selected' : '' }}>
-                                RW {{ $rw }}
-                            </option>
-                        @endforeach
-                    </select>
-                </div>
+            <!-- RT Filter -->
+            <div>
+                <label class="block text-label-sm font-medium text-on-surface mb-xs">RT</label>
+                <select name="rt" class="w-full bg-surface border border-outline-variant rounded-lg px-md py-2 text-body-sm">
+                    <option value="">Semua RT</option>
+                    @foreach($rtList ?? [] as $rt)
+                        <option value="{{ $rt }}" {{ request('rt') == $rt ? 'selected' : '' }}>
+                            RT {{ $rt }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
             
             <!-- Jenis Kelamin & Status -->
@@ -243,7 +230,7 @@
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">NIK</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Nama</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">L/P</th>
-                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">RT/RW</th>
+                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">RT</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">No. KK</th>
                         <th class="text-center px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Aksi</th>
                     </tr>
@@ -254,7 +241,7 @@
                             <td class="px-lg py-4 text-body-sm font-mono text-on-surface">{{ $p->nik }}</td>
                             <td class="px-lg py-4 text-body-md font-semibold text-on-surface">{{ $p->nama }}</td>
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->jenis_kelamin ?? '-' }}</td>
-                            <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->rt }}/{{ $p->rw }}</td>
+                            <td class="px-lg py-4 text-body-sm text-on-surface-variant font-semibold">RT {{ $p->rt }}</td>
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->no_kk ?? '-' }}</td>
                             <td class="px-lg py-4 text-center">
                                 <div class="flex items-center justify-center gap-sm">

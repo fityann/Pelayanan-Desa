@@ -34,12 +34,28 @@ class SuratController extends Controller
         return redirect()->route('admin.surat.jenis')->with('success', 'Jenis surat berhasil ditambahkan');
     }
 
-    public function pengajuanMasuk(): View
+    public function pengajuanMasuk(Request $request): View
     {
-        $pengajuan = PengajuanSurat::with(['user', 'jenisSurat'])
-            ->whereNotIn('status', ['selesai'])
-            ->latest()
-            ->paginate(15);
+        $query = PengajuanSurat::with(['user', 'jenisSurat']);
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kode_tracking', 'like', "%{$search}%")
+                  ->orWhere('keperluan', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($u) use ($search) {
+                      $u->where('name', 'like', "%{$search}%")
+                        ->orWhere('nik', 'like', "%{$search}%");
+                  })
+                  ->orWhereHas('jenisSurat', function($j) use ($search) {
+                      $j->where('nama_surat', 'like', "%{$search}%");
+                  });
+            });
+        } else {
+            $query->whereNotIn('status', ['selesai']);
+        }
+
+        $pengajuan = $query->latest()->paginate(15)->withQueryString();
 
         return view('admin.surat.pengajuan', compact('pengajuan'));
     }
@@ -51,6 +67,7 @@ class SuratController extends Controller
     public function verifikasi(PengajuanSurat $pengajuan): RedirectResponse
     {
         abort_unless($pengajuan->status === 'diajukan', 422);
+        $pengajuan->loadMissing('jenisSurat');
 
         $pengajuan->update([
             'status' => 'diverifikasi_admin',
@@ -58,6 +75,19 @@ class SuratController extends Controller
         ]);
 
         $pengajuan->catatStatus('diverifikasi_admin', 'Berkas lengkap, diteruskan ke Kepala Desa untuk approval.');
+
+        // Kirim Notifikasi ke Warga
+        $userId = $this->resolveCitizenUserId($pengajuan);
+        if ($userId) {
+            \App\Models\Notification::buat($userId, [
+                'judul' => 'Pengajuan Surat Diverifikasi',
+                'pesan' => "Pengajuan Surat '{$pengajuan->jenisSurat->nama}' Anda telah diverifikasi oleh Admin Desa dan diteruskan ke Kepala Desa.",
+                'tipe' => 'surat',
+                'icon' => 'verified',
+                'warna' => 'bg-amber-100 text-amber-800',
+                'link' => route('warga.surat.status', $pengajuan->kode_tracking ?? $pengajuan->id),
+            ]);
+        }
 
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan diverifikasi. Menunggu approval Kepala Desa.');
     }
@@ -72,6 +102,7 @@ class SuratController extends Controller
         abort_unless(auth()->user()->hasAnyRole(['Kepala Desa', 'Super Admin']), 403);
         abort_unless($pengajuan->status === 'diverifikasi_admin', 422);
 
+        $pengajuan->loadMissing('jenisSurat');
         $nomor = $this->generateNomorSurat($pengajuan->jenisSurat->kode);
 
         $pengajuan->update([
@@ -91,6 +122,19 @@ class SuratController extends Controller
             $pengajuan->catatStatus('selesai', 'Surat tanpa TTD fisik, otomatis selesai. Warga dapat mengunduh PDF.');
         }
 
+        // Kirim Notifikasi ke Warga bahwa Surat Disetujui
+        $userId = $this->resolveCitizenUserId($pengajuan);
+        if ($userId) {
+            \App\Models\Notification::buat($userId, [
+                'judul' => 'Pengajuan Surat Disetujui! 🎉',
+                'pesan' => "Selamat! Surat '{$pengajuan->jenisSurat->nama}' Anda telah disetujui Kepala Desa dengan Nomor Surat: {$nomor}.",
+                'tipe' => 'surat',
+                'icon' => 'check_circle',
+                'warna' => 'bg-emerald-100 text-emerald-800',
+                'link' => route('warga.surat.status', $pengajuan->kode_tracking ?? $pengajuan->id),
+            ]);
+        }
+
         return redirect()->route('admin.surat.pengajuan')->with('success', "Surat disetujui. Nomor: {$nomor}");
     }
 
@@ -99,6 +143,7 @@ class SuratController extends Controller
         $request->validate(['alasan_ditolak' => ['required', 'string']]);
 
         abort_unless(in_array($pengajuan->status, ['diajukan', 'diverifikasi_admin']), 422);
+        $pengajuan->loadMissing('jenisSurat');
 
         $pengajuan->update([
             'status' => 'ditolak',
@@ -106,6 +151,19 @@ class SuratController extends Controller
         ]);
 
         $pengajuan->catatStatus('ditolak', $request->alasan_ditolak);
+
+        // Kirim Notifikasi Penolakan ke Warga
+        $userId = $this->resolveCitizenUserId($pengajuan);
+        if ($userId) {
+            \App\Models\Notification::buat($userId, [
+                'judul' => 'Pengajuan Surat Ditolak',
+                'pesan' => "Pengajuan Surat '{$pengajuan->jenisSurat->nama}' ditolak. Alasan: {$request->alasan_ditolak}",
+                'tipe' => 'surat',
+                'icon' => 'cancel',
+                'warna' => 'bg-rose-100 text-rose-800',
+                'link' => route('warga.surat.status', $pengajuan->kode_tracking ?? $pengajuan->id),
+            ]);
+        }
 
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan ditolak');
     }
@@ -117,6 +175,7 @@ class SuratController extends Controller
     public function selesai(PengajuanSurat $pengajuan): RedirectResponse
     {
         abort_unless($pengajuan->status === 'menunggu_ttd_fisik', 422);
+        $pengajuan->loadMissing('jenisSurat');
 
         $pengajuan->update([
             'status' => 'selesai',
@@ -126,7 +185,70 @@ class SuratController extends Controller
 
         $pengajuan->catatStatus('selesai', 'Surat telah ditandatangani dan siap diambil warga.');
 
+        // Kirim Notifikasi Selesai ke Warga
+        $userId = $this->resolveCitizenUserId($pengajuan);
+        if ($userId) {
+            \App\Models\Notification::buat($userId, [
+                'judul' => 'Surat Selesai & Siap Diambil 📜',
+                'pesan' => "Surat '{$pengajuan->jenisSurat->nama}' (No: {$pengajuan->nomor_surat}) telah selesai ditandatangani Kepala Desa dan siap diambil di Kantor Desa.",
+                'tipe' => 'surat',
+                'icon' => 'task_alt',
+                'warna' => 'bg-emerald-100 text-emerald-800',
+                'link' => route('warga.surat.status', $pengajuan->kode_tracking ?? $pengajuan->id),
+            ]);
+        }
+
         return redirect()->route('admin.surat.pengajuan')->with('success', 'Pengajuan selesai');
+    }
+
+    /**
+     * Mencari ID User Warga pemohon secara presisi untuk pengiriman notifikasi.
+     */
+    private function resolveCitizenUserId(PengajuanSurat $pengajuan): ?int
+    {
+        // 1. Cek NIK Pemohon (Prioritas tertinggi & paling akurat)
+        $nik = trim($pengajuan->nik_pemohon ?? '');
+        if (!empty($nik)) {
+            $user = \App\Models\User::where('nik', $nik)->first();
+            if ($user) {
+                return $user->id;
+            }
+
+            // Jika ada data Penduduk KTP desa, sinkronkan atau buat akun user warga
+            $pd = \App\Models\Penduduk::where('nik', $nik)->first();
+            if ($pd) {
+                $user = \App\Models\User::firstOrCreate(
+                    ['nik' => $pd->nik],
+                    [
+                        'name' => $pd->nama,
+                        'email' => $pd->nik . '@puspamukti.local',
+                        'password' => bcrypt('password'),
+                        'rt' => $pd->rt,
+                        'rw' => $pd->rw,
+                    ]
+                );
+                return $user->id;
+            }
+        }
+
+        // 2. Cek user_id milik non-admin/perangkat desa
+        if ($pengajuan->user_id) {
+            $u = \App\Models\User::find($pengajuan->user_id);
+            if ($u && !$u->hasAnyRole(['Super Admin', 'Admin Desa', 'Kepala Desa', 'Sekretaris Desa', 'Bendahara'])) {
+                return $u->id;
+            }
+        }
+
+        // 3. Cek Nama Pemohon
+        $nama = trim($pengajuan->pemohon_name ?? '');
+        if (!empty($nama)) {
+            $user = \App\Models\User::where('name', 'like', "%{$nama}%")->first();
+            if ($user) {
+                return $user->id;
+            }
+        }
+
+        return null;
     }
 
     public function pdf(PengajuanSurat $pengajuan): \Illuminate\Http\Response
