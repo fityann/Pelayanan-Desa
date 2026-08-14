@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Manajemen Pengguna - SILAPU')
 
@@ -33,6 +33,7 @@
             <table class="w-full">
                 <thead>
                     <tr class="bg-surface-container/50">
+                        <th class="text-center px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest w-16">No</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Nama</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">NIK</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Email</th>
@@ -43,6 +44,7 @@
                 <tbody class="divide-y divide-surface-variant/20">
                     @foreach ($users as $user)
                         <tr class="hover:bg-surface-container/30 transition-colors">
+                            <td class="px-lg py-4 text-body-md text-on-surface-variant text-center">{{ ($users->currentPage() - 1) * $users->perPage() + $loop->iteration }}</td>
                             <td class="px-lg py-4 text-body-md font-semibold text-on-surface">{{ $user->name }}</td>
                             <td class="px-lg py-4 text-body-sm font-mono text-on-surface">{{ $user->nik }}</td>
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $user->email ?? '-' }}</td>

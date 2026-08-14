@@ -194,15 +194,8 @@ class PengaduanController extends Controller
     {
         $pengaduan = Pengaduan::findOrFail($id);
         
-        if ($pengaduan->status !== 'diterima') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Hanya pengaduan dengan status "diterima" yang bisa diproses'
-            ], 400);
-        }
-        
         $pengaduan->status = 'diproses';
-        $pengaduan->processed_by = auth()->id();
+        $pengaduan->processed_by = auth()->id() ?? null;
         $pengaduan->tanggal_diproses = now();
         $pengaduan->save();
         
@@ -220,15 +213,10 @@ class PengaduanController extends Controller
         
         $pengaduan = Pengaduan::findOrFail($id);
         
-        if ($pengaduan->status !== 'diproses') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Hanya pengaduan dengan status "diproses" yang bisa diselesaikan'
-            ], 400);
-        }
-        
         $pengaduan->status = 'selesai';
-        $pengaduan->tanggapan = $request->tanggapan;
+        if ($request->filled('tanggapan')) {
+            $pengaduan->tanggapan = $request->tanggapan;
+        }
         $pengaduan->tanggal_selesai = now();
         $pengaduan->save();
         
@@ -240,12 +228,80 @@ class PengaduanController extends Controller
     
     public function export(Request $request)
     {
-        // This is a placeholder for export functionality
-        // You can implement CSV or Excel export here
+        $filters = $request->only(['status', 'kategori', 'sumber', 'start_date', 'end_date', 'rt', 'rw']);
         
-        return response()->json([
-            'message' => 'Export functionality to be implemented',
-            'filters' => $request->all()
-        ]);
+        $query = Pengaduan::with(['user', 'processedBy'])
+            ->orderBy('tanggal_diterima', 'desc');
+            
+        // Apply status filters
+        if (!empty($filters['status'])) {
+            $query->whereIn('status', (array)$filters['status']);
+        }
+        if (!empty($filters['kategori'])) {
+            $query->where('kategori', $filters['kategori']);
+        }
+        if (!empty($filters['sumber'])) {
+            $query->whereIn('sumber_akses', (array)$filters['sumber']);
+        }
+        if (!empty($filters['start_date'])) {
+            $query->whereDate('tanggal_diterima', '>=', $filters['start_date']);
+        }
+        if (!empty($filters['end_date'])) {
+            $query->whereDate('tanggal_diterima', '<=', $filters['end_date']);
+        }
+        if (!empty($filters['rt'])) {
+            $query->where('rt', $filters['rt']);
+        }
+        if (!empty($filters['rw'])) {
+            $query->where('rw', $filters['rw']);
+        }
+        
+        $pengaduanList = $query->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Pengaduan');
+
+        // Header
+        $headers = [
+            'A1' => 'No', 'B1' => 'Judul', 'C1' => 'Kategori', 'D1' => 'Nama Pelapor', 
+            'E1' => 'RT/RW', 'F1' => 'Tanggal Diterima', 'G1' => 'Status', 'H1' => 'Tanggapan',
+            'I1' => 'Sumber Akses'
+        ];
+
+        foreach ($headers as $cell => $value) {
+            $sheet->setCellValue($cell, $value);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+        }
+
+        // Data
+        $row = 2;
+        foreach ($pengaduanList as $index => $p) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $p->judul);
+            $sheet->setCellValue('C' . $row, ucfirst($p->kategori));
+            $sheet->setCellValue('D' . $row, $p->nama_pelapor ?? ($p->user->name ?? 'Anonim'));
+            $sheet->setCellValue('E' . $row, "RT {$p->rt} / RW {$p->rw}");
+            $sheet->setCellValue('F' . $row, $p->tanggal_diterima);
+            $sheet->setCellValue('G' . $row, ucfirst($p->status));
+            $sheet->setCellValue('H' . $row, $p->tanggapan);
+            $sheet->setCellValue('I' . $row, $p->sumber_akses);
+            $row++;
+        }
+
+        foreach (range('A', 'I') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'Data_Pengaduan_' . date('Ymd_His') . '.xlsx';
+        
+        // Output to browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
     }
 }

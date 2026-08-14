@@ -126,7 +126,17 @@ class DatabaseSeeder extends Seeder
             }
         }
 
-        $this->command->info('Roles dan users berhasil dibuat');
+        $this->command->info('Roles dan users default berhasil dibuat');
+
+        // ==== CREATE DUMMY WARGA (LOOP) ====
+        $this->command->info('Mulai membuat 100 dummy data Warga...');
+        $wargaRole = \Spatie\Permission\Models\Role::where('name', 'Warga')->first();
+        
+        $dummyUsers = User::factory()->count(100)->create();
+        foreach ($dummyUsers as $u) {
+            $u->assignRole($wargaRole);
+        }
+        $this->command->info('100 dummy Warga berhasil dibuat!');
 
         // ==== PERMISSION & AKSES (CRUD ter-enforce di route) ====
         $this->call(RolePermissionSeeder::class);

@@ -193,17 +193,11 @@ class ApbdesController extends Controller
     public function export(Request $request)
     {
         $tahun = $request->get('tahun', date('Y'));
-        $type = $request->get('type', 'pdf');
         
         $data = $this->getYearlySummary($tahun);
         
-        // Export logic here - using dompdf for PDF export
-        // You'll need to implement this based on your dompdf setup
+        $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('apbdes.pdf', compact('data', 'tahun'));
         
-        return response()->json([
-            'message' => 'Export functionality to be implemented',
-            'tahun' => $tahun,
-            'type' => $type
-        ]);
+        return $pdf->download('Laporan_APBDes_' . $tahun . '.pdf');
     }
 }

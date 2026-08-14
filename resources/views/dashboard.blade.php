@@ -9,7 +9,7 @@
     <div class="flex items-center justify-between">
         <div>
             <h1 class="text-headline-md font-bold text-on-surface">Dashboard</h1>
-            <p class="text-body-sm text-on-surface-variant">Selamat datang, {{ auth()->user()->name }} — {{ now()->translatedFormat('l, d F Y') }}</p>
+            <p class="text-body-sm text-on-surface-variant">Selamat datang, {{ auth()->user()?->name ?? 'Pengguna' }} — {{ now()->translatedFormat('l, d F Y') }}</p>
         </div>
         <div class="flex items-center gap-sm bg-surface-container-lowest rounded-full px-lg py-2 shadow-sm">
             <span class="material-symbols-outlined text-[18px] text-on-surface-variant">calendar_today</span>
@@ -184,14 +184,14 @@
                     <!-- Bar Belanja -->
                     <div class="flex flex-col items-center gap-3 w-32">
                         <div class="h-40 w-full flex items-end justify-center bg-surface-container/40 rounded-xl p-1.5 relative border border-outline-variant/10">
-                            <div class="w-full bg-gradient-to-t from-blue-600 to-indigo-400 rounded-lg relative group/bar transition-all duration-500 hover:brightness-110 shadow-sm flex items-start justify-center pt-1" style="height: {{ $bHeight }}%">
+                            <div class="w-full bg-gradient-to-t from-red-600 to-rose-400 rounded-lg relative group/bar transition-all duration-500 hover:brightness-110 shadow-sm flex items-start justify-center pt-1" style="height: {{ $bHeight }}%">
                                 <div class="absolute -top-9 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-lg opacity-0 group-hover/bar:opacity-100 transition-all pointer-events-none whitespace-nowrap z-30">
                                     Rp {{ number_format($belanja, 0, ',', '.') }}
                                 </div>
                             </div>
                         </div>
                         <div class="flex flex-col items-center text-center">
-                            <span class="text-xs font-black text-blue-700">Rp {{ number_format($belanja / 1000000, 1) }} jt</span>
+                            <span class="text-xs font-black text-red-700">Rp {{ number_format($belanja / 1000000, 1) }} jt</span>
                             <span class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Belanja</span>
                         </div>
                     </div>
@@ -202,7 +202,7 @@
                         <span class="font-bold text-on-surface-variant">Pendapatan</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-blue-600 to-indigo-400"></div>
+                        <div class="w-3 h-3 rounded-sm bg-gradient-to-br from-red-600 to-rose-400"></div>
                         <span class="font-bold text-on-surface-variant">Belanja</span>
                     </div>
                 </div>
@@ -336,7 +336,7 @@
             </div>
 
             {{-- Quick Links --}}
-            <div class="bg-gradient-to-br from-emerald-950 via-teal-900 to-slate-900 p-xl rounded-2xl shadow-xl relative overflow-hidden text-white border border-emerald-500/20">
+            <div class="bg-gradient-to-br from-purple-950 via-violet-900 to-slate-900 p-xl rounded-2xl shadow-xl relative overflow-hidden text-white border border-purple-500/20">
                 <div class="absolute -right-6 -bottom-6 opacity-[0.06]">
                     <span class="material-symbols-outlined text-[160px]">rocket_launch</span>
                 </div>

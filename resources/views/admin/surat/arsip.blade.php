@@ -10,6 +10,10 @@
             <p class="text-body-sm text-on-surface-variant">Arsip surat yang sudah selesai diproses</p>
         </div>
         <div class="flex gap-sm">
+            <a href="{{ route('admin.surat.arsip.export', request()->query()) }}" class="bg-green-600 px-lg py-2 rounded-full text-label-md font-bold text-white hover:bg-green-700 transition-all flex items-center gap-sm shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                Export Excel
+            </a>
             <a href="{{ route('admin.surat.tracking') }}" class="bg-surface-container-lowest px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all flex items-center gap-sm border border-outline-variant">
                 <span class="material-symbols-outlined text-[18px]">search</span>
                 Tracking
@@ -42,7 +46,13 @@
                             <td class="px-lg py-4">
                                 <span class="text-body-sm font-bold text-on-surface block">{{ $item->jenisSurat->nama }}</span>
                                 @if ($item->keterangan || $item->keperluan)
-                                    <span class="text-[11px] text-on-surface-variant block mt-0.5">Keperluan: {{ $item->keterangan ?? $item->keperluan }}</span>
+                                    <span class="text-[11px] text-on-surface-variant block mt-0.5 mb-1">Keperluan: {{ $item->keterangan ?? $item->keperluan }}</span>
+                                @endif
+                                @if ($item->file_pendukung)
+                                    <a href="{{ Storage::url($item->file_pendukung) }}" target="_blank" class="inline-flex items-center space-x-1 text-[11px] font-bold text-blue-700 hover:text-blue-800 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200/60 mt-1">
+                                        <span class="material-symbols-outlined text-[12px]">attach_file</span>
+                                        <span>Lampiran</span>
+                                    </a>
                                 @endif
                             </td>
                             <td class="px-lg py-4">

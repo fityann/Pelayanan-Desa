@@ -11,7 +11,7 @@ class PengajuanSurat extends Model
     protected $fillable = [
         'user_id', 'jenis_surat_id', 'nomor_surat', 'status',
         'nama_pemohon', 'nik_pemohon', 'alamat_pemohon', 'no_whatsapp', 'kode_tracking',
-        'butuh_ttd_fisik', 'keterangan', 'alasan_ditolak', 'file_pendukung',
+        'butuh_ttd_fisik', 'keterangan', 'data_isian', 'alasan_ditolak', 'file_pendukung',
         'verified_by', 'approved_by',
         'tanggal_diajukan', 'tanggal_disetujui', 'tanggal_ttd_fisik', 'tanggal_diambil',
     ];
@@ -20,6 +20,7 @@ class PengajuanSurat extends Model
     {
         return [
             'butuh_ttd_fisik' => 'boolean',
+            'data_isian' => 'array',
             'tanggal_diajukan' => 'datetime',
             'tanggal_disetujui' => 'datetime',
             'tanggal_ttd_fisik' => 'datetime',

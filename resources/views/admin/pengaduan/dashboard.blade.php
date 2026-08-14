@@ -30,52 +30,52 @@
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-label-sm text-on-surface-variant">Total Pengaduan</p>
-                        <h3 class="text-headline-md font-semibold text-on-surface mt-xs">{{ $stats['total'] }}</h3>
+                        <h3 class="text-headline-md font-semibold text-on-surface mt-xs">{{ $stats['total'] ?? 0 }}</h3>
                     </div>
                     <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-primary">campaign</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-on-surface-variant mt-sm">{{ $stats['today'] }} hari ini</p>
+                <p class="text-[11px] text-on-surface-variant mt-sm">{{ $stats['today'] ?? 0 }} hari ini</p>
             </div>
             
             <div class="bg-surface-container p-md rounded-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-label-sm text-on-surface-variant">Diterima</p>
-                        <h3 class="text-headline-md font-semibold text-blue-600 mt-xs">{{ $stats['diterima'] }}</h3>
+                        <h3 class="text-headline-md font-semibold text-blue-600 mt-xs">{{ $stats['diterima'] ?? 0 }}</h3>
                     </div>
                     <div class="w-12 h-12 bg-blue-500/10 rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-blue-500">inbox</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-blue-600 mt-sm">{{ $stats['diterima_percent'] }}% dari total</p>
+                <p class="text-[11px] text-blue-600 mt-sm">{{ $stats['diterima_percent'] ?? 0 }}% dari total</p>
             </div>
             
             <div class="bg-surface-container p-md rounded-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-label-sm text-on-surface-variant">Diproses</p>
-                        <h3 class="text-headline-md font-semibold text-yellow-600 mt-xs">{{ $stats['diproses'] }}</h3>
+                        <h3 class="text-headline-md font-semibold text-yellow-600 mt-xs">{{ $stats['diproses'] ?? 0 }}</h3>
                     </div>
                     <div class="w-12 h-12 bg-yellow-500/10 rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-yellow-500">pending</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-yellow-600 mt-sm">{{ $stats['diproses_percent'] }}% dari total</p>
+                <p class="text-[11px] text-yellow-600 mt-sm">{{ $stats['diproses_percent'] ?? 0 }}% dari total</p>
             </div>
             
             <div class="bg-surface-container p-md rounded-xl">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-label-sm text-on-surface-variant">Selesai</p>
-                        <h3 class="text-headline-md font-semibold text-green-600 mt-xs">{{ $stats['selesai'] }}</h3>
+                        <h3 class="text-headline-md font-semibold text-green-600 mt-xs">{{ $stats['selesai'] ?? 0 }}</h3>
                     </div>
                     <div class="w-12 h-12 bg-green-500/10 rounded-lg flex items-center justify-center">
                         <span class="material-symbols-outlined text-green-500">check_circle</span>
                     </div>
                 </div>
-                <p class="text-[11px] text-green-600 mt-sm">{{ $stats['selesai_percent'] }}% dari total</p>
+                <p class="text-[11px] text-green-600 mt-sm">{{ $stats['selesai_percent'] ?? 0 }}% dari total</p>
             </div>
         </div>
     </div>
@@ -534,50 +534,54 @@
     // Action Functions
     function processPengaduan(id) {
         if (confirm('Proses pengaduan ini?')) {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
             fetch(`/admin/pengaduan/${id}/proses`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf,
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Pengaduan berhasil diproses', 'success');
-                    setTimeout(() => location.reload(), 1500);
+            .then(async response => {
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && data.success !== false) {
+                    showToast(data.message || 'Pengaduan berhasil diproses', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    showToast('Gagal memproses pengaduan', 'error');
+                    showToast(data.message || 'Gagal memproses pengaduan', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan', 'error');
+                console.error('Error processing complaint:', error);
+                showToast('Terjadi kesalahan koneksi/server', 'error');
             });
         }
     }
     
     function completePengaduan(id) {
         if (confirm('Tandai pengaduan sebagai selesai?')) {
+            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
             fetch(`/admin/pengaduan/${id}/selesai`, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrf,
                     'Accept': 'application/json'
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showToast('Pengaduan berhasil diselesaikan', 'success');
-                    setTimeout(() => location.reload(), 1500);
+            .then(async response => {
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && data.success !== false) {
+                    showToast(data.message || 'Pengaduan berhasil diselesaikan', 'success');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    showToast('Gagal menyelesaikan pengaduan', 'error');
+                    showToast(data.message || 'Gagal menyelesaikan pengaduan', 'error');
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                showToast('Terjadi kesalahan', 'error');
+                console.error('Error completing complaint:', error);
+                showToast('Terjadi kesalahan koneksi/server', 'error');
             });
         }
     }

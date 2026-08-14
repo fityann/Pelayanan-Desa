@@ -138,6 +138,7 @@ class SuratController extends Controller
             'no_whatsapp' => ['required', 'string', 'max:20'],
             'alamat' => ['nullable', 'string', 'max:255'],
             'keterangan' => ['required', 'string', 'max:1000'],
+            'data_isian' => ['nullable', 'array'],
             'file_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
         ]);
 
@@ -193,6 +194,7 @@ class SuratController extends Controller
             'kode_tracking' => $this->generateTracking(),
             'butuh_ttd_fisik' => $jenisSurat->butuh_ttd_fisik,
             'keterangan' => $request->keterangan,
+            'data_isian' => $request->data_isian,
             'file_pendukung' => $filePath,
             'tanggal_diajukan' => now(),
         ]);
@@ -248,13 +250,17 @@ class SuratController extends Controller
     public function pdf(string $kode): \Illuminate\Http\Response
     {
         $cleanId = (int) str_replace('SRT-', '', $kode);
-        $pengajuan = PengajuanSurat::where('kode_tracking', $kode)
+        $pengajuan = PengajuanSurat::with('jenisSurat')->where('kode_tracking', $kode)
             ->when($cleanId > 0, fn($q) => $q->orWhere('id', $cleanId))
             ->firstOrFail();
 
         abort_unless(in_array($pengajuan->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']), 403);
 
-        $pdf = Pdf::loadView('pdf.surat', ['surat' => $pengajuan])
+        $viewName = view()->exists('pdf.surat_' . strtolower($pengajuan->jenisSurat->kode)) 
+            ? 'pdf.surat_' . strtolower($pengajuan->jenisSurat->kode) 
+            : 'pdf.surat';
+
+        $pdf = Pdf::loadView($viewName, ['surat' => $pengajuan])
             ->setPaper('a4', 'portrait');
 
         $filename = (str_replace(['/', '\\'], '-', $pengajuan->nomor_surat) ?? 'draft')

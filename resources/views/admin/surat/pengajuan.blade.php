@@ -82,8 +82,17 @@
                             <td class="px-6 py-4">
                                 <span class="font-extrabold text-slate-900 text-sm block">{{ $item->jenisSurat->nama }}</span>
                                 @if ($item->keterangan || $item->keperluan)
-                                    <div class="mt-1.5 bg-amber-50/90 border border-amber-200/90 px-2.5 py-1 rounded-lg text-[11px] text-amber-900 font-medium inline-block max-w-xs leading-snug">
+                                    <div class="mt-1.5 bg-amber-50/90 border border-amber-200/90 px-2.5 py-1 rounded-lg text-[11px] text-amber-900 font-medium inline-block max-w-xs leading-snug mb-1">
                                         <span class="text-amber-800 font-bold">Keperluan:</span> {{ $item->keterangan ?? $item->keperluan }}
+                                    </div>
+                                @endif
+                                
+                                @if ($item->file_pendukung)
+                                    <div class="mt-1">
+                                        <a href="{{ Storage::url($item->file_pendukung) }}" target="_blank" class="inline-flex items-center space-x-1 text-[11px] font-bold text-blue-700 hover:text-blue-800 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/60 shadow-xs transition-all hover:bg-blue-100">
+                                            <span class="material-symbols-outlined text-[14px]">attach_file</span>
+                                            <span>Lihat Lampiran</span>
+                                        </a>
                                     </div>
                                 @endif
                             </td>

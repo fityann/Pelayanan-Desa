@@ -299,7 +299,7 @@
             const tahun = document.getElementById('tahunFilter').value;
             const bidang = document.getElementById('bidangFilter').value;
             
-            let url = '/apbdes/export?type=' + type + '&tahun=' + tahun;
+            let url = '/admin/apbdes/export?type=' + type + '&tahun=' + tahun;
             if (bidang) {
                 url += '&bidang=' + bidang;
             }

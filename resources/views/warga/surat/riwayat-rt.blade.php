@@ -7,7 +7,7 @@
     <!-- Header Banner -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div class="flex items-center space-x-3">
-            <div class="bg-[#4B5D3A]/10 p-3 rounded-2xl text-[#4B5D3A]">
+            <div class="bg-[#6A3297]/10 p-3 rounded-2xl text-[#6A3297]">
                 <span class="material-symbols-outlined text-3xl">lan</span>
             </div>
             <div>
@@ -16,7 +16,7 @@
             </div>
         </div>
         <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" 
-           class="inline-flex items-center space-x-2 bg-[#4B5D3A] hover:bg-[#364329] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs self-start sm:self-center">
+           class="inline-flex items-center space-x-2 bg-[#6A3297] hover:bg-[#4E2472] text-white px-4 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs self-start sm:self-center">
             <span class="material-symbols-outlined text-base">add_circle</span>
             <span>Ajukan Surat Baru</span>
         </a>
@@ -29,7 +29,7 @@
                 <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg">search</span>
                 <input type="text" name="search" value="{{ request('search') }}" 
                        placeholder="Cari berdasarkan Kode Tracking (SRT-xxx) atau Jenis Surat..." 
-                       class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:border-[#4B5D3A] focus:ring-2 focus:ring-[#4B5D3A]/20 transition-all outline-none">
+                       class="w-full bg-slate-50 border border-slate-200 rounded-xl py-2 pl-9 pr-4 text-xs font-medium text-slate-800 placeholder-slate-400 focus:bg-white focus:border-[#6A3297] focus:ring-2 focus:ring-[#6A3297]/20 transition-all outline-none">
             </div>
 
             <!-- Filter Status -->
@@ -48,7 +48,7 @@
                 @endphp
                 @foreach ($statuses as $key => $label)
                     <a href="{{ route('warga.rt.surat.riwayat', array_merge(['rt' => $rt], request()->except('page', 'status'), ['status' => $key])) }}"
-                       class="px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all border {{ $currentStatus === $key ? 'bg-[#4B5D3A] text-white border-[#4B5D3A] shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100' }}">
+                       class="px-3 py-1.5 rounded-xl text-[11px] font-bold whitespace-nowrap transition-all border {{ $currentStatus === $key ? 'bg-[#6A3297] text-white border-[#6A3297] shadow-xs' : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100' }}">
                         {{ $label }}
                     </a>
                 @endforeach
@@ -59,11 +59,11 @@
     <!-- List Surat Cards -->
     <div class="space-y-4">
         @forelse ($pengajuanList as $item)
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden hover:border-[#4B5D3A]/30 transition-all">
+            <div class="bg-white rounded-2xl shadow-sm border border-slate-200/80 overflow-hidden hover:border-[#6A3297]/30 transition-all">
                 <!-- Card Header -->
                 <div class="p-5 border-b border-slate-100 flex flex-wrap items-center justify-between gap-3 bg-slate-50/50">
                     <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 rounded-xl bg-[#4B5D3A]/10 text-[#4B5D3A] flex items-center justify-center font-bold">
+                        <div class="w-10 h-10 rounded-xl bg-[#6A3297]/10 text-[#6A3297] flex items-center justify-center font-bold">
                             <span class="material-symbols-outlined text-xl">description</span>
                         </div>
                         <div>
@@ -83,7 +83,7 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100 text-xs">
                         <div>
                             <span class="text-slate-400 font-medium block text-[10px] uppercase">Kode Tracking</span>
-                            <span class="font-mono font-extrabold text-[#4B5D3A] text-sm">{{ $item->kode_tracking_val }}</span>
+                            <span class="font-mono font-extrabold text-[#6A3297] text-sm">{{ $item->kode_tracking_val }}</span>
                         </div>
                         <div>
                             <span class="text-slate-400 font-medium block text-[10px] uppercase">Nomor Surat Resmi</span>
@@ -113,13 +113,13 @@
                     @if ($item->status !== 'ditolak')
                         <div class="py-2">
                             <div class="flex items-center justify-between text-[10px] font-bold text-slate-500 mb-2">
-                                <span class="{{ $step >= 1 ? 'text-[#4B5D3A]' : '' }}">1. Diajukan</span>
-                                <span class="{{ $step >= 2 ? 'text-[#4B5D3A]' : '' }}">2. Diverifikasi Admin</span>
-                                <span class="{{ $step >= 3 ? 'text-[#4B5D3A]' : '' }}">3. Approval Kades</span>
-                                <span class="{{ $step >= 4 ? 'text-[#4B5D3A]' : '' }}">4. Selesai</span>
+                                <span class="{{ $step >= 1 ? 'text-[#6A3297]' : '' }}">1. Diajukan</span>
+                                <span class="{{ $step >= 2 ? 'text-[#6A3297]' : '' }}">2. Diverifikasi Admin</span>
+                                <span class="{{ $step >= 3 ? 'text-[#6A3297]' : '' }}">3. Approval Kades</span>
+                                <span class="{{ $step >= 4 ? 'text-[#6A3297]' : '' }}">4. Selesai</span>
                             </div>
                             <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden flex">
-                                <div class="bg-[#4B5D3A] h-2 transition-all duration-500 rounded-full" 
+                                <div class="bg-[#6A3297] h-2 transition-all duration-500 rounded-full" 
                                      style="width: {{ $step == 1 ? '25%' : ($step == 2 ? '50%' : ($step == 3 ? '75%' : '100%')) }}"></div>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                     <!-- Card Actions Footer -->
                     <div class="flex items-center justify-between pt-2 border-t border-slate-100">
                         <a href="{{ route('warga.rt.surat.status', ['rt' => $rt, 'kode' => $item->kode_tracking_val]) }}" 
-                           class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-[#4B5D3A]/10 text-[#4B5D3A] text-xs font-extrabold hover:bg-[#4B5D3A] hover:text-white transition-all shadow-xs group">
+                           class="inline-flex items-center space-x-1.5 px-3.5 py-1.5 rounded-xl bg-[#6A3297]/10 text-[#6A3297] text-xs font-extrabold hover:bg-[#6A3297] hover:text-white transition-all shadow-xs group">
                             <span>Lacak Progress Rincian</span>
                             <span class="material-symbols-outlined text-base group-hover:translate-x-1 transition-transform">arrow_forward</span>
                         </a>
@@ -159,7 +159,7 @@
                 </p>
                 <div class="mt-4">
                     <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" 
-                       class="inline-flex items-center space-x-1.5 bg-[#4B5D3A] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs hover:bg-[#364329] transition-all">
+                       class="inline-flex items-center space-x-1.5 bg-[#6A3297] text-white px-4 py-2 rounded-xl text-xs font-bold shadow-xs hover:bg-[#4E2472] transition-all">
                         <span class="material-symbols-outlined text-sm">add_circle</span>
                         <span>Buat Surat Pengajuan</span>
                     </a>

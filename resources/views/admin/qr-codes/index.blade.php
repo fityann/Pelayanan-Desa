@@ -72,7 +72,7 @@
                                 <div class="flex items-center justify-center">
                                     @if ($item['qr_image'])
                                         <div class="flex flex-col items-center gap-xs">
-                                            <img src="{{ $item['qr_image'] }}" alt="QR RT {{ $item['rt'] }} RW {{ $item['rw'] }}" class="w-20 h-20 rounded bg-white border border-outline-variant/30 object-contain">
+                                            <img src="{{ $item['qr_image'] }}" alt="QR RT {{ $item['rt'] }}" class="w-20 h-20 rounded bg-white border border-outline-variant/30 object-contain">
                                             <span class="text-[10px] text-on-surface-variant">
                                                 {{ $item['tanggal_generate']?->translatedFormat('d M Y') ?? '-' }}
                                             </span>
@@ -93,7 +93,7 @@
                                 </div>
                             </td>
                             <td class="px-lg py-4 text-center align-top">
-                                <form method="POST" action="{{ route('admin.qr-links.status', ['rt' => $item['rt']]) }}">
+                                <form method="POST" action="{{ route('admin.qr-links.status', ['rt' => $item['rt'], 'rw' => $item['rw'] ?? '01']) }}">
                                     @csrf
                                     <button type="submit"
                                             class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-[11px] font-bold transition-all {{ $item['status'] === 'aktif' ? 'bg-success/10 text-success hover:bg-success/20' : 'bg-error/10 text-error hover:bg-error/20' }}"
@@ -136,7 +136,7 @@
                                             </form>
                                         </div>
                                     @else
-                                        <form method="POST" action="{{ route('admin.qr-links.generateByRtRw', ['rt' => $item['rt']]) }}" class="w-full">
+                                        <form method="POST" action="{{ route('admin.qr-links.generateByRtRw', ['rt' => $item['rt'], 'rw' => $item['rw'] ?? '01']) }}" class="w-full">
                                             @csrf
                                             <button type="submit" class="w-full px-3 py-1.5 rounded-lg text-[11px] font-bold text-on-primary bg-primary hover:bg-primary/90 transition-colors">
                                                 Generate QR

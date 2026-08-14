@@ -10,12 +10,10 @@
             <p class="text-body-sm text-on-surface-variant">Kelola data keluarga Desa Puspamukti</p>
         </div>
         <div class="flex gap-sm">
-            @can('C Keluarga')
-            <button onclick="showKeluargaModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
+            <button onclick="showKeluargaModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">add</span>
-                Tambah Keluarga
+                <span>Tambah Keluarga</span>
             </button>
-            @endcan
             <button onclick="toggleFilterPanel()" class="bg-surface-container text-on-surface px-lg py-2 rounded-full text-label-md font-bold hover:bg-surface-container-high transition-all flex items-center gap-sm">
                 <span class="material-symbols-outlined text-[18px]">filter_list</span>
                 Filter
@@ -192,8 +190,7 @@
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant font-semibold">RT {{ $k->rt }}</td>
                             <td class="px-lg py-4 text-center text-body-sm text-on-surface">{{ $k->penduduk_count }} org</td>
                             <td class="px-lg py-4 text-center">
-                                <div class="flex items-center justify-center gap-sm">
-                                    @can('U Keluarga')
+                                <div class="flex items-center justify-center gap-xs">
                                     <button onclick="showKeluargaModal({
                                         id: '{{ $k->id }}',
                                         no_kk: '{{ $k->no_kk }}',
@@ -203,16 +200,16 @@
                                         rw: '{{ $k->rw ?? '' }}',
                                         desa: '{{ $k->desa ?? '' }}',
                                         kecamatan: '{{ $k->kecamatan ?? '' }}'
-                                    })" class="text-primary text-label-sm font-bold hover:underline">
-                                        Edit
+                                    })" class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 hover:bg-amber-500 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all">
+                                        <span class="material-symbols-outlined text-[15px]">edit</span>
+                                        <span>Edit</span>
                                     </button>
-                                    @endcan
-                                    @can('D Keluarga')
-                                    <form method="POST" action="{{ route('admin.keluarga.destroy', $k) }}" class="inline" onsubmit="return confirm('Hapus data keluarga ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-error text-label-sm font-bold hover:underline">Hapus</button>
-                                    </form>
-                                    @endcan
+                                    <button onclick="confirmDeleteKeluarga('{{ route('admin.keluarga.destroy', $k) }}', '{{ addslashes($k->kepala_keluarga) }}', '{{ $k->no_kk }}')"
+                                            type="button"
+                                            class="inline-flex items-center gap-1 bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all">
+                                        <span class="material-symbols-outlined text-[15px]">delete</span>
+                                        <span>Hapus</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -229,8 +226,59 @@
 
 @include('components.keluarga-modal')
 
+<!-- Custom Delete Modal Keluarga -->
+<div id="deleteKeluargaModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-center">
+        <button onclick="closeDeleteKeluargaModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+
+        <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto mb-4 flex items-center justify-center border-4 border-red-50 shadow-inner">
+            <span class="material-symbols-outlined text-3xl">delete_forever</span>
+        </div>
+
+        <h3 class="text-xl font-black text-slate-900 mb-1">Konfirmasi Hapus Data KK</h3>
+        <p class="text-xs text-slate-500 mb-4">Apakah Anda yakin ingin menghapus data Kartu Keluarga berikut?</p>
+
+        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 text-left text-xs space-y-1.5">
+            <div class="flex justify-between">
+                <span class="text-slate-400 font-medium">Kepala Keluarga:</span>
+                <span id="deleteKeluargaKepala" class="font-bold text-slate-900"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-400 font-medium">No. KK:</span>
+                <span id="deleteKeluargaNoKk" class="font-mono font-bold text-slate-900"></span>
+            </div>
+        </div>
+
+        <form id="deleteKeluargaForm" method="POST" action="">
+            @csrf
+            @method('DELETE')
+            <div class="flex gap-3">
+                <button type="button" onclick="closeDeleteKeluargaModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-xs transition-all">
+                    Batal
+                </button>
+                <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-3 px-4 rounded-xl text-xs shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                    <span>Ya, Hapus Data</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+function confirmDeleteKeluarga(url, kepala, noKk) {
+    document.getElementById('deleteKeluargaForm').action = url;
+    document.getElementById('deleteKeluargaKepala').textContent = kepala;
+    document.getElementById('deleteKeluargaNoKk').textContent = noKk;
+    document.getElementById('deleteKeluargaModal').classList.remove('hidden');
+}
+
+function closeDeleteKeluargaModal() {
+    document.getElementById('deleteKeluargaModal').classList.add('hidden');
+}
 // Toggle filter panel
 function toggleFilterPanel() {
     const panel = document.getElementById('filterPanel');

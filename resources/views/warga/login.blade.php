@@ -29,8 +29,8 @@
                 <!-- Dual Pane Glass Card (Clean White Card on Both Mobile & Desktop) -->
                 <div class="bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-amber-300/40 overflow-hidden grid grid-cols-1 md:grid-cols-12 transition-all duration-300">
                     
-                    <!-- Left Hero Banner (#4B5D3A Green & #D8B84C Gold Theme) -->
-                    <div class="md:col-span-5 relative bg-[#4B5D3A] p-6 sm:p-8 flex flex-col justify-between text-white text-left overflow-hidden">
+                    <!-- Left Hero Banner (#6A3297 Green & #D8B84C Gold Theme) -->
+                    <div class="md:col-span-5 relative bg-[#6A3297] p-6 sm:p-8 flex flex-col justify-between text-white text-left overflow-hidden">
                         <div class="absolute inset-0 bg-cover bg-center opacity-20 mix-blend-overlay" style="background-image: url('{{ asset('images/bg-desa-puspamukti.jpg') }}');"></div>
                         <div class="absolute -top-24 -left-24 w-64 h-64 bg-[#D8B84C]/20 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -94,7 +94,7 @@
                                         <span class="material-symbols-outlined text-xl">badge</span>
                                     </div>
                                     <input type="text" id="nik" name="nik" value="{{ old('nik') }}" required maxlength="16" pattern="\d{16}"
-                                           class="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-slate-50 border {{ $errors->has('nik') ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200' }} rounded-xl text-slate-900 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#4B5D3A] focus:ring-4 focus:ring-[#4B5D3A]/10 transition-all"
+                                           class="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-slate-50 border {{ $errors->has('nik') ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200' }} rounded-xl text-slate-900 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#6A3297] focus:ring-4 focus:ring-[#6A3297]/10 transition-all"
                                            placeholder="Contoh: 3206xxxxxxxxxxxx">
                                 </div>
                             </div>
@@ -109,24 +109,19 @@
                                         <span class="material-symbols-outlined text-xl">person</span>
                                     </div>
                                     <input type="text" id="nama" name="nama" value="{{ old('nama') }}" required maxlength="255"
-                                           class="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-slate-50 border {{ $errors->has('nama') ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200' }} rounded-xl text-slate-900 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#4B5D3A] focus:ring-4 focus:ring-[#4B5D3A]/10 transition-all"
+                                           class="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-slate-50 border {{ $errors->has('nama') ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200' }} rounded-xl text-slate-900 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#6A3297] focus:ring-4 focus:ring-[#6A3297]/10 transition-all"
                                            placeholder="Nama lengkap sesuai KTP">
                                 </div>
                             </div>
 
-                            <!-- Submit Button (#4B5D3A Solid Green) -->
-                            <button type="submit" class="w-full bg-[#4B5D3A] hover:bg-[#364329] text-white font-black py-3.5 sm:py-4 px-6 rounded-xl sm:rounded-2xl shadow-xl shadow-[#4B5D3A]/30 border border-[#D8B84C]/40 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center space-x-2 text-base mt-2">
+                            <!-- Submit Button (#6A3297 Solid Green) -->
+                            <button type="submit" class="w-full bg-[#6A3297] hover:bg-[#4E2472] text-white font-black py-3.5 sm:py-4 px-6 rounded-xl sm:rounded-2xl shadow-xl shadow-[#6A3297]/30 border border-[#D8B84C]/40 hover:scale-[1.01] transition-all duration-200 flex items-center justify-center space-x-2 text-base mt-2">
                                 <span class="material-symbols-outlined text-xl text-[#F0D878]">login</span>
                                 <span>Masuk Layanan Sekarang</span>
                             </button>
                         </form>
 
-                        <div class="mt-6 pt-4 border-t border-slate-100 text-center">
-                            <a href="{{ route('warga.rt.landing', ['rt' => $rt]) }}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-[#4B5D3A] hover:text-[#364329] transition-colors">
-                                <span class="material-symbols-outlined text-base">arrow_back</span>
-                                <span>Kembali ke Beranda RT {{ $rt }}</span>
-                            </a>
-                        </div>
+
                     </div>
                 </div>
             </div>

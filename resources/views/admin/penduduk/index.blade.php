@@ -10,12 +10,14 @@
             <p class="text-body-sm text-on-surface-variant">Kelola data penduduk Desa Puspamukti</p>
         </div>
         <div class="flex gap-sm">
-            @can('C Penduduk')
-            <button onclick="showPendudukModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
+            <a href="{{ route('admin.penduduk.export', request()->query()) }}" class="bg-green-600 text-white px-lg py-2 rounded-full text-label-md font-bold hover:bg-green-700 transition-all flex items-center gap-sm shadow-sm">
+                <span class="material-symbols-outlined text-[18px]">download</span>
+                <span>Export Excel</span>
+            </a>
+            <button onclick="showPendudukModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm shadow-sm">
                 <span class="material-symbols-outlined text-[18px]">add</span>
-                Tambah Penduduk
+                <span>Tambah Penduduk</span>
             </button>
-            @endcan
             <button onclick="toggleFilterPanel('penduduk')" class="bg-surface-container text-on-surface px-lg py-2 rounded-full text-label-md font-bold hover:bg-surface-container-high transition-all flex items-center gap-sm">
                 <span class="material-symbols-outlined text-[18px]">filter_list</span>
                 Filter
@@ -244,8 +246,7 @@
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant font-semibold">RT {{ $p->rt }}</td>
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->no_kk ?? '-' }}</td>
                             <td class="px-lg py-4 text-center">
-                                <div class="flex items-center justify-center gap-sm">
-                                    @can('U Penduduk')
+                                <div class="flex items-center justify-center gap-xs">
                                     <button onclick="showPendudukModal({
                                         id: '{{ $p->id }}',
                                         nik: '{{ $p->nik }}',
@@ -262,16 +263,16 @@
                                         pendidikan: '{{ $p->pendidikan_terakhir ?? '' }}',
                                         pekerjaan: '{{ $p->pekerjaan ?? '' }}',
                                         kewarganegaraan: '{{ $p->kewarganegaraan ?? 'WNI' }}'
-                                    })" class="text-primary text-label-sm font-bold hover:underline">
-                                        Edit
+                                    })" class="inline-flex items-center gap-1 bg-amber-500/10 text-amber-700 hover:bg-amber-500 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all">
+                                        <span class="material-symbols-outlined text-[15px]">edit</span>
+                                        <span>Edit</span>
                                     </button>
-                                    @endcan
-                                    @can('D Penduduk')
-                                    <form method="POST" action="{{ route('admin.penduduk.destroy', $p) }}" class="inline" onsubmit="return confirm('Hapus data penduduk ini?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="text-error text-label-sm font-bold hover:underline">Hapus</button>
-                                    </form>
-                                    @endcan
+                                    <button onclick="confirmDeletePenduduk('{{ route('admin.penduduk.destroy', $p) }}', '{{ addslashes($p->nama) }}', '{{ $p->nik }}')"
+                                            type="button"
+                                            class="inline-flex items-center gap-1 bg-red-500/10 text-red-600 hover:bg-red-600 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all">
+                                        <span class="material-symbols-outlined text-[15px]">delete</span>
+                                        <span>Hapus</span>
+                                    </button>
                                 </div>
                             </td>
                         </tr>
@@ -288,8 +289,59 @@
 
 @include('components.penduduk-modal')
 
+<!-- Custom Delete Modal Penduduk -->
+<div id="deletePendudukModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-center">
+        <button onclick="closeDeletePendudukModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors">
+            <span class="material-symbols-outlined text-xl">close</span>
+        </button>
+
+        <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto mb-4 flex items-center justify-center border-4 border-red-50 shadow-inner">
+            <span class="material-symbols-outlined text-3xl">delete_forever</span>
+        </div>
+
+        <h3 class="text-xl font-black text-slate-900 mb-1">Konfirmasi Hapus Data</h3>
+        <p class="text-xs text-slate-500 mb-4">Apakah Anda yakin ingin menghapus data penduduk berikut?</p>
+
+        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 text-left text-xs space-y-1.5">
+            <div class="flex justify-between">
+                <span class="text-slate-400 font-medium">Nama Penduduk:</span>
+                <span id="deletePendudukNama" class="font-bold text-slate-900"></span>
+            </div>
+            <div class="flex justify-between">
+                <span class="text-slate-400 font-medium">NIK KTP:</span>
+                <span id="deletePendudukNik" class="font-mono font-bold text-slate-900"></span>
+            </div>
+        </div>
+
+        <form id="deletePendudukForm" method="POST" action="">
+            @csrf
+            @method('DELETE')
+            <div class="flex gap-3">
+                <button type="button" onclick="closeDeletePendudukModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-xs transition-all">
+                    Batal
+                </button>
+                <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-3 px-4 rounded-xl text-xs shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-base">delete</span>
+                    <span>Ya, Hapus Data</span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
 @push('scripts')
 <script>
+function confirmDeletePenduduk(url, nama, nik) {
+    document.getElementById('deletePendudukForm').action = url;
+    document.getElementById('deletePendudukNama').textContent = nama;
+    document.getElementById('deletePendudukNik').textContent = nik;
+    document.getElementById('deletePendudukModal').classList.remove('hidden');
+}
+
+function closeDeletePendudukModal() {
+    document.getElementById('deletePendudukModal').classList.add('hidden');
+}
 // Toggle filter panel
 function toggleFilterPanel(type = 'penduduk') {
     const panel = document.getElementById(`${type}FilterPanel`);

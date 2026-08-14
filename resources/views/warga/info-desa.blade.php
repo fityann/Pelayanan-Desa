@@ -342,7 +342,7 @@ function copyContact(phone, elementId) {
 function shareInfoDesa() {
     if (navigator.share) {
         navigator.share({
-            title: 'Informasi Desa Puspamukti - RT {{ $rt }} RW {{ $rw }}',
+            title: 'Informasi Desa Puspamukti - RT {{ $rt }}',
             text: 'Informasi penting desa dan layanan untuk warga',
             url: window.location.href
         });

@@ -21,8 +21,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 </head>
 <body class="bg-slate-50 font-body-md text-slate-800">
-    <!-- Sidebar (Solid #4B5D3A Green Theme) -->
-    <aside class="fixed left-0 top-0 h-full w-72 bg-[#4B5D3A] border-r border-[#D8B84C]/30 z-50 flex flex-col shadow-2xl sidebar-scrollbar overflow-y-auto">
+    <!-- Sidebar (Solid #6A3297 Green Theme) -->
+    <aside class="fixed left-0 top-0 h-full w-72 bg-[#6A3297] border-r border-[#D8B84C]/30 z-50 flex flex-col shadow-2xl sidebar-scrollbar overflow-y-auto">
         <div class="p-lg flex items-center gap-md border-b border-[#D8B84C]/25 mb-md">
             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] p-0.5 shadow-lg shadow-[#D8B84C]/20 flex items-center justify-center">
                 <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-lg bg-white p-0.5">
@@ -192,12 +192,12 @@
                 </div>
             </div>
 
-            {{-- ===================== KEUANGAN ===================== --}}
-            <div x-data="{ open: {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
+            {{-- ===================== KEUANGAN & ASET ===================== --}}
+            <div x-data="{ open: {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja', 'admin/assets', 'admin/kategori-aset']) ? 'true' : 'false' }} }" class="rounded-xl">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja', 'admin/assets', 'admin/kategori-aset']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">account_balance</span>
-                        <span class="text-label-md">Keuangan</span>
+                        <span class="text-label-md">Keuangan & Aset</span>
                     </span>
                     <span class="material-symbols-outlined transition-transform duration-300" :class="open ? 'rotate-180' : ''">expand_more</span>
                 </button>
@@ -225,6 +225,14 @@
                     <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/belanja') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.belanja.index') }}">
                         <span class="material-symbols-outlined text-[18px]">shopping_cart</span>
                         <span class="text-label-md">Belanja Desa</span>
+                    </a>
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/assets') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.assets.index') }}">
+                        <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                        <span class="text-label-md">Aset Desa</span>
+                    </a>
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/kategori-aset') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.kategori-aset.index') }}">
+                        <span class="material-symbols-outlined text-[18px]">category</span>
+                        <span class="text-label-md">Kategori Aset</span>
                     </a>
                 </div>
             </div>
@@ -507,6 +515,9 @@
                     .then(data => {
                         this.unread = data.unread || 0;
                         this.items = data.items || [];
+                        if (window.SilapuPushNotification) {
+                            window.SilapuPushNotification.processItems(this.items);
+                        }
                     })
                     .catch(() => {})
                     .finally(() => { this.loading = false; });
@@ -589,6 +600,68 @@
                     }
                 }, 300);
             }
+        });
+
+        // Web Push Notification Helper for Admin
+        window.SilapuPushNotification = {
+            shownIds: new Set(JSON.parse(localStorage.getItem('silapu_notif_shown') || '[]')),
+            
+            init() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                }
+            },
+
+            requestPermission(callback) {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            new Notification('Notifikasi SILAPU Admin Aktif 🔔', {
+                                body: 'Notifikasi browser telah diaktifkan. Anda akan menerima notifikasi pengajuan surat & pengaduan baru.',
+                                icon: '/images/logo-desa-puspamukti.jpg'
+                            });
+                        }
+                        if (callback) callback(permission);
+                    });
+                }
+            },
+
+            processItems(items) {
+                if (!('Notification' in window) || Notification.permission !== 'granted') return;
+                
+                let newlyShown = false;
+                (items || []).forEach(item => {
+                    if (!item.is_read && !this.shownIds.has(item.id)) {
+                        this.shownIds.add(item.id);
+                        newlyShown = true;
+                        
+                        try {
+                            const notif = new Notification(item.judul || 'Notifikasi Admin SILAPU', {
+                                body: item.pesan || 'Ada pemberitahuan baru.',
+                                icon: '/images/logo-desa-puspamukti.jpg',
+                                tag: 'silapu-notif-' + item.id,
+                                renotify: true
+                            });
+                            
+                            if (item.link) {
+                                notif.onclick = function() {
+                                    window.focus();
+                                    window.location.href = item.link;
+                                };
+                            }
+                        } catch(e) {}
+                    }
+                });
+                
+                if (newlyShown) {
+                    const idsArray = Array.from(this.shownIds).slice(-100);
+                    localStorage.setItem('silapu_notif_shown', JSON.stringify(idsArray));
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.SilapuPushNotification.init();
         });
     </script>
 

@@ -33,18 +33,18 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
-                <input type="text" name="nama" value="{{ old('nama', auth()->check() ? auth()->user()->name : '') }}" required maxlength="100"
-                       class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
-                       placeholder="Nama sesuai KTP">
-                @error('nama') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
-            </div>
-            <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">NIK</label>
                 <input type="text" name="nik" value="{{ old('nik', auth()->check() ? auth()->user()->nik : '') }}" required pattern="\d{16}" maxlength="16" inputmode="numeric"
                        class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
                        placeholder="16 digit NIK">
                 @error('nik') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Nama Lengkap</label>
+                <input type="text" name="nama" value="{{ old('nama', auth()->check() ? auth()->user()->name : '') }}" required maxlength="100"
+                       class="w-full px-4 py-3 border border-gray-300 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all"
+                       placeholder="Nama sesuai KTP">
+                @error('nama') <p class="text-red-600 text-xs mt-1">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-2">No. WhatsApp</label>
@@ -108,4 +108,29 @@
         </div>
     </form>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nikInput = document.querySelector('input[name="nik"]');
+    const namaInput = document.querySelector('input[name="nama"]');
+    const alamatInput = document.querySelector('input[name="alamat"]');
+
+    if (nikInput) {
+        nikInput.addEventListener('input', function() {
+            const nik = this.value;
+            if (nik.length === 16) {
+                fetch(`/cek-nik/${nik}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.found) {
+                            if (namaInput) namaInput.value = data.data.nama;
+                            if (alamatInput) alamatInput.value = data.data.alamat;
+                        }
+                    })
+                    .catch(err => console.error('Error fetching NIK data:', err));
+            }
+        });
+    }
+});
+</script>
 @endsection

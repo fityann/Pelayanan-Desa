@@ -10,43 +10,36 @@
         $prosesSelesai = ($pengaduanStats['total_pengaduan'] ?? 0) > 0 ? round((($pengaduanStats['pengaduan_selesai'] ?? 0) / $pengaduanStats['total_pengaduan']) * 100) : 0;
     @endphp
 
-    <!-- Welcome Hero Section (#4B5D3A Green & #D8B84C Gold Theme) -->
-    <section class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#364329] via-[#4B5D3A] to-[#2A3520] text-white border border-[#D8B84C]/35 shadow-2xl">
-        <!-- Decorative glowing gold & green blobs -->
-        <div class="absolute -top-16 -right-16 w-72 h-72 rounded-full bg-[#D8B84C]/20 blur-3xl pointer-events-none"></div>
-        <div class="absolute -bottom-20 -left-10 w-80 h-80 rounded-full bg-[#4B5D3A]/40 blur-3xl pointer-events-none"></div>
-        <div class="absolute top-10 right-1/3 w-40 h-40 bg-[#F0D878]/15 blur-2xl rounded-full pointer-events-none"></div>
-
+    <!-- Welcome Hero Section (Purple Theme with Gold Border) -->
+    <section class="relative overflow-hidden rounded-3xl bg-[#6A3297] text-white border-4 border-[#D8B84C] shadow-2xl shadow-[#6A3297]/30">
         <div class="relative p-6 md:p-10">
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
                 <div class="flex-1">
                     <div class="flex items-center space-x-4 mb-5">
-                        <div class="bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] text-[#2A3520] p-3.5 rounded-2xl shadow-lg shadow-[#D8B84C]/25 border border-[#F7F0D4]/50">
+                        <div class="bg-[#D8B84C] text-[#2A3520] p-3.5 rounded-2xl shadow-md border border-[#F7F0D4]/50">
                             <span class="material-symbols-outlined text-3xl font-bold">qr_code_scanner</span>
                         </div>
                         <div>
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#D8B84C] via-[#E5C968] to-[#F0D878] text-[#2A3520] text-xs font-black tracking-wide uppercase shadow-sm border border-[#F7F0D4]/40">
+                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#D8B84C] text-[#2A3520] text-xs font-black tracking-wide uppercase shadow-sm border border-[#F7F0D4]/40">
                                 Portal Warga Desa Puspamukti
                             </span>
                         </div>
                     </div>
 
-                    <h1 class="text-3xl md:text-4xl font-black leading-tight mb-3 tracking-tight">
+                    <h1 class="text-3xl md:text-4xl font-black leading-tight mb-2 tracking-tight">
                         {{ $greeting }}! 👋
                     </h1>
+                    <h2 class="text-2xl md:text-3xl font-black text-[#F0D878] uppercase tracking-widest mb-4">
+                        HAPUNTEN BARAYA
+                    </h2>
                     <p class="text-slate-100 text-base md:text-lg mb-1 font-medium">
                         Selamat datang di <span class="font-bold text-[#F0D878]">{{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}</span>
                     </p>
-                    <p class="text-slate-200/90 text-sm md:text-base max-w-xl">
-                        {{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->deskripsi ?? "Portal layanan digital untuk warga RT $rt.")) }}
-                    </p>
+
 
                     <!-- Hero meta chips -->
                     <div class="flex flex-wrap gap-3 mt-6">
-                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-[#D8B84C]/35 backdrop-blur px-4 py-2 rounded-full text-[#F0D878]">
-                            <span class="material-symbols-outlined text-sm">location_on</span>
-                            <span class="text-sm font-bold">RT {{ $rt }}</span>
-                        </div>
+
                         <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-slate-400/30 backdrop-blur px-4 py-2 rounded-full text-slate-200">
                             <span class="material-symbols-outlined text-sm">calendar_today</span>
                             <span class="text-sm font-semibold">{{ now()->translatedFormat('l, d F Y') }}</span>
@@ -60,7 +53,7 @@
                     <!-- Quick actions -->
                     <div class="flex flex-wrap gap-3 mt-7">
                         <button onclick="showPengaduanModal()"
-                                class="inline-flex items-center space-x-2 bg-gradient-to-r from-[#D8B84C] via-[#E5C968] to-[#F0D878] hover:from-[#E5C968] hover:to-[#F7F0D4] text-[#2A3520] px-6 py-3.5 rounded-xl font-black shadow-xl shadow-[#D8B84C]/30 hover:scale-105 transition-all">
+                                class="inline-flex items-center space-x-2 bg-[#D8B84C] hover:bg-[#c9a73b] text-[#2A3520] px-6 py-3.5 rounded-xl font-black shadow-lg hover:scale-105 transition-all">
                             <span class="material-symbols-outlined font-bold">campaign</span>
                             <span>Buat Pengaduan</span>
                         </button>
@@ -76,7 +69,7 @@
                 <div class="flex-shrink-0">
                     <div class="bg-[#2A3520]/80 backdrop-blur-xl border border-[#D8B84C]/40 rounded-2xl p-6 w-full md:w-64 shadow-xl">
                         <div class="flex items-center space-x-3">
-                            <div class="bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] text-[#2A3520] p-2.5 rounded-full shadow-md">
+                            <div class="bg-[#D8B84C] text-[#2A3520] p-2.5 rounded-full shadow-md">
                                 <span class="material-symbols-outlined font-bold">check_circle</span>
                             </div>
                             <div>
@@ -140,7 +133,7 @@
             </div>
             <h3 class="text-3xl font-extrabold text-gray-900">{{ $stats['today_scans'] ?? 0 }}</h3>
             <p class="text-sm text-gray-500 mt-1">
-                Terakhir: {{ $stats['last_scan'] ? \Carbon\Carbon::parse($stats['last_scan'])->diffForHumans() : 'Belum ada' }}
+                Terakhir: {{ !empty($stats['last_scan']) ? \Carbon\Carbon::parse($stats['last_scan'])->diffForHumans() : 'Belum ada' }}
             </p>
         </div>
     </div>
@@ -172,9 +165,9 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <!-- Pengaduan -->
-            <div class="service-card p-6 cursor-pointer group" onclick="showPengaduanModal()">
+            <div class="service-card p-6 cursor-default">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-red-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <div class="bg-red-100 p-3 rounded-xl">
                         <span class="material-symbols-outlined text-red-600 text-2xl">campaign</span>
                     </div>
                     <div class="flex-1">
@@ -185,14 +178,13 @@
                             <span>Proses cepat, respon 1x24 jam</span>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-red-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
             
             <!-- Info Desa -->
-            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.info', ['rt' => $rt]) }}'">
+            <div class="service-card p-6 cursor-default">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-blue-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <div class="bg-blue-100 p-3 rounded-xl">
                         <span class="material-symbols-outlined text-blue-600 text-2xl">newspaper</span>
                     </div>
                     <div class="flex-1">
@@ -203,14 +195,13 @@
                             <span>Update terbaru setiap minggu</span>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-blue-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
             
             <!-- Surat Online -->
-            <div class="service-card p-6 cursor-pointer group" onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt]) }}'">
+            <div class="service-card p-6 cursor-default">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-green-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <div class="bg-green-100 p-3 rounded-xl">
                         <span class="material-symbols-outlined text-green-600 text-2xl">edit_note</span>
                     </div>
                     <div class="flex-1">
@@ -221,14 +212,13 @@
                             <span>Download langsung setelah disetujui</span>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-green-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
             
             <!-- Data Penduduk -->
-            <div class="service-card p-6 group">
+            <div class="service-card p-6 cursor-default text-left block">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-purple-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
+                    <div class="bg-purple-100 p-3 rounded-xl">
                         <span class="material-symbols-outlined text-purple-600 text-2xl">groups</span>
                     </div>
                     <div class="flex-1">
@@ -239,33 +229,31 @@
                             <span>Data terverifikasi pemerintah desa</span>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
             
             <!-- Kegiatan RT -->
-            <div class="service-card p-6 group">
+            <div class="service-card p-6 cursor-default text-left w-full block">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-yellow-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-yellow-600 text-2xl">event</span>
+                    <div class="bg-amber-100 p-3 rounded-xl">
+                        <span class="material-symbols-outlined text-amber-700 text-2xl">event</span>
                     </div>
                     <div class="flex-1">
                         <h3 class="font-bold text-gray-900 mb-2">Kegiatan RT</h3>
                         <p class="text-sm text-gray-600 mb-3">Jadwal kegiatan dan pertemuan RT {{ $rt }}</p>
                         <div class="flex items-center text-xs text-gray-500">
                             <span class="material-symbols-outlined text-xs mr-1">calendar_month</span>
-                            <span>Remaja tangga, arisan, kerja bakti</span>
+                            <span>Arisan, kerja bakti, pengajian, remaja</span>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-yellow-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
             
             <!-- Kontak Darurat -->
-            <div class="service-card p-6 group">
+            <div class="service-card p-6 cursor-default text-left w-full block">
                 <div class="flex items-start space-x-4">
-                    <div class="bg-pink-100 p-3 rounded-xl group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-pink-600 text-2xl">emergency</span>
+                    <div class="bg-rose-100 p-3 rounded-xl">
+                        <span class="material-symbols-outlined text-rose-600 text-2xl">emergency</span>
                     </div>
                     <div class="flex-1">
                         <h3 class="font-bold text-gray-900 mb-2">Kontak Darurat</h3>
@@ -285,7 +273,6 @@
                             </div>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-gray-300 group-hover:text-pink-500 group-hover:translate-x-1 transition-all self-center">arrow_forward</span>
                 </div>
             </div>
         </div>
@@ -457,118 +444,280 @@
 
 @push('modals')
 <!-- Pengaduan Modal -->
-<div id="pengaduanModal" class="fixed inset-0 z-50 hidden modal-overlay">
-    <div class="flex items-center justify-center min-h-screen p-4">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
-            <!-- Modal Header -->
-            <div class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-4">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
-                        <span class="material-symbols-outlined">campaign</span>
-                        <div>
-                            <h3 class="text-lg font-bold">Buat Pengaduan Baru</h3>
-                            <p class="text-sm text-white/80">RT {{ $rt }}</p>
-                        </div>
+<div id="pengaduanModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closePengaduanModal()">
+    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+        <!-- Modal Header -->
+        <div class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <span class="material-symbols-outlined">campaign</span>
+                    <div>
+                        <h3 class="text-lg font-bold">Buat Pengaduan Baru</h3>
+                        <p class="text-sm text-white/80">RT {{ $rt }}</p>
                     </div>
-                    <button onclick="closePengaduanModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10">
-                        <span class="material-symbols-outlined">close</span>
+                </div>
+                <button type="button" onclick="closePengaduanModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Modal Content -->
+        <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px)">
+            <form id="pengaduanForm" onsubmit="submitPengaduan(event)" class="space-y-6">
+                @csrf
+                
+                <!-- Nama & WhatsApp -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Nama Lengkap <span class="text-red-500">*</span>
+                        </label>
+                        <input type="text" name="nama" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                               placeholder="Masukkan nama lengkap">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Nomor WhatsApp <span class="text-red-500">*</span>
+                        </label>
+                        <input type="tel" name="whatsapp" required
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                               placeholder="0812-3456-7890">
+                    </div>
+                </div>
+                
+                <!-- Kategori -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Kategori Pengaduan <span class="text-red-500">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        @foreach(['sampah' => 'Sampah', 'jalan' => 'Jalan', 'drainase' => 'Drainase', 'penerangan' => 'Penerangan', 'air' => 'Air', 'lainnya' => 'Lainnya'] as $key => $label)
+                        <label class="relative">
+                            <input type="radio" name="kategori" value="{{ $key }}" 
+                                   class="sr-only peer" {{ $key == 'sampah' ? 'checked' : '' }}>
+                            <div class="border border-gray-300 rounded-lg p-4 text-center cursor-pointer peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 peer-checked:font-semibold transition-all">
+                                <span class="text-sm font-medium">{{ $label }}</span>
+                            </div>
+                        </label>
+                        @endforeach
+                    </div>
+                </div>
+                
+                <!-- Judul -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Judul Pengaduan <span class="text-red-500">*</span>
+                    </label>
+                    <input type="text" name="judul" required
+                           class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
+                           placeholder="Contoh: Sampah menumpuk di gang RT {{ $rt }}">
+                </div>
+                
+                <!-- Deskripsi -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Deskripsi Lengkap <span class="text-red-500">*</span>
+                    </label>
+                    <textarea name="deskripsi" rows="4" required
+                              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none resize-none"
+                              placeholder="Jelaskan masalah secara detail..."></textarea>
+                </div>
+                
+                <!-- Foto -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                        Foto Bukti (Maks. 5 foto, opsional)
+                    </label>
+                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-300 transition-colors">
+                        <input type="file" name="foto[]" id="fotoInput" accept="image/*" capture="environment" multiple class="hidden">
+                        <label for="fotoInput" class="cursor-pointer">
+                            <span class="material-symbols-outlined text-4xl text-gray-400 mb-2 block">add_photo_alternate</span>
+                            <p class="text-sm text-gray-600 mb-2">Ambil beberapa foto langsung dari kamera</p>
+                            <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 5MB, format: JPG, PNG, WEBP</p>
+                        </label>
+                    </div>
+                    <div id="fotoPreview" class="mt-3 hidden grid grid-cols-3 gap-2"></div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="flex space-x-3 pt-6 border-t border-gray-200">
+                    <button type="button" onclick="closePengaduanModal()"
+                            class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
+                        Batal
+                    </button>
+                    <button type="submit"
+                            class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center justify-center space-x-2">
+                        <span class="material-symbols-outlined">send</span>
+                        <span>Kirim Pengaduan</span>
                     </button>
                 </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kegiatan RT -->
+<div id="kegiatanRtModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKegiatanRtModal()">
+    <div class="relative bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
+        <!-- Header Banner -->
+        <div class="bg-[#6A3297] text-white px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2 rounded-xl">
+                    <span class="material-symbols-outlined text-2xl text-white">event</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black leading-tight">Jadwal Kegiatan RT {{ $rt }}</h3>
+                    <p class="text-xs text-white/80 font-medium">Agenda rutin dan pertemuan warga RT {{ $rt }} Desa Puspamukti</p>
+                </div>
             </div>
-            
-            <!-- Modal Content -->
-            <div class="p-6 overflow-y-auto" style="max-height: calc(90vh - 120px)">
-                <form id="pengaduanForm" onsubmit="submitPengaduan(event)" class="space-y-6">
-                    @csrf
-                    
-                    <!-- Nama & WhatsApp -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Nama Lengkap <span class="text-red-500">*</span>
-                            </label>
-                            <input type="text" name="nama" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
-                                   placeholder="Masukkan nama lengkap">
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-2">
-                                Nomor WhatsApp <span class="text-red-500">*</span>
-                            </label>
-                            <input type="tel" name="whatsapp" required
-                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
-                                   placeholder="0812-3456-7890">
-                        </div>
+            <button type="button" onclick="closeKegiatanRtModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
+            <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 flex items-start space-x-3">
+                <div class="bg-[#6A3297] text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
+                    <span class="text-[10px] font-black block">MINGGU</span>
+                    <span class="text-base font-black leading-none">08:00</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-black text-slate-900">Kerja Bakti Masal RT {{ $rt }}</h4>
+                    <p class="text-xs text-slate-600 mt-0.5">Pembersihan selokan drainase & fasilitas umum lingkungan.</p>
+                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-amber-900 font-bold">
+                        <span class="material-symbols-outlined text-sm text-amber-700">location_on</span>
+                        <span>Area Balai RT {{ $rt }} & Lapangan Warga</span>
                     </div>
-                    
-                    <!-- Kategori -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-3">
-                            Kategori Pengaduan <span class="text-red-500">*</span>
-                        </label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            @foreach(['sampah' => 'Sampah', 'jalan' => 'Jalan', 'drainase' => 'Drainase', 'penerangan' => 'Penerangan', 'air' => 'Air', 'lainnya' => 'Lainnya'] as $key => $label)
-                            <label class="relative">
-                                <input type="radio" name="kategori" value="{{ $key }}" 
-                                       class="sr-only peer" {{ $key == 'sampah' ? 'checked' : '' }}>
-                                <div class="border border-gray-300 rounded-lg p-4 text-center cursor-pointer peer-checked:border-red-500 peer-checked:bg-red-50 peer-checked:text-red-700 peer-checked:font-semibold transition-all">
-                                    <span class="text-sm font-medium">{{ $label }}</span>
-                                </div>
-                            </label>
-                            @endforeach
-                        </div>
-                    </div>
-                    
-                    <!-- Judul -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Judul Pengaduan <span class="text-red-500">*</span>
-                        </label>
-                        <input type="text" name="judul" required
-                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
-                               placeholder="Contoh: Sampah menumpuk di gang RT {{ $rt }}">
-                    </div>
-                    
-                    <!-- Deskripsi -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Deskripsi Lengkap <span class="text-red-500">*</span>
-                        </label>
-                        <textarea name="deskripsi" rows="4" required
-                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none resize-none"
-                                  placeholder="Jelaskan masalah secara detail..."></textarea>
-                    </div>
-                    
-                    <!-- Foto -->
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Foto Bukti (Maks. 5 foto, opsional)
-                        </label>
-                        <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-300 transition-colors">
-                            <input type="file" name="foto[]" id="fotoInput" accept="image/*" capture="environment" multiple class="hidden">
-                            <label for="fotoInput" class="cursor-pointer">
-                                <span class="material-symbols-outlined text-4xl text-gray-400 mb-2 block">add_photo_alternate</span>
-                                <p class="text-sm text-gray-600 mb-2">Ambil beberapa foto langsung dari kamera</p>
-                                <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 5MB, format: JPG, PNG, WEBP</p>
-                            </label>
-                        </div>
-                        <div id="fotoPreview" class="mt-3 hidden grid grid-cols-3 gap-2"></div>
-                    </div>
-                    
-                    <!-- Submit Button -->
-                    <div class="flex space-x-3 pt-6 border-t border-gray-200">
-                        <button type="button" onclick="closePengaduanModal()"
-                                class="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors">
-                            Batal
-                        </button>
-                        <button type="submit"
-                                class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center justify-center space-x-2">
-                            <span class="material-symbols-outlined">send</span>
-                            <span>Kirim Pengaduan</span>
-                        </button>
-                    </div>
-                </form>
+                </div>
             </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start space-x-3">
+                <div class="bg-amber-600 text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
+                    <span class="text-[10px] font-black block">BULANAN</span>
+                    <span class="text-base font-black leading-none">19:30</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-black text-slate-900">Arisan & Pengajian Bulanan Warga</h4>
+                    <p class="text-xs text-slate-600 mt-0.5">Silaturahmi warga, pembacaan yasin, dan diskusi lingkungan RT.</p>
+                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-slate-500 font-bold">
+                        <span class="material-symbols-outlined text-sm text-slate-400">home</span>
+                        <span>Rumah Bapak Ketua RT {{ $rt }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start space-x-3">
+                <div class="bg-blue-600 text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
+                    <span class="text-[10px] font-black block">SABTU</span>
+                    <span class="text-base font-black leading-none">20:00</span>
+                </div>
+                <div class="flex-1">
+                    <h4 class="text-sm font-black text-slate-900">Kumpul Karang Taruna & Remaja RT {{ $rt }}</h4>
+                    <p class="text-xs text-slate-600 mt-0.5">Pertemuan pemuda-pemudi untuk kegiatan olahraga dan seni desa.</p>
+                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-slate-500 font-bold">
+                        <span class="material-symbols-outlined text-sm text-slate-400">location_on</span>
+                        <span>Pos Ronda Utama RT {{ $rt }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-right">
+            <button type="button" onclick="closeKegiatanRtModal()" class="bg-[#6A3297] text-white font-bold px-5 py-2 rounded-xl text-xs hover:bg-[#4E2472] transition-all">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Kontak Darurat -->
+<div id="kontakDaruratModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKontakDaruratModal()">
+    <div class="relative bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
+        <!-- Red Header Banner -->
+        <div class="bg-[#c82333] text-white px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-3">
+                <div class="bg-white/20 p-2 rounded-xl">
+                    <span class="material-symbols-outlined text-2xl text-white">emergency</span>
+                </div>
+                <div>
+                    <h3 class="text-lg font-black leading-tight">Kontak & Nomor Darurat</h3>
+                    <p class="text-xs text-white/80 font-medium">Bantuan cepat 24 jam warga RT {{ $rt }} Desa Puspamukti</p>
+                </div>
+            </div>
+            <button type="button" onclick="closeKontakDaruratModal()" class="text-white/80 hover:text-white p-1 rounded-lg hover:bg-white/10 transition-colors">
+                <span class="material-symbols-outlined text-2xl">close</span>
+            </button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+            <!-- Ketua RT Card -->
+            <div class="border border-red-200 bg-red-50/50 rounded-xl p-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-red-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                        <span class="material-symbols-outlined text-xl">person_alert</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-red-600 tracking-wider">Ketua RT {{ $rt }}</span>
+                        <h4 class="text-sm font-black text-slate-900">Bapak Ketua RT {{ $rt }}</h4>
+                        <p class="text-xs font-mono font-bold text-slate-600 mt-0.5">0813-1234-567</p>
+                    </div>
+                </div>
+                <a href="tel:08131234567" class="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 shadow-md transition-all">
+                    <span class="material-symbols-outlined text-base">call</span>
+                    <span>Panggil</span>
+                </a>
+            </div>
+
+            <!-- Kantor Desa Card -->
+            <div class="border border-blue-200 bg-blue-50/50 rounded-xl p-4 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center font-bold flex-shrink-0">
+                        <span class="material-symbols-outlined text-xl">holiday_village</span>
+                    </div>
+                    <div>
+                        <span class="text-[10px] uppercase font-bold text-blue-600 tracking-wider">Pemerintah Desa</span>
+                        <h4 class="text-sm font-black text-slate-900">Kantor Desa Puspamukti</h4>
+                        <p class="text-xs font-mono font-bold text-slate-600 mt-0.5">(0265) 123456</p>
+                    </div>
+                </div>
+                <a href="tel:0265123456" class="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-xl text-xs flex items-center space-x-1 shadow-md transition-all">
+                    <span class="material-symbols-outlined text-base">call</span>
+                    <span>Panggil</span>
+                </a>
+            </div>
+
+            <!-- Layanan Darurat Publik -->
+            <div class="pt-2">
+                <p class="text-xs font-black text-slate-700 uppercase tracking-wider mb-2.5">Layanan Darurat Publik 24 Jam</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <a href="tel:110" class="border border-slate-200 hover:border-red-500 bg-white hover:bg-red-50/50 p-3.5 rounded-xl text-center block transition-all group">
+                        <span class="material-symbols-outlined text-red-600 text-2xl block mb-1 group-hover:scale-110 transition-transform">local_police</span>
+                        <span class="text-xs font-bold text-slate-800 block">Kepolisian</span>
+                        <span class="text-base font-mono font-black text-red-600 mt-0.5">110</span>
+                    </a>
+                    <a href="tel:113" class="border border-slate-200 hover:border-orange-500 bg-white hover:bg-orange-50/50 p-3.5 rounded-xl text-center block transition-all group">
+                        <span class="material-symbols-outlined text-orange-600 text-2xl block mb-1 group-hover:scale-110 transition-transform">local_fire_department</span>
+                        <span class="text-xs font-bold text-slate-800 block">Damkar</span>
+                        <span class="text-base font-mono font-black text-orange-600 mt-0.5">113</span>
+                    </a>
+                    <a href="tel:119" class="border border-slate-200 hover:border-emerald-500 bg-white hover:bg-emerald-50/50 p-3.5 rounded-xl text-center block transition-all group">
+                        <span class="material-symbols-outlined text-emerald-600 text-2xl block mb-1 group-hover:scale-110 transition-transform">ambulance</span>
+                        <span class="text-xs font-bold text-slate-800 block">Ambulans</span>
+                        <span class="text-base font-mono font-black text-emerald-600 mt-0.5">119</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-right">
+            <button onclick="closeKontakDaruratModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold px-5 py-2 rounded-xl text-xs transition-all">
+                Tutup
+            </button>
         </div>
     </div>
 </div>
@@ -576,6 +725,35 @@
 
 @push('scripts')
 <script>
+window.showKegiatanRtModal = function() {
+    const m = document.getElementById('kegiatanRtModal');
+    if (m) {
+        m.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+};
+window.closeKegiatanRtModal = function() {
+    const m = document.getElementById('kegiatanRtModal');
+    if (m) {
+        m.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+};
+window.showKontakDaruratModal = function() {
+    const m = document.getElementById('kontakDaruratModal');
+    if (m) {
+        m.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+};
+window.closeKontakDaruratModal = function() {
+    const m = document.getElementById('kontakDaruratModal');
+    if (m) {
+        m.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+};
+
 // Handle Foto Preview (multiple images)
 document.getElementById('fotoInput')?.addEventListener('change', function(e) {
     const files = Array.from(e.target.files || []);
@@ -619,7 +797,7 @@ async function submitPengaduan(e) {
     submitBtn.innerHTML = '<span class="animate-spin">↻</span> Mengirim...';
     
     try {
-        const response = await fetch('{{ route("warga.rt.createPengaduan", ["rt" => $rt, "rw" => $rw]) }}', {
+        const response = await fetch('{{ route("warga.rt.createPengaduan", ["rt" => $rt]) }}', {
             method: 'POST',
             body: formData,
             headers: {

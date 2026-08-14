@@ -75,34 +75,34 @@
         @if ($pengajuan->status !== 'ditolak')
             <div class="mb-6">
                 <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[#4B5D3A] text-lg">conversion_path</span>
+                    <span class="material-symbols-outlined text-[#6A3297] text-lg">conversion_path</span>
                     <span>Alur & Status Tahapan Surat</span>
                 </h4>
                 
                 <div class="relative">
                     <div class="overflow-hidden h-2.5 mb-4 text-xs flex rounded-full bg-slate-100">
                         <div style="width: {{ $currentStep == 1 ? '25%' : ($currentStep == 2 ? '50%' : ($currentStep == 3 ? '75%' : '100%')) }}" 
-                             class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#4B5D3A] transition-all duration-500 rounded-full"></div>
+                             class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#6A3297] transition-all duration-500 rounded-full"></div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
                         <div class="p-3 rounded-xl border {{ $currentStep >= 1 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 1 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">1</div>
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 1 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">1</div>
                             <p class="text-xs font-black">Diajukan</p>
                             <p class="text-[10px] opacity-80">Warga Mengirim</p>
                         </div>
                         <div class="p-3 rounded-xl border {{ $currentStep >= 2 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 2 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">2</div>
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 2 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">2</div>
                             <p class="text-xs font-black">Verifikasi Admin</p>
                             <p class="text-[10px] opacity-80">Berkas Diperiksa</p>
                         </div>
                         <div class="p-3 rounded-xl border {{ $currentStep >= 3 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 3 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">3</div>
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 3 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">3</div>
                             <p class="text-xs font-black">Approval Kades</p>
                             <p class="text-[10px] opacity-80">Persetujuan & No. Surat</p>
                         </div>
                         <div class="p-3 rounded-xl border {{ $currentStep >= 4 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 4 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">4</div>
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 4 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">4</div>
                             <p class="text-xs font-black">Selesai / Cetak</p>
                             <p class="text-[10px] opacity-80">Dokumen Siap</p>
                         </div>

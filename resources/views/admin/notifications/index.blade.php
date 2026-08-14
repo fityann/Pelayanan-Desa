@@ -62,7 +62,7 @@
             </div>
         @endforelse
 
-        @if ($notifications->hasPages())
+        @if (method_exists($notifications, 'hasPages') && $notifications->hasPages())
             <div class="p-lg">
                 {{ $notifications->links() }}
             </div>

@@ -26,19 +26,19 @@
     <div class="grid grid-cols-1 md:grid-cols-4 gap-lg">
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Total Usulan</p>
-            <p class="font-headline-lg text-on-surface">{{ $stats['total'] }}</p>
+            <p class="font-headline-lg text-on-surface">{{ $stats['total'] ?? 0 }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Diusulkan</p>
-            <p class="font-headline-lg text-on-surface">{{ $stats['diusulkan'] }}</p>
+            <p class="font-headline-lg text-on-surface">{{ $stats['diusulkan'] ?? 0 }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Disetujui</p>
-            <p class="font-headline-lg text-on-surface">{{ $stats['disetujui'] }}</p>
+            <p class="font-headline-lg text-on-surface">{{ $stats['disetujui'] ?? 0 }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Total Alokasi</p>
-            <p class="font-headline-md text-on-surface">Rp {{ number_format($stats['total_alokasi'], 0, ',', '.') }}</p>
+            <p class="font-headline-md text-on-surface">Rp {{ number_format($stats['total_alokasi'] ?? 0, 0, ',', '.') }}</p>
         </div>
     </div>
 

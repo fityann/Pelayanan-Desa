@@ -26,15 +26,15 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-lg">
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Total Belanja</p>
-            <p class="font-headline-lg text-on-surface">{{ $stats['total'] }}</p>
+            <p class="font-headline-lg text-on-surface">{{ $stats['total'] ?? 0 }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Menunggu Proses</p>
-            <p class="font-headline-lg text-on-surface">{{ $stats['pending'] }}</p>
+            <p class="font-headline-lg text-on-surface">{{ $stats['pending'] ?? 0 }}</p>
         </div>
         <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg">
             <p class="text-label-sm text-on-surface-variant uppercase tracking-widest">Total Nilai</p>
-            <p class="font-headline-md text-on-surface">Rp {{ number_format($stats['total_nilai'], 0, ',', '.') }}</p>
+            <p class="font-headline-md text-on-surface">Rp {{ number_format($stats['total_nilai'] ?? 0, 0, ',', '.') }}</p>
         </div>
     </div>
 

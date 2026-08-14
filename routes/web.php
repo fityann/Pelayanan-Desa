@@ -39,29 +39,43 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
     }
 
     $penduduk = Penduduk::where('nik', $nik)->first();
-    if (!$penduduk) {
-        return response()->json(['found' => false]);
+    if ($penduduk) {
+        return response()->json([
+            'found' => true,
+            'data' => [
+                'nama' => $penduduk->nama,
+                'alamat' => $penduduk->alamat,
+                'rt' => $penduduk->rt,
+                'rw' => $penduduk->rw ?? '01',
+            ],
+        ]);
     }
 
-    // Hanya field publik/minimal yang dibutuhkan form register (autofill)
-    return response()->json([
-        'found' => true,
-        'data' => [
-            'nama' => $penduduk->nama,
-            'alamat' => $penduduk->alamat,
-            'rt' => $penduduk->rt,
-            'rw' => $penduduk->rw ?? '01',
-        ],
-    ]);
+    $user = \App\Models\User::where('nik', $nik)->first();
+    if ($user) {
+        return response()->json([
+            'found' => true,
+            'data' => [
+                'nama' => $user->name,
+                'alamat' => $user->address ?? '',
+                'rt' => $user->rt ?? '01',
+                'rw' => $user->rw ?? '01',
+            ],
+        ]);
+    }
+
+    return response()->json(['found' => false]);
 })->name('cek-nik');
 
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
 Route::get('/apbdes-publik', [ApbdesController::class, 'publik'])->name('apbdes.publik');
+Route::get('/aset-desa', [\App\Http\Controllers\AsetController::class, 'index'])->name('aset.publik');
 
 // ==== QR Code untuk Warga per RT ====
 Route::prefix('rt/{rt}')->name('warga.rt.')->group(function () {
     Route::get('/', [\App\Http\Controllers\WargaRtController::class, 'landing'])->name('landing');
     Route::get('/info', [\App\Http\Controllers\WargaRtController::class, 'infoDesa'])->name('info');
+    Route::post('/pengaduan', [\App\Http\Controllers\WargaRtController::class, 'createPengaduan'])->name('createPengaduan');
 
     // Login warga (NIK + Nama) — khusus warga yang terdaftar di panel admin
     Route::get('/login', [\App\Http\Controllers\WargaRtController::class, 'showLogin'])->name('login');
@@ -71,14 +85,15 @@ Route::prefix('rt/{rt}')->name('warga.rt.')->group(function () {
 
     // Layanan warga yang wajib login (NIK & Nama KTP)
     Route::middleware('warga.auth')->group(function () {
+        Route::get('/profil', [\App\Http\Controllers\WargaProfileController::class, 'index'])->name('profil');
+        Route::put('/profil', [\App\Http\Controllers\WargaProfileController::class, 'update'])->name('profil.update');
+
         Route::get('/surat', [WargaSuratController::class, 'indexRt'])->name('surat.index');
         Route::get('/surat/riwayat', [WargaSuratController::class, 'riwayatRt'])->name('surat.riwayat');
         Route::get('/surat/status/{kode}', [WargaSuratController::class, 'statusRt'])->name('surat.status');
         Route::get('/surat/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('surat.pdf');
         Route::get('/surat/{jenisSurat}/buat', [WargaSuratController::class, 'createRt'])->name('surat.create');
         Route::post('/surat/{jenisSurat}', [WargaSuratController::class, 'storeRt'])->name('surat.store');
-
-        Route::post('/pengaduan', [\App\Http\Controllers\WargaRtController::class, 'createPengaduan'])->name('createPengaduan');
 
         // Chat warga dengan admin desa (hanya warga yang sudah login)
         Route::get('/chat', [WargaChatController::class, 'index'])->name('chat');
@@ -161,6 +176,7 @@ Route::prefix('admin')->name('admin.')
         Route::delete('penduduk/{penduduk}', [PendudukController::class, 'destroy'])->middleware('permission:D Penduduk')->name('penduduk.destroy');
         Route::get('penduduk-import', [PendudukController::class, 'import'])->middleware('permission:C Penduduk')->name('penduduk.import');
         Route::post('penduduk-import', [PendudukController::class, 'importStore'])->middleware('permission:C Penduduk')->name('penduduk.import.store');
+        Route::get('penduduk-export', [PendudukController::class, 'export'])->middleware('permission:R Penduduk')->name('penduduk.export');
 
         // Surat (jenis surat)
         Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->middleware('permission:R Surat')->name('surat.jenis');
@@ -176,6 +192,7 @@ Route::prefix('admin')->name('admin.')
 
         // Arsip Surat
         Route::get('surat/arsip', [SuratController::class, 'arsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip');
+        Route::get('surat/arsip-export', [SuratController::class, 'exportArsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip.export');
         Route::get('surat/tracking', [SuratController::class, 'tracking'])->middleware('permission:R Pengajuan Surat')->name('surat.tracking');
 
         // APBDes Dashboard (Fase 2)
@@ -189,6 +206,10 @@ Route::prefix('admin')->name('admin.')
         Route::post('apbdes/{apbde}/review', [ApbdesController::class, 'review'])->middleware('permission:U APBDes')->name('apbdes.review');
         Route::post('apbdes/{apbde}/publish', [ApbdesController::class, 'publish'])->middleware('permission:U APBDes')->name('apbdes.publish');
         Route::delete('apbdes/{apbde}', [ApbdesController::class, 'destroy'])->middleware('permission:D APBDes')->name('apbdes.destroy');
+        
+        // Manajemen Aset
+        Route::resource('assets', \App\Http\Controllers\Admin\AsetController::class);
+        Route::resource('kategori-aset', \App\Http\Controllers\Admin\KategoriAsetController::class)->except('show');
         
         // Musrenbang (Fase 2 - Perencanaan)
         Route::prefix('musrenbang')->name('musrenbang.')->group(function () {
@@ -225,17 +246,17 @@ Route::prefix('admin')->name('admin.')
         });
 
         // Pengaduan Dashboard (Enhanced Fase 2)
-        Route::get('pengaduan/dashboard', [PengaduanController::class, 'index'])->middleware('permission:R Pengaduan')->name('pengaduan.dashboard');
-        Route::get('pengaduan/{pengaduan}/detail', [PengaduanController::class, 'show'])->middleware('permission:R Pengaduan')->name('pengaduan.show');
-        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->middleware('permission:U Pengaduan')->name('pengaduan.proses');
-        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->middleware('permission:U Pengaduan')->name('pengaduan.selesai');
-        Route::get('pengaduan/export', [PengaduanController::class, 'export'])->middleware('permission:R Pengaduan')->name('pengaduan.export');
+        Route::get('pengaduan/dashboard', [PengaduanController::class, 'index'])->name('pengaduan.dashboard');
+        Route::get('pengaduan/{pengaduan}/detail', [PengaduanController::class, 'show'])->name('pengaduan.show');
+        Route::post('pengaduan/{pengaduan}/proses', [PengaduanController::class, 'proses'])->name('pengaduan.proses');
+        Route::post('pengaduan/{pengaduan}/selesai', [PengaduanController::class, 'selesai'])->name('pengaduan.selesai');
+        Route::get('pengaduan/export', [PengaduanController::class, 'export'])->name('pengaduan.export');
         
         // Pengaduan Legacy Routes
-        Route::get('pengaduan', [PengaduanController::class, 'index'])->middleware('permission:R Pengaduan')->name('pengaduan.index');
-        Route::get('pengaduan/create', [PengaduanController::class, 'create'])->middleware('permission:C Pengaduan')->name('pengaduan.create');
-        Route::post('pengaduan', [PengaduanController::class, 'store'])->middleware('permission:C Pengaduan')->name('pengaduan.store');
-        Route::delete('pengaduan/{pengaduan}', [PengaduanController::class, 'destroy'])->middleware('permission:D Pengaduan')->name('pengaduan.destroy');
+        Route::get('pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
+        Route::get('pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+        Route::post('pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+        Route::delete('pengaduan/{pengaduan}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
 
         // Informasi
         Route::get('informasi', [InformasiController::class, 'index'])->middleware('permission:R Informasi')->name('informasi.index');

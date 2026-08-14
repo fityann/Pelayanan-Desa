@@ -27,10 +27,10 @@ class QrCodeController extends Controller
 
     public function index()
     {
-        // Pastikan RT 01 sampai RT 19 terdaftar di database
+        // Pastikan RT 01 sampai RT 19 terdaftar di database & QR Code-nya ter-generate otomatis
         for ($i = 1; $i <= 19; $i++) {
             $rtStr = str_pad($i, 2, '0', STR_PAD_LEFT);
-            RtQrCode::firstOrCreate(
+            $qr = RtQrCode::firstOrCreate(
                 ['rt' => $rtStr],
                 [
                     'rw' => '01',
@@ -40,6 +40,11 @@ class QrCodeController extends Controller
                     'created_by' => auth()->id(),
                 ]
             );
+
+            // Auto-generate QR code image if not generated yet
+            if (!$qr->qr_code_path || !Storage::disk('public')->exists($qr->qr_code_path)) {
+                $this->generateQrImage($qr);
+            }
         }
 
         $qrCodes = RtQrCode::orderByRaw('CAST(rt AS UNSIGNED) ASC')

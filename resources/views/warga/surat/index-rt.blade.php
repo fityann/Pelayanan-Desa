@@ -19,7 +19,7 @@
         </div>
         <div class="flex items-center space-x-2">
             <a href="{{ route('warga.rt.surat.riwayat', ['rt' => $rt]) }}"
-               class="inline-flex items-center space-x-2 bg-[#4B5D3A] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#364329] transition-all shadow-xs">
+               class="inline-flex items-center space-x-2 bg-[#6A3297] text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#4E2472] transition-all shadow-xs">
                 <span class="material-symbols-outlined text-sm">lan</span>
                 <span>Riwayat & Tracking Surat Saya</span>
             </a>

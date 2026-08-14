@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
         <div class="flex items-center space-x-3">
-            <div class="bg-[#4B5D3A]/10 p-3 rounded-2xl text-[#4B5D3A]">
+            <div class="bg-[#6A3297]/10 p-3 rounded-2xl text-[#6A3297]">
                 <span class="material-symbols-outlined text-3xl">mark_email_read</span>
             </div>
             <div>
@@ -46,7 +46,7 @@
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-5 border-b border-slate-100">
             <div>
                 <span class="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Kode Tracking Pengajuan</span>
-                <span class="text-lg font-mono font-extrabold text-[#4B5D3A]">{{ $pengajuan->kode_tracking_val }}</span>
+                <span class="text-lg font-mono font-extrabold text-[#6A3297]">{{ $pengajuan->kode_tracking_val }}</span>
             </div>
             <div>
                 @include('partials.surat-status-badge', ['status' => $pengajuan->status])
@@ -57,20 +57,20 @@
         @if ($pengajuan->status !== 'ditolak')
             <div class="mb-6">
                 <h4 class="text-xs font-bold text-slate-800 uppercase tracking-wider mb-4 flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-[#4B5D3A] text-lg">conversion_path</span>
+                    <span class="material-symbols-outlined text-[#6A3297] text-lg">conversion_path</span>
                     <span>Alur & Status Tahapan Surat</span>
                 </h4>
                 
                 <div class="relative">
                     <div class="overflow-hidden h-2.5 mb-4 text-xs flex rounded-full bg-slate-100">
                         <div style="width: {{ $currentStep == 1 ? '25%' : ($currentStep == 2 ? '50%' : ($currentStep == 3 ? '75%' : '100%')) }}" 
-                             class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#4B5D3A] transition-all duration-500 rounded-full"></div>
+                             class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-[#6A3297] transition-all duration-500 rounded-full"></div>
                     </div>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-center">
                         <!-- Step 1 -->
                         <div class="p-3 rounded-xl border {{ $currentStep >= 1 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 1 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 1 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">
                                 1
                             </div>
                             <p class="text-xs font-black">Diajukan</p>
@@ -79,7 +79,7 @@
 
                         <!-- Step 2 -->
                         <div class="p-3 rounded-xl border {{ $currentStep >= 2 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 2 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 2 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">
                                 2
                             </div>
                             <p class="text-xs font-black">Verifikasi Admin</p>
@@ -88,7 +88,7 @@
 
                         <!-- Step 3 -->
                         <div class="p-3 rounded-xl border {{ $currentStep >= 3 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 3 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 3 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">
                                 3
                             </div>
                             <p class="text-xs font-black">Approval Kades</p>
@@ -97,7 +97,7 @@
 
                         <!-- Step 4 -->
                         <div class="p-3 rounded-xl border {{ $currentStep >= 4 ? 'bg-emerald-50/70 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400' }}">
-                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 4 ? 'bg-[#4B5D3A] text-white' : 'bg-slate-200 text-slate-500' }}">
+                            <div class="w-8 h-8 rounded-full mx-auto mb-1.5 flex items-center justify-center font-bold text-xs {{ $currentStep >= 4 ? 'bg-[#6A3297] text-white' : 'bg-slate-200 text-slate-500' }}">
                                 4
                             </div>
                             <p class="text-xs font-black">Selesai / Cetak</p>
@@ -156,14 +156,14 @@
     <!-- Riwayat Catatan Log Proses -->
     <div class="bg-white rounded-2xl shadow-sm p-6 border border-slate-200/80">
         <h3 class="text-xs uppercase tracking-widest font-black text-slate-800 mb-6 flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#4B5D3A] text-lg">history</span>
+            <span class="material-symbols-outlined text-[#6A3297] text-lg">history</span>
             <span>Riwayat & Catatan Verifikasi Petugas</span>
         </h3>
 
-        <div class="relative pl-6 border-l-2 border-[#4B5D3A]/30 space-y-6">
+        <div class="relative pl-6 border-l-2 border-[#6A3297]/30 space-y-6">
             @forelse ($pengajuan->riwayatStatus as $riwayat)
                 <div class="relative">
-                    <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full border-2 border-white bg-[#4B5D3A] flex items-center justify-center shadow-xs">
+                    <span class="absolute -left-[31px] top-0.5 w-4 h-4 rounded-full border-2 border-white bg-[#6A3297] flex items-center justify-center shadow-xs">
                         <span class="material-symbols-outlined text-[10px] text-white font-bold">check</span>
                     </span>
                     <div class="flex flex-wrap items-center justify-between gap-2">

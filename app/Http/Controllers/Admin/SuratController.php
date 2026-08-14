@@ -254,8 +254,14 @@ class SuratController extends Controller
     public function pdf(PengajuanSurat $pengajuan): \Illuminate\Http\Response
     {
         abort_unless(in_array($pengajuan->status, ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai']), 422);
+        
+        $pengajuan->loadMissing('jenisSurat');
+        
+        $viewName = view()->exists('pdf.surat_' . strtolower($pengajuan->jenisSurat->kode)) 
+            ? 'pdf.surat_' . strtolower($pengajuan->jenisSurat->kode) 
+            : 'pdf.surat';
 
-        $pdf = Pdf::loadView('pdf.surat', ['surat' => $pengajuan])
+        $pdf = Pdf::loadView($viewName, ['surat' => $pengajuan])
             ->setPaper('a4', 'portrait');
 
         $filename = (str_replace(['/', '\\'], '-', $pengajuan->nomor_surat) ?? 'draft')
@@ -272,6 +278,59 @@ class SuratController extends Controller
             ->paginate(15);
 
         return view('admin.surat.arsip', compact('arsip'));
+    }
+
+    public function exportArsip(Request $request)
+    {
+        $query = PengajuanSurat::with(['user', 'jenisSurat'])
+            ->whereIn('status', ['disetujui_kades', 'menunggu_ttd_fisik', 'selesai'])
+            ->latest();
+
+        $arsipList = $query->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Arsip Surat');
+
+        // Header
+        $headers = [
+            'A1' => 'No', 'B1' => 'Nomor Surat', 'C1' => 'Jenis Surat', 
+            'D1' => 'Nama Pemohon', 'E1' => 'NIK Pemohon', 'F1' => 'Tanggal Pengajuan', 
+            'G1' => 'Status'
+        ];
+
+        foreach ($headers as $cell => $value) {
+            $sheet->setCellValue($cell, $value);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+        }
+
+        // Data
+        $row = 2;
+        foreach ($arsipList as $index => $s) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValue('B' . $row, $s->nomor_surat ?? '-');
+            $sheet->setCellValue('C' . $row, $s->jenisSurat->nama ?? '-');
+            $sheet->setCellValue('D' . $row, $s->pemohon_name);
+            $sheet->setCellValueExplicit('E' . $row, $s->nik_pemohon, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('F' . $row, $s->created_at->format('Y-m-d H:i'));
+            $sheet->setCellValue('G' . $row, ucfirst(str_replace('_', ' ', $s->status)));
+            $row++;
+        }
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'Arsip_Surat_' . date('Ymd_His') . '.xlsx';
+        
+        // Output to browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
     }
 
     public function tracking(Request $request): View

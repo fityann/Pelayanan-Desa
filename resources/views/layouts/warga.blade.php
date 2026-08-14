@@ -22,13 +22,13 @@
         @endphp
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(160deg, #f4fbf7 0%, #fefce8 45%, #ecfdf5 100%);
+            background: #F4F6F2;
             min-height: 100vh;
         }
         [x-cloak] { display: none !important; }
 
         .masy-navbar {
-            background: #4B5D3A;
+            background: #6A3297;
             border-bottom: 3px solid #D8B84C;
             box-shadow: 0 6px 24px rgba(75, 93, 58, 0.35);
         }
@@ -103,7 +103,7 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #4B5D3A 0%, #364329 100%);
+            background: linear-gradient(135deg, #6A3297 0%, #4E2472 100%);
             color: #fff;
             font-weight: 700;
             border: 1px solid rgba(216, 184, 76, 0.35);
@@ -236,7 +236,7 @@
 <body class="min-h-screen">
     <!-- Header / Navbar -->
     <header class="masy-navbar sticky top-0 z-50 text-white">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="w-full px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16 gap-4">
                 <!-- Brand -->
                 <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="flex items-center space-x-3 flex-shrink-0">
@@ -246,11 +246,7 @@
                     <div>
                         <h1 class="text-base sm:text-lg font-bold leading-tight">SILAPU</h1>
                         <p class="text-[11px] sm:text-sm text-white/80 leading-tight hidden sm:block">
-                            @if ($isRtScoped)
-                                Sistem Layanan Puspamukti · RT {{ $rt }}
-                            @else
-                                Sistem Layanan Puspamukti
-                            @endif
+                            Sistem Layanan Puspamukti
                         </p>
                     </div>
                 </a>
@@ -271,6 +267,9 @@
                     </a>
                     <a class="masy-navlink {{ $inMenu('apbdes.publik') ? 'active' : '' }}" href="{{ route('apbdes.publik', $rtQuery) }}">
                         <span class="material-symbols-outlined text-[18px]">account_balance</span> APBDes
+                    </a>
+                    <a class="masy-navlink {{ $inMenu('aset.publik') ? 'active' : '' }}" href="{{ route('aset.publik') }}">
+                        <span class="material-symbols-outlined text-[18px]">inventory_2</span> Aset Desa
                     </a>
                     <a class="masy-navlink {{ $inMenu('informasi.publik') ? 'active' : '' }}" href="{{ route('informasi.publik', $rtQuery) }}">
                         <span class="material-symbols-outlined text-[18px]">newspaper</span> Berita
@@ -319,6 +318,18 @@
                                         <button @click="markAll(); $event.stopPropagation()"
                                                 class="text-xs font-medium text-emerald-600 hover:text-emerald-700">Tandai sudah dibaca</button>
                                     </div>
+                                    <div x-data="{ perm: ('Notification' in window) ? Notification.permission : 'denied' }"
+                                         x-show="perm === 'default'"
+                                         class="bg-amber-50 border-b border-amber-200 px-3.5 py-2 text-[11px] text-amber-900 flex items-center justify-between gap-2">
+                                        <div class="flex items-center gap-1.5 font-bold">
+                                            <span class="material-symbols-outlined text-amber-700 text-sm">notifications_active</span>
+                                            <span>Aktifkan Notifikasi Desktop/HP?</span>
+                                        </div>
+                                        <button @click="window.SilapuPushNotification?.requestPermission((p) => { perm = p; })"
+                                                class="bg-[#6A3297] hover:bg-[#4E2472] text-white font-black px-2.5 py-1 rounded-lg text-[10px] shadow-xs transition-all">
+                                            Izinkan
+                                        </button>
+                                    </div>
                                     <div class="flex-1 overflow-y-auto p-2 space-y-1.5 max-h-[380px]" x-ref="notifList">
                                         <template x-if="items.length === 0">
                                             <div class="p-6 text-center text-xs font-semibold text-slate-400">
@@ -329,15 +340,15 @@
                                         <template x-for="item in items" :key="item.id">
                                             <a :href="item.link || '#'"
                                                @click="if(!item.is_read) markRead(item.id)"
-                                               :class="{'bg-[#4B5D3A]/10 border border-[#4B5D3A]/20': !item.is_read, 'bg-white border border-slate-100 hover:bg-slate-50': item.is_read}"
+                                               :class="{'bg-[#6A3297]/10 border border-[#6A3297]/20': !item.is_read, 'bg-white border border-slate-100 hover:bg-slate-50': item.is_read}"
                                                class="flex items-start gap-3 p-3 rounded-xl transition-all shadow-xs block group">
                                                 <div class="p-2 rounded-xl flex-shrink-0 flex items-center justify-center"
-                                                     :class="item.warna || 'bg-[#4B5D3A]/10 text-[#4B5D3A]'">
+                                                     :class="item.warna || 'bg-[#6A3297]/10 text-[#6A3297]'">
                                                     <span class="material-symbols-outlined text-lg" x-text="item.icon || 'notifications'"></span>
                                                 </div>
                                                 <div class="flex-1 min-w-0 text-left">
                                                     <div class="flex items-center justify-between gap-1 mb-0.5">
-                                                        <p class="text-xs font-black text-slate-900 truncate group-hover:text-[#4B5D3A] transition-colors" x-text="item.judul"></p>
+                                                        <p class="text-xs font-black text-slate-900 truncate group-hover:text-[#6A3297] transition-colors" x-text="item.judul"></p>
                                                         <span x-show="!item.is_read" class="w-2 h-2 rounded-full bg-[#D8B84C] flex-shrink-0"></span>
                                                     </div>
                                                     <p class="text-[11px] text-slate-600 font-medium leading-snug line-clamp-2" x-text="item.pesan"></p>
@@ -349,24 +360,70 @@
                                 </div>
                             </div>
 
-                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt]) }}'"
-                                    class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
-                                <span class="material-symbols-outlined text-sm">person</span>
-                                <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
-                            </button>
-                            
-                            <form method="POST" action="{{ route('warga.rt.logout', ['rt' => $rt]) }}" class="inline">
-                                @csrf
-                                <button type="submit" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="Keluar">
-                                    <span class="material-symbols-outlined">logout</span>
+                            <div x-data="{ openProfile: false }" class="relative inline-block text-left">
+                                <button @click="openProfile = !openProfile" @click.outside="openProfile = false"
+                                        class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
+                                    <span class="material-symbols-outlined text-sm">person</span>
+                                    <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
+                                    <span class="material-symbols-outlined text-sm transition-transform duration-200" :class="{ 'rotate-180': openProfile }">expand_more</span>
                                 </button>
-                            </form>
+
+                                <div x-show="openProfile" x-cloak
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-50">
+                                    <div class="py-1">
+                                        <a href="{{ route('warga.rt.profil', ['rt' => $rt]) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#6A3297] transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">manage_accounts</span> Profil
+                                        </a>
+                                        <a href="{{ route('warga.rt.surat.riwayat', ['rt' => $rt]) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#6A3297] transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">history</span> Riwayat
+                                        </a>
+                                        <div class="border-t border-slate-100 my-1"></div>
+                                        <form method="POST" action="{{ route('warga.rt.logout', ['rt' => $rt]) }}">
+                                            @csrf
+                                            <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
+                                                <span class="material-symbols-outlined text-[18px]">logout</span> Keluar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         @else
-                            <button onclick="window.location.href='{{ route('warga.rt.surat.index', ['rt' => $rt ?? '01']) }}'"
-                                    class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
-                                <span class="material-symbols-outlined text-sm">person</span>
-                                <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
-                            </button>
+                            <div x-data="{ openProfile: false }" class="relative inline-block text-left">
+                                <button @click="openProfile = !openProfile" @click.outside="openProfile = false"
+                                        class="bg-white/20 hover:bg-white/30 px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition-colors flex items-center space-x-1 flex-shrink-0">
+                                    <span class="material-symbols-outlined text-sm">person</span>
+                                    <span class="hidden lg:inline">{{ auth('warga')->user()->name }}</span>
+                                    <span class="material-symbols-outlined text-sm transition-transform duration-200" :class="{ 'rotate-180': openProfile }">expand_more</span>
+                                </button>
+
+                                <div x-show="openProfile" x-cloak
+                                     x-transition:enter="transition ease-out duration-100"
+                                     x-transition:enter-start="transform opacity-0 scale-95"
+                                     x-transition:enter-end="transform opacity-100 scale-100"
+                                     x-transition:leave="transition ease-in duration-75"
+                                     x-transition:leave-start="transform opacity-100 scale-100"
+                                     x-transition:leave-end="transform opacity-0 scale-95"
+                                     class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-lg border border-slate-100 overflow-hidden z-50">
+                                    <div class="py-1">
+                                        <a href="{{ route('warga.rt.profil', ['rt' => $rt ?? '01']) }}" class="flex items-center gap-2 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 hover:text-[#6A3297] transition-colors">
+                                            <span class="material-symbols-outlined text-[18px]">manage_accounts</span> Profil
+                                        </a>
+                                        <div class="border-t border-slate-100 my-1"></div>
+                                        <form method="POST" action="{{ route('warga.rt.logout', ['rt' => $rt ?? '01']) }}">
+                                            @csrf
+                                            <button type="submit" class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
+                                                <span class="material-symbols-outlined text-[18px]">logout</span> Keluar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         @endif
                     @else
                         <button onclick="window.location.href='{{ route('warga.rt.login', ['rt' => $rt ?? '01']) }}'"
@@ -375,9 +432,7 @@
                             <span>Masuk</span>
                         </button>
                     @endauth
-                    <button onclick="window.location.href='{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}'" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors" title="{{ $isRtScoped ? 'Kembali ke Beranda RT ' . $rt : 'Kembali ke Beranda' }}">
-                        <span class="material-symbols-outlined">home</span>
-                    </button>
+
                 </div>
             </div>
         </div>
@@ -412,78 +467,73 @@
         @yield('content')
     </main>
 
-    <!-- Floating Action Button (Pengaduan) -->
-    @if ($isRtScoped)
-        <button onclick="showPengaduanModal()" class="floating-action-btn" title="Buat Pengaduan Baru">
-            <span class="material-symbols-outlined text-2xl">add</span>
-        </button>
-    @endif
+
 
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8 mt-12">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Desa Puspamukti</h3>
-                    <p class="text-gray-300 text-sm mb-4">
+                    <h3 class="text-base font-bold mb-3">Desa Puspamukti</h3>
+                    <p class="text-gray-300 text-xs mb-3">
                         Jl. Raya Puspamukti No. 1<br>Kecamatan Bojong, Kabupaten Tegal
                     </p>
                     <div class="space-y-2">
-                        <div class="flex items-center text-sm text-gray-300">
-                            <span class="material-symbols-outlined text-base mr-2">call</span><span>(0281) 123456</span>
+                        <div class="flex items-center text-xs text-gray-300">
+                            <span class="material-symbols-outlined text-sm mr-2">call</span><span>(0281) 123456</span>
                         </div>
-                        <div class="flex items-center text-sm text-gray-300">
-                            <span class="material-symbols-outlined text-base mr-2">whatsapp</span><span>0812-3456-7890</span>
+                        <div class="flex items-center text-xs text-gray-300">
+                            <span class="material-symbols-outlined text-sm mr-2">chat</span><span>0812-3456-7890</span>
                         </div>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="text-lg font-bold mb-4">Jam Operasional</h3>
-                    <ul class="space-y-2 text-sm text-gray-300">
+                    <h3 class="text-base font-bold mb-3">Jam Operasional</h3>
+                    <ul class="space-y-2 text-xs text-gray-300">
                         <li class="flex items-center">
-                            <span class="material-symbols-outlined text-base mr-2">schedule</span><span>Senin - Jumat: 08:00 - 16:00</span>
+                            <span class="material-symbols-outlined text-sm mr-2">schedule</span><span>Senin - Jumat: 08:00 - 16:00</span>
                         </li>
                         <li class="flex items-center">
-                            <span class="material-symbols-outlined text-base mr-2">schedule</span><span>Sabtu: 08:00 - 12:00</span>
+                            <span class="material-symbols-outlined text-sm mr-2">schedule</span><span>Sabtu: 08:00 - 12:00</span>
                         </li>
                         <li class="flex items-center">
-                            <span class="material-symbols-outlined text-base mr-2">event_busy</span><span>Minggu & Hari Libur: Tutup</span>
+                            <span class="material-symbols-outlined text-sm mr-2">event_busy</span><span>Minggu & Hari Libur: Tutup</span>
                         </li>
                     </ul>
                 </div>
 
                 @if ($isRtScoped)
                     <div>
-                        <h3 class="text-lg font-bold mb-4">Kontak RT</h3>
-                        <ul class="space-y-2 text-sm text-gray-300">
+                        <h3 class="text-base font-bold mb-3">Kontak RT</h3>
+                        <ul class="space-y-2 text-xs text-gray-300">
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">person</span><span>Ketua RT {{ $rt }}: 0813-1234-567</span>
+                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Ketua RT {{ $rt }}: 0813-1234-567</span>
                             </li>
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">info</span><span>Untuk keadaan darurat segera hubungi</span>
+                                <span class="material-symbols-outlined text-sm mr-2">info</span><span>Untuk keadaan darurat segera hubungi</span>
                             </li>
                         </ul>
                     </div>
                 @else
                     <div>
-                        <h3 class="text-lg font-bold mb-4">Kontak Desa</h3>
-                        <ul class="space-y-2 text-sm text-gray-300">
+                        <h3 class="text-base font-bold mb-3">Kontak Desa</h3>
+                        <ul class="space-y-2 text-xs text-gray-300">
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">person</span><span>Kepala Desa: 0813-1234-567</span>
+                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Kepala Desa: 0813-1234-567</span>
                             </li>
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">person</span><span>Sekretaris Desa: 0821-9876-543</span>
+                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Sekretaris Desa: 0821-9876-543</span>
                             </li>
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-base mr-2">info</span><span>Untuk informasi lebih lanjut</span>
+                                <span class="material-symbols-outlined text-sm mr-2">info</span><span>Untuk informasi lebih lanjut</span>
                             </li>
                         </ul>
                     </div>
                 @endif
             </div>
 
-            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-sm">
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400 text-xs">
                 <p>&copy; {{ date('Y') }} SILAPU - Sistem Layanan Puspamukti. Hak Cipta Dilindungi.</p>
                 <p class="mt-1">Sistem Layanan Digital Desa Puspamukti</p>
             </div>
@@ -495,8 +545,8 @@
         <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="{{ $inMenu('warga.rt.landing') || $inMenu('dashboard') ? 'active' : '' }}">
             <span class="material-symbols-outlined">home</span> Beranda
         </a>
-        <a href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt]) : route('informasi.publik') }}" class="{{ $inMenu('warga.rt.info') ? 'active' : '' }}">
-            <span class="material-symbols-outlined">info</span> Info Desa
+        <a href="{{ route('informasi.publik', $isRtScoped ? ['rt' => $rt] : []) }}" class="{{ $inMenu('informasi.publik') ? 'active' : '' }}">
+            <span class="material-symbols-outlined">newspaper</span> Berita
         </a>
 
         @if ($isRtScoped)
@@ -506,7 +556,7 @@
             <a onclick="showPengaduanModal()" style="cursor:pointer" class="{{ $inMenu('warga.rt.landing') ? '' : '' }}">
                 <span class="material-symbols-outlined">campaign</span> Lapor
             </a>
-            @auth
+            @auth('warga')
                 <a href="{{ route('warga.rt.chat', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
                     <span class="material-symbols-outlined">forum</span> Chat
                 </a>
@@ -556,6 +606,9 @@
                     .then(data => {
                         this.unread = data.unread || 0;
                         this.items = data.items || [];
+                        if (window.SilapuPushNotification) {
+                            window.SilapuPushNotification.processItems(this.items);
+                        }
                     })
                     .catch(() => {})
                     .finally(() => { this.loading = false; });
@@ -590,19 +643,43 @@
             icon.textContent = menu.classList.contains('hidden') ? 'menu' : 'close';
         }
 
-        function showPengaduanModal() {
+        window.showPengaduanModal = function() {
             const modal = document.getElementById('pengaduanModal');
-            if (modal) { modal.classList.remove('hidden'); document.body.style.overflow = 'hidden'; }
-        }
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        };
 
-        function closePengaduanModal() {
+        window.closePengaduanModal = function() {
             const modal = document.getElementById('pengaduanModal');
-            if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
-        }
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        };
+
+        window.showKegiatanRtModal = function() {
+            const modal = document.getElementById('kegiatanRtModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        };
+
+        window.closeKegiatanRtModal = function() {
+            const modal = document.getElementById('kegiatanRtModal');
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        };
+
+        window.showKontakDaruratModal = function() {
+            const modal = document.getElementById('kontakDaruratModal');
+            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+        };
+
+        window.closeKontakDaruratModal = function() {
+            const modal = document.getElementById('kontakDaruratModal');
+            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+        };
 
         document.addEventListener('DOMContentLoaded', function () {
             document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') closePengaduanModal();
+                if (e.key === 'Escape') {
+                    closePengaduanModal();
+                    closeKegiatanRtModal();
+                    closeKontakDaruratModal();
+                }
             });
 
             document.querySelectorAll('.modal-overlay').forEach(overlay => {
@@ -662,6 +739,94 @@
                 copyToClipboard(window.location.href);
             }
         }
+
+        // Web Push Notification Helper
+        window.SilapuPushNotification = {
+            shownIds: new Set(JSON.parse(localStorage.getItem('silapu_notif_shown') || '[]')),
+            
+            init() {
+                if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register('/sw.js').catch(() => {});
+                }
+            },
+
+            requestPermission(callback) {
+                if ('Notification' in window) {
+                    Notification.requestPermission().then(permission => {
+                        if (permission === 'granted') {
+                            try {
+                                new Notification('Notifikasi SILAPU Aktif 🔔', {
+                                    body: 'Notifikasi browser telah diaktifkan! Anda akan menerima pemberitahuan otomatis pengajuan surat.',
+                                    icon: '/images/logo-desa-puspamukti.jpg'
+                                });
+                            } catch(e) {}
+                            if (typeof showToast === 'function') showToast('Notifikasi browser berhasil diizinkan! 🔔', 'success');
+                        } else if (permission === 'denied') {
+                            if (typeof showToast === 'function') showToast('Izin notifikasi diblokir di browser. Mohon izinkan dari setelan situs.', 'error');
+                        }
+                        if (callback) callback(permission);
+                    });
+                } else {
+                    alert('Browser Anda tidak mendukung Notifikasi.');
+                }
+            },
+
+            processItems(items) {
+                if (!('Notification' in window) || Notification.permission !== 'granted') return;
+                
+                let newlyShown = false;
+                (items || []).forEach(item => {
+                    if (!item.is_read && !this.shownIds.has(item.id)) {
+                        this.shownIds.add(item.id);
+                        newlyShown = true;
+                        
+                        try {
+                            const notif = new Notification(item.judul || 'Notifikasi SILAPU', {
+                                body: item.pesan || 'Ada pemberitahuan baru.',
+                                icon: '/images/logo-desa-puspamukti.jpg',
+                                tag: 'silapu-notif-' + item.id,
+                                renotify: true
+                            });
+                            
+                            if (item.link) {
+                                notif.onclick = function() {
+                                    window.focus();
+                                    window.location.href = item.link;
+                                };
+                            }
+                        } catch(e) {}
+                    }
+                });
+                
+                if (newlyShown) {
+                    const idsArray = Array.from(this.shownIds).slice(-100);
+                    localStorage.setItem('silapu_notif_shown', JSON.stringify(idsArray));
+                }
+            }
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            window.SilapuPushNotification.init();
+
+            // Gulir mulus ke atas jika mengeklik menu yang sedang aktif/dilihat
+            const currentUrl = window.location.href.split('#')[0].replace(/\/$/, "");
+            const navLinks = document.querySelectorAll('a.masy-navlink, .bottom-nav a');
+            
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    if (this.href) {
+                        const linkUrl = this.href.split('#')[0].replace(/\/$/, "");
+                        if (linkUrl === currentUrl) {
+                            e.preventDefault();
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+        });
     </script>
 
     @stack('modals')

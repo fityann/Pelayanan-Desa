@@ -200,4 +200,85 @@ class PendudukController extends Controller
 
         return redirect()->route('admin.penduduk.index')->with('success', $message);
     }
+
+    public function export(Request $request)
+    {
+        $query = Penduduk::query();
+
+        // Apply filters
+        if ($request->filled('rt')) {
+            $query->where('rt', $request->rt);
+        }
+        if ($request->filled('rw')) {
+            $query->where('rw', $request->rw);
+        }
+        if ($request->filled('jenis_kelamin')) {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+        if ($request->filled('status_perkawinan')) {
+            $query->where('status_perkawinan', $request->status_perkawinan);
+        }
+        if ($request->filled('pendidikan')) {
+            $query->where('pendidikan_terakhir', $request->pendidikan);
+        }
+        if ($request->filled('agama')) {
+            $query->where('agama', $request->agama);
+        }
+
+        $pendudukList = $query->get();
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Data Penduduk');
+
+        // Header
+        $headers = [
+            'A1' => 'No', 'B1' => 'NIK', 'C1' => 'Nama', 'D1' => 'Tempat Lahir', 'E1' => 'Tanggal Lahir',
+            'F1' => 'Jenis Kelamin', 'G1' => 'Alamat', 'H1' => 'RT', 'I1' => 'RW', 'J1' => 'Agama',
+            'K1' => 'Status Perkawinan', 'L1' => 'Pekerjaan', 'M1' => 'Kewarganegaraan', 'N1' => 'Pendidikan Terakhir',
+            'O1' => 'No KK', 'P1' => 'Hubungan Keluarga'
+        ];
+
+        foreach ($headers as $cell => $value) {
+            $sheet->setCellValue($cell, $value);
+            $sheet->getStyle($cell)->getFont()->setBold(true);
+        }
+
+        // Data
+        $row = 2;
+        foreach ($pendudukList as $index => $p) {
+            $sheet->setCellValue('A' . $row, $index + 1);
+            $sheet->setCellValueExplicit('B' . $row, $p->nik, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('C' . $row, $p->nama);
+            $sheet->setCellValue('D' . $row, $p->tempat_lahir);
+            $sheet->setCellValue('E' . $row, $p->tanggal_lahir);
+            $sheet->setCellValue('F' . $row, $p->jenis_kelamin);
+            $sheet->setCellValue('G' . $row, $p->alamat);
+            $sheet->setCellValueExplicit('H' . $row, $p->rt, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValueExplicit('I' . $row, $p->rw, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('J' . $row, $p->agama);
+            $sheet->setCellValue('K' . $row, $p->status_perkawinan);
+            $sheet->setCellValue('L' . $row, $p->pekerjaan);
+            $sheet->setCellValue('M' . $row, $p->kewarganegaraan);
+            $sheet->setCellValue('N' . $row, $p->pendidikan_terakhir);
+            $sheet->setCellValueExplicit('O' . $row, $p->no_kk, \PhpOffice\PhpSpreadsheet\Cell\DataType::TYPE_STRING);
+            $sheet->setCellValue('P' . $row, $p->hubungan_keluarga);
+            $row++;
+        }
+
+        foreach (range('A', 'P') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $fileName = 'Data_Penduduk_' . date('Ymd_His') . '.xlsx';
+        
+        // Output to browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="' . $fileName . '"');
+        header('Cache-Control: max-age=0');
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
 }

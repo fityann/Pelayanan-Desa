@@ -145,8 +145,8 @@
 
     <!-- Judul & Nomor Surat Resmi -->
     <div class="perihal-container">
-        <div class="perihal-title">{{ strtoupper($surat->jenisSurat->nama) }}</div>
-        <div class="perihal-nomor">Nomor: {{ $surat->nomor_surat }}</div>
+        <div class="perihal-title">{{ strtoupper($surat->jenisSurat?->nama ?? 'SURAT KETERANGAN') }}</div>
+        <div class="perihal-nomor">Nomor: {{ $surat->nomor_surat ?? $surat->kode_tracking_val }}</div>
     </div>
 
     <!-- Isi Surat -->
@@ -158,11 +158,11 @@
             <col style="width: 70%;">
             <tr>
                 <td style="font-weight: bold;">Nama Lengkap</td>
-                <td>: {{ $surat->pemohon_name }}</td>
+                <td>: {{ $surat->pemohon_name ?? $surat->user?->name ?? 'Warga' }}</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">NIK</td>
-                <td>: {{ $surat->pemohon_nik }}</td>
+                <td>: {{ $surat->pemohon_nik ?? $surat->user?->penduduk?->nik ?? '-' }}</td>
             </tr>
             <tr>
                 <td style="font-weight: bold;">Tempat / Tanggal Lahir</td>

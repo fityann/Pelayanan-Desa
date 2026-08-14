@@ -23,7 +23,7 @@
                 <div class="flex-1 min-w-0">
                     <div class="flex items-center gap-sm">
                         <span class="text-label-md font-bold text-on-surface truncate">{{ $chat->user->name }}</span>
-                        <span class="text-[10px] bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">RT {{ $chat->rt }} / RW {{ $chat->rw }}</span>
+                        <span class="text-[10px] bg-surface-container px-2 py-0.5 rounded-full text-on-surface-variant">RT {{ $chat->rt }}</span>
                     </div>
                     <p class="text-body-sm text-on-surface-variant truncate mt-0.5">
                         @if ($terakhir)

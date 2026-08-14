@@ -262,8 +262,11 @@ class WargaRtController extends Controller
         return $user;
     }
 
-    public function createPengaduan(Request $request, $rt, $rw)
+    public function createPengaduan(Request $request, $rt, $rw = '01')
     {
+        $rw = $request->input('rw', $rw ?: '01');
+        $rtNorm = sprintf('%02d', (int)$rt);
+
         // Validasi request
         $request->validate([
             'nama' => 'required|string|max:100',
@@ -277,13 +280,13 @@ class WargaRtController extends Controller
 
         // Create pengaduan
         $pengaduan = new Pengaduan();
-        $pengaduan->user_id = auth('warga')->id() ?? null;
+        $pengaduan->user_id = auth('warga')->id() ?? auth()->id() ?? null;
         $pengaduan->nama_pelapor = $request->nama;
         $pengaduan->whatsapp = $request->whatsapp;
         $pengaduan->kategori = $request->kategori;
         $pengaduan->judul = $request->judul;
         $pengaduan->deskripsi = $request->deskripsi;
-        $pengaduan->rt = $rt;
+        $pengaduan->rt = $rtNorm;
         $pengaduan->rw = $rw;
         $pengaduan->sumber_akses = 'qr_rt';
         $pengaduan->status = 'diterima';
