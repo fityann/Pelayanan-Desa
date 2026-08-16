@@ -287,7 +287,7 @@
 
             {{-- Map Card --}}
             <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/10 overflow-hidden group hover:shadow-md transition-all">
-                <div class="relative h-44 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700 cursor-pointer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAy_ehTvAEuj4akK2GkCC1nDRIEXb6mawMXf2pjndDiVoqKqJDA_zxc5FZ3TZMupSK2BHlgXUynt1DhgTD7rlhssGcCllUM-AJmgP0M1-Si4SKMJjFL8-VisEDmySs4NB_usjl3Rye32iwB7Ecl9SdB2FMsJumXHKC9O7va3HIT6Eri7R8KxRz5ac2ROZfnNiGKQJaIUZHlR9F7UG9fZ1XvwUdGsWb0rdFb7aWNCghNo_A-r_9emWazbA')">
+                <a href="https://www.google.com/maps/place/Puspamukti,+Kec.+Cigalontang,+Kabupaten+Tasikmalaya,+Jawa+Barat/@-7.3112671,107.955953,16471m/data=!3m2!1e3!4b1!4m6!3m5!1s0x2e68ac63c95966f7:0x490b3588e251e289!8m2!3d-7.3234002!4d107.9917034!16s%2Fg%2F121vxmw1!5m1!1e2?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="block relative h-44 bg-cover bg-center grayscale group-hover:grayscale-0 transition-all duration-700 cursor-pointer" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAy_ehTvAEuj4akK2GkCC1nDRIEXb6mawMXf2pjndDiVoqKqJDA_zxc5FZ3TZMupSK2BHlgXUynt1DhgTD7rlhssGcCllUM-AJmgP0M1-Si4SKMJjFL8-VisEDmySs4NB_usjl3Rye32iwB7Ecl9SdB2FMsJumXHKC9O7va3HIT6Eri7R8KxRz5ac2ROZfnNiGKQJaIUZHlR9F7UG9fZ1XvwUdGsWb0rdFb7aWNCghNo_A-r_9emWazbA')">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                     <div class="absolute bottom-3 left-4 flex items-center gap-2">
                         <div class="w-8 h-8 rounded-lg bg-white/90 backdrop-blur flex items-center justify-center shadow-lg">
@@ -298,16 +298,16 @@
                             <p class="text-[10px] text-white/80">Puspamukti, Cigalontang</p>
                         </div>
                     </div>
-                </div>
+                </a>
                 <div class="p-lg flex items-center justify-between">
                     <div class="flex items-center gap-2">
                         <span class="material-symbols-outlined text-[16px] text-on-surface-variant">update</span>
                         <span class="text-[11px] text-on-surface-variant">Foto satelit terkini</span>
                     </div>
-                    <button class="text-label-sm font-bold text-primary hover:underline flex items-center gap-1">
+                    <a href="https://www.google.com/maps/place/Puspamukti,+Kec.+Cigalontang,+Kabupaten+Tasikmalaya,+Jawa+Barat/@-7.3112671,107.955953,16471m/data=!3m2!1e3!4b1!4m6!3m5!1s0x2e68ac63c95966f7:0x490b3588e251e289!8m2!3d-7.3234002!4d107.9917034!16s%2Fg%2F121vxmw1!5m1!1e2?entry=ttu&g_ep=EgoyMDI2MDgxMi4wIKXMDSoASAFQAw%3D%3D" target="_blank" rel="noopener noreferrer" class="text-label-sm font-bold text-primary hover:underline flex items-center gap-1">
                         Buka Peta
                         <span class="material-symbols-outlined text-[16px]">open_in_new</span>
-                    </button>
+                    </a>
                 </div>
             </div>
 

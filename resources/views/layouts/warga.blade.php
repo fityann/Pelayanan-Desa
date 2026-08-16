@@ -171,9 +171,9 @@
             .bottom-nav {
                 position: fixed;
                 bottom: 0; left: 0; right: 0;
-                background: #fff;
-                border-top: 1px solid #e5e7eb;
-                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.06);
+                background: #6A3297;
+                border-top: none;
+                box-shadow: 0 -4px 16px rgba(106, 50, 151, 0.2);
                 z-index: 950;
                 display: flex;
                 padding-bottom: env(safe-area-inset-bottom);
@@ -187,12 +187,13 @@
                 padding: 9px 4px 8px;
                 font-size: 10.5px;
                 font-weight: 600;
-                color: #6b7280;
+                color: rgba(255, 255, 255, 0.6);
                 text-decoration: none;
                 transition: color .2s ease;
             }
             .bottom-nav a .material-symbols-outlined { font-size: 22px; }
-            .bottom-nav a.active { color: #15803d; }
+            .bottom-nav a.active { color: #ffffff; }
+            .bottom-nav a.active .material-symbols-outlined { font-variation-settings: 'FILL' 1; }
         }
         @media (min-width: 768px) {
             .bottom-nav { display: none !important; }
@@ -240,19 +241,19 @@
             <div class="flex items-center justify-between h-16 gap-4">
                 <!-- Brand -->
                 <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="flex items-center space-x-3 flex-shrink-0">
-                    <div class="bg-white/20 p-2 rounded-xl">
+                    <div class="bg-white/20 p-2 rounded-xl hidden sm:block">
                         <span class="material-symbols-outlined text-white">holiday_village</span>
                     </div>
                     <div>
-                        <h1 class="text-base sm:text-lg font-bold leading-tight">SILAPU</h1>
-                        <p class="text-[11px] sm:text-sm text-white/80 leading-tight hidden sm:block">
+                        <h1 class="text-[19px] sm:text-lg font-bold leading-tight tracking-wide">SILAPU</h1>
+                        <p class="text-[12px] sm:text-sm text-white/80 leading-tight mt-0.5">
                             Sistem Layanan Puspamukti
                         </p>
                     </div>
                 </a>
 
                 <!-- Desktop menu (Scrollable Kanan Kiri) -->
-                <nav class="desktop-menu flex-1 items-center space-x-1.5 min-w-0 overflow-x-auto">
+                <nav class="desktop-menu flex-1 items-center space-x-1.5 min-w-0 overflow-x-auto hidden md:flex">
                     @php
                         $inMenu = fn($name) => $currentRoute === $name;
                         $rtQuery = $isRtScoped ? ['rt' => $rt] : [];
@@ -293,7 +294,10 @@
                 </nav>
 
                 <!-- Right actions -->
-                <div class="flex items-center space-x-2 flex-shrink-0">                    @auth('warga')
+                <div class="flex items-center space-x-2 flex-shrink-0">
+                    <button class="md:hidden block text-white/90 hover:text-white p-1 rounded-lg transition-colors">
+                        <span class="material-symbols-outlined text-[28px]">menu</span>
+                    </button>                    @auth('warga')
                         @if ($isRtScoped)
                             <div x-data="wargaNotif()" x-init="init()" class="relative">
                                 <button @click="toggle()" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors relative" title="Notifikasi">
