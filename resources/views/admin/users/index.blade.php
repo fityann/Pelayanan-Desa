@@ -57,7 +57,7 @@
                                 <div class="flex items-center justify-center gap-sm">
                                     <a href="{{ route('admin.users.edit', $user) }}" class="text-primary text-label-sm font-bold hover:underline">Edit</a>
                                     @if ($user->id !== auth()->id())
-                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="inline" onsubmit="return confirm('Hapus pengguna ini?')">
+                                        <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="m-0 flex items-center" onsubmit="return confirm('Hapus pengguna ini?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="text-error text-label-sm font-bold hover:underline">Hapus</button>
                                         </form>

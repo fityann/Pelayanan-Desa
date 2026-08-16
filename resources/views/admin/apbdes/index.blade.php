@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'APBDes - SILAPU')
 
@@ -18,7 +18,7 @@
                     <option value="{{ date('Y') }}" {{ !$tahunList->contains(date('Y')) && $tahunDipilih == date('Y') ? 'selected' : '' }}>{{ date('Y') }}</option>
                 </select>
             </form>
-            @if(auth()->user()->hasRole('Bendahara'))
+            @if(auth()->user()->hasAnyRole(['Bendahara', 'Super Admin', 'Kepala Desa', 'Sekretaris Desa']))
                 <button onclick="showApbdesModal()" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
                     <span class="material-symbols-outlined text-[18px]">add</span>
                     Input Data
@@ -118,12 +118,12 @@
                                                     <button class="text-success text-label-sm font-bold hover:underline">Publish</button>
                                                 </form>
                                             @endif
-                                            @if($item->status === 'draft' && auth()->user()->hasRole('Bendahara'))
-                                                <form method="POST" action="{{ route('admin.apbdes.destroy', $item) }}" class="inline" onsubmit="return confirm('Hapus data ini?')">
-                                                    @csrf @method('DELETE')
-                                                    <button class="text-error text-label-sm font-bold hover:underline">Hapus</button>
-                                                </form>
-                                            @endif
+                                            
+                                            <a href="{{ route('admin.apbdes.edit', $item) }}" class="text-secondary text-label-sm font-bold hover:underline">Edit</a>
+                                            <form method="POST" action="{{ route('admin.apbdes.destroy', $item) }}" class="m-0 flex items-center" onsubmit="return confirm('Hapus data ini?')">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="text-error text-label-sm font-bold hover:underline">Hapus</button>
+                                            </form>
                                         </div>
                                     </td>
                                 @endif

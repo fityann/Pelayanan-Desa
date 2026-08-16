@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Informasi & Pengumuman - SILAPU')
 
@@ -55,9 +55,9 @@
                                 </form>
                             @endif
                             <a href="{{ route('admin.informasi.edit', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Edit</a>
-                            <form method="POST" action="{{ route('admin.informasi.destroy', $item) }}" class="inline" onsubmit="return confirm('Hapus informasi ini?')">
+                            <form method="POST" action="{{ route('admin.informasi.destroy', $item) }}" class="m-0 flex items-center" onsubmit="return confirm('Hapus informasi ini?')">
                                 @csrf @method('DELETE')
-                                <button class="text-error text-label-sm font-bold hover:underline">Hapus</button>
+                                <button type="submit" class="text-error text-label-sm font-bold hover:underline">Hapus</button>
                             </form>
                         </div>
                     </div>

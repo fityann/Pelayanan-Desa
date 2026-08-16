@@ -116,16 +116,14 @@ class ApbdesController extends Controller
     
     private function getSourceBreakdown($tahun)
     {
-        // Asumsi sumber dana ada di kolom 'bidang' atau 'sub_bidang'
-        // Sesuaikan dengan struktur data Anda
-        return Apbde::select('bidang as sumber_dana', 
+        return Apbde::select('sub_bidang as sumber_dana', 
                 DB::raw('SUM(anggaran) as total_anggaran'), 
                 DB::raw('SUM(realisasi) as total_realisasi'))
             ->where('tahun', $tahun)
             ->where('kategori', 'Pendapatan')
             ->where('status', 'dipublikasikan')
-            ->whereNotNull('bidang')
-            ->groupBy('bidang')
+            ->whereNotNull('sub_bidang')
+            ->groupBy('sub_bidang')
             ->get()
             ->map(function($item) {
                 return [

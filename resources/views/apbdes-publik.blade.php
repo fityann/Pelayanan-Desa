@@ -24,7 +24,7 @@
             </div>
             <form method="GET" class="flex items-center gap-3 bg-white px-4 py-3 rounded-xl shadow-sm">
                 <label class="text-sm font-semibold text-gray-700">Tahun:</label>
-                <select name="tahun" onchange="this.form.submit()" class="bg-emerald-50 rounded-lg px-3 py-2 text-sm outline-none border border-emerald-200">
+                <select name="tahun" onchange="this.form.submit()" class="bg-emerald-50 rounded-lg pl-3 pr-8 py-2 text-sm outline-none border border-emerald-200">
                     @foreach ($tahunList as $t)
                         <option value="{{ $t }}" {{ $t == $tahun ? 'selected' : '' }}>{{ $t }}</option>
                     @endforeach

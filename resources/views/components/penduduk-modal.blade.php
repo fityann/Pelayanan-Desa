@@ -26,7 +26,7 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="nik" id="nik" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    placeholder="16 digit angka"
                                    pattern="[0-9]{16}"
                                    maxlength="16"
@@ -43,7 +43,7 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="no_kk" id="no_kk" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    placeholder="Kosongkan jika belum"
                                    pattern="[0-9]{16}"
                                    maxlength="16">
@@ -62,7 +62,7 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="nama" id="nama" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    placeholder="Nama lengkap"
                                    required>
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
@@ -102,7 +102,7 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="tempat_lahir" id="tempat_lahir" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    placeholder="Kota/Kabupaten">
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">location_on</span>
@@ -116,9 +116,9 @@
                         </label>
                         <div class="relative">
                             <input type="date" name="tanggal_lahir" id="tanggal_lahir" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    max="{{ date('Y-m-d') }}">
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
                                 <span class="material-symbols-outlined text-base">calendar_today</span>
                             </div>
                         </div>
@@ -133,7 +133,7 @@
                         </label>
                         <div class="relative">
                             <textarea name="alamat" id="alamat" rows="3"
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
                                    placeholder="Alamat lengkap"></textarea>
                             <div class="absolute right-3 top-3 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">home</span>
@@ -146,7 +146,7 @@
                             <label class="block text-label-sm font-medium text-on-surface mb-xs">RT</label>
                             <input type="number" name="rt" id="rt" 
                                    min="1" max="99" placeholder="cth: 01"
-                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm">
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm">
                             <input type="hidden" name="rw" id="rw" value="01">
                         </div>
                         
@@ -200,7 +200,7 @@
                     <div>
                         <label class="block text-label-sm font-medium text-on-surface mb-xs">Pekerjaan</label>
                         <input type="text" name="pekerjaan" id="pekerjaan" 
-                               class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm"
+                               class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm"
                                placeholder="Pekerjaan">
                     </div>
                     

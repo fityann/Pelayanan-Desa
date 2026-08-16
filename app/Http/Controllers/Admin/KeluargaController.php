@@ -66,7 +66,7 @@ class KeluargaController extends Controller
         return view('admin.keluarga.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'no_kk' => ['required', 'string', 'size:16', 'unique:keluarga,no_kk'],
@@ -82,6 +82,10 @@ class KeluargaController extends Controller
 
         Keluarga::create($request->all());
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Data keluarga berhasil ditambahkan'], 201);
+        }
+
         return redirect()->route('admin.keluarga.index')->with('success', 'Data keluarga berhasil ditambahkan');
     }
 
@@ -90,7 +94,7 @@ class KeluargaController extends Controller
         return view('admin.keluarga.edit', compact('keluarga'));
     }
 
-    public function update(Request $request, Keluarga $keluarga): RedirectResponse
+    public function update(Request $request, Keluarga $keluarga)
     {
         $request->validate([
             'no_kk' => ['required', 'string', 'size:16', 'unique:keluarga,no_kk,' . $keluarga->id],
@@ -105,6 +109,10 @@ class KeluargaController extends Controller
         ]);
 
         $keluarga->update($request->all());
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Data keluarga berhasil diperbarui'], 200);
+        }
 
         return redirect()->route('admin.keluarga.index')->with('success', 'Data keluarga berhasil diperbarui');
     }

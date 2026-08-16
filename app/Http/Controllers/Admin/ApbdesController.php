@@ -62,6 +62,35 @@ class ApbdesController extends Controller
         return redirect()->route('admin.apbdes.index')->with('success', 'Data APBDes berhasil ditambahkan');
     }
 
+    public function edit(Apbde $apbde): View
+    {
+        return view('admin.apbdes.edit', compact('apbde'));
+    }
+
+    public function update(Request $request, Apbde $apbde)
+    {
+        $request->validate([
+            'tahun' => ['required', 'string', 'size:4'],
+            'kategori' => ['required', 'in:Pendapatan,Belanja,Pembiayaan'],
+            'bidang' => ['nullable', 'string', 'max:200'],
+            'uraian' => ['required', 'string'],
+            'anggaran' => ['required', 'numeric', 'min:0'],
+            'realisasi' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $data = $request->all();
+        $apbde->update($data);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data APBDes berhasil diperbarui',
+            ], 200);
+        }
+
+        return redirect()->route('admin.apbdes.index')->with('success', 'Data APBDes berhasil diperbarui');
+    }
+
     public function review(Apbde $apbde): RedirectResponse
     {
         $apbde->update([

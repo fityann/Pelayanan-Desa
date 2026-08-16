@@ -9,7 +9,7 @@
             <h1 class="text-2xl font-bold text-slate-800">Kategori Aset</h1>
             <p class="text-sm text-slate-500">Kelola master data kategori aset desa</p>
         </div>
-        <button @click="showModal = true; isEdit = false; editName = ''" class="bg-blue-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center gap-2">
+        <button @click="showModal = true; isEdit = false; editName = ''" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
             <span class="material-symbols-outlined text-[18px]">add</span>
             Tambah Kategori
         </button>

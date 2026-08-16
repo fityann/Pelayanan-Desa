@@ -78,7 +78,7 @@ class PendudukController extends Controller
         return view('admin.penduduk.create', compact('keluargaList'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'nik' => ['required', 'string', 'size:16', 'unique:penduduk,nik'],
@@ -101,6 +101,10 @@ class PendudukController extends Controller
 
         Penduduk::create($request->all());
 
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Data penduduk berhasil ditambahkan'], 201);
+        }
+
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan');
     }
 
@@ -111,7 +115,7 @@ class PendudukController extends Controller
         return view('admin.penduduk.edit', compact('penduduk', 'keluargaList', 'users'));
     }
 
-    public function update(Request $request, Penduduk $penduduk): RedirectResponse
+    public function update(Request $request, Penduduk $penduduk)
     {
         $request->validate([
             'nik' => ['required', 'string', 'size:16', 'unique:penduduk,nik,' . $penduduk->id],
@@ -134,6 +138,10 @@ class PendudukController extends Controller
         ]);
 
         $penduduk->update($request->all());
+
+        if ($request->expectsJson()) {
+            return response()->json(['message' => 'Data penduduk berhasil diperbarui'], 200);
+        }
 
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil diperbarui');
     }

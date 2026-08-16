@@ -203,6 +203,8 @@ Route::prefix('admin')->name('admin.')
         Route::get('apbdes', [ApbdesController::class, 'index'])->middleware('permission:R APBDes')->name('apbdes.index');
         Route::get('apbdes/create', [ApbdesController::class, 'create'])->middleware('permission:C APBDes')->name('apbdes.create');
         Route::post('apbdes', [ApbdesController::class, 'store'])->middleware('permission:C APBDes')->name('apbdes.store');
+        Route::get('apbdes/{apbde}/edit', [ApbdesController::class, 'edit'])->middleware('permission:U APBDes')->name('apbdes.edit');
+        Route::match(['put', 'patch'], 'apbdes/{apbde}', [ApbdesController::class, 'update'])->middleware('permission:U APBDes')->name('apbdes.update');
         Route::post('apbdes/{apbde}/review', [ApbdesController::class, 'review'])->middleware('permission:U APBDes')->name('apbdes.review');
         Route::post('apbdes/{apbde}/publish', [ApbdesController::class, 'publish'])->middleware('permission:U APBDes')->name('apbdes.publish');
         Route::delete('apbdes/{apbde}', [ApbdesController::class, 'destroy'])->middleware('permission:D APBDes')->name('apbdes.destroy');

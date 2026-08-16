@@ -29,9 +29,7 @@
                     <h1 class="text-3xl md:text-4xl font-black leading-tight mb-2 tracking-tight">
                         {{ $greeting }}! 👋
                     </h1>
-                    <h2 class="text-2xl md:text-3xl font-black text-[#F0D878] uppercase tracking-widest mb-4">
-                        HAPUNTEN BARAYA
-                    </h2>
+
                     <p class="text-slate-100 text-base md:text-lg mb-1 font-medium">
                         Selamat datang di <span class="font-bold text-[#F0D878]">{{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}</span>
                     </p>
