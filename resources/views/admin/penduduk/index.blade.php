@@ -229,6 +229,7 @@
             <table class="w-full">
                 <thead>
                     <tr class="bg-surface-container/50">
+                        <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest w-12">No.</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">NIK</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">Nama</th>
                         <th class="text-left px-lg py-3 text-label-sm font-bold text-on-surface-variant uppercase tracking-widest">L/P</th>
@@ -240,6 +241,7 @@
                 <tbody class="divide-y divide-surface-variant/20">
                     @foreach ($penduduk as $p)
                         <tr class="hover:bg-surface-container/30 transition-colors">
+                            <td class="px-lg py-4 text-body-sm text-on-surface-variant font-medium">{{ $penduduk->firstItem() + $loop->iteration - 1 }}</td>
                             <td class="px-lg py-4 text-body-sm font-mono text-on-surface">{{ $p->nik }}</td>
                             <td class="px-lg py-4 text-body-md font-semibold text-on-surface">{{ $p->nama }}</td>
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->jenis_kelamin ?? '-' }}</td>
@@ -247,6 +249,10 @@
                             <td class="px-lg py-4 text-body-sm text-on-surface-variant">{{ $p->no_kk ?? '-' }}</td>
                             <td class="px-lg py-4 text-center">
                                 <div class="flex items-center justify-center gap-xs">
+                                    <a href="{{ route('admin.penduduk.show', $p) }}" class="inline-flex items-center gap-1 bg-blue-500/10 text-blue-700 hover:bg-blue-500 hover:text-white px-2.5 py-1 rounded-lg text-xs font-bold transition-all">
+                                        <span class="material-symbols-outlined text-[15px]">visibility</span>
+                                        <span>Detail</span>
+                                    </a>
                                     <button onclick="showPendudukModal({
                                         id: '{{ $p->id }}',
                                         nik: '{{ $p->nik }}',

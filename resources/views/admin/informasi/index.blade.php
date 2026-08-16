@@ -54,6 +54,7 @@
                                     <button class="text-success text-label-sm font-bold hover:underline">Publish</button>
                                 </form>
                             @endif
+                            <a href="{{ route('admin.informasi.show', $item) }}" class="text-blue-600 text-label-sm font-bold hover:underline">Detail</a>
                             <a href="{{ route('admin.informasi.edit', $item) }}" class="text-primary text-label-sm font-bold hover:underline">Edit</a>
                             <form method="POST" action="{{ route('admin.informasi.destroy', $item) }}" class="m-0 flex items-center" onsubmit="return confirm('Hapus informasi ini?')">
                                 @csrf @method('DELETE')

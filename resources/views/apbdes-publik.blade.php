@@ -56,21 +56,25 @@
     </div>
 
     <!-- Grafik -->
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-        <h3 class="text-lg font-bold text-gray-900 mb-6">Grafik Pendapatan vs Belanja</h3>
+    <div class="bg-white rounded-2xl shadow-sm p-6 mb-8 mt-4">
+        <h3 class="text-lg font-bold text-gray-900 mb-10">Grafik Pendapatan vs Belanja</h3>
         @php $maxVal = max($ringkasan['pendapatan'], $ringkasan['belanja'], 1); @endphp
-        <div class="flex items-end justify-around gap-6 h-48 px-4">
-            <div class="flex flex-col items-center gap-3">
-                <span class="text-sm font-bold text-gray-900">Rp {{ number_format($ringkasan['pendapatan'] / 1000000, 1) }}jt</span>
-                <div class="w-16 bg-emerald-600 rounded-t-lg" style="height: {{ ($ringkasan['pendapatan'] / $maxVal) * 100 }}%"></div>
-                <span class="text-sm font-bold text-gray-500">Pendapatan</span>
+        <div class="flex justify-around items-end h-64 px-4 sm:px-12 pb-2 border-b border-gray-100">
+            <!-- Pendapatan -->
+            <div class="w-20 sm:w-32 relative flex flex-col justify-end items-center" style="height: {{ ($ringkasan['pendapatan'] / $maxVal) * 100 }}%;">
+                <span class="absolute -top-7 text-sm font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format($ringkasan['pendapatan'] / 1000000, 1) }}jt</span>
+                <div class="w-full h-full bg-emerald-500 rounded-t-xl transition-all duration-1000 shadow-sm"></div>
+                <span class="absolute -bottom-8 text-sm font-semibold text-gray-500">Pendapatan</span>
             </div>
-            <div class="flex flex-col items-center gap-3">
-                <span class="text-sm font-bold text-gray-900">Rp {{ number_format($ringkasan['belanja'] / 1000000, 1) }}jt</span>
-                <div class="w-16 bg-teal-600 rounded-t-lg" style="height: {{ ($ringkasan['belanja'] / $maxVal) * 100 }}%"></div>
-                <span class="text-sm font-bold text-gray-500">Belanja</span>
+
+            <!-- Belanja -->
+            <div class="w-20 sm:w-32 relative flex flex-col justify-end items-center" style="height: {{ ($ringkasan['belanja'] / $maxVal) * 100 }}%;">
+                <span class="absolute -top-7 text-sm font-bold text-gray-900 whitespace-nowrap">Rp {{ number_format($ringkasan['belanja'] / 1000000, 1) }}jt</span>
+                <div class="w-full h-full bg-teal-500 rounded-t-xl transition-all duration-1000 shadow-sm"></div>
+                <span class="absolute -bottom-8 text-sm font-semibold text-gray-500">Belanja</span>
             </div>
         </div>
+        <div class="h-8"></div>
     </div>
 
     <!-- Detail per kategori -->

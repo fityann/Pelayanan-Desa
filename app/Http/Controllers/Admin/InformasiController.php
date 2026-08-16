@@ -66,6 +66,12 @@ class InformasiController extends Controller
         return redirect()->route('admin.informasi.index')->with('success', 'Informasi berhasil ditambahkan');
     }
 
+    public function show(Informasi $informasi): View
+    {
+        $informasi->load('user');
+        return view('admin.informasi.show', compact('informasi'));
+    }
+
     public function edit(Informasi $informasi): View
     {
         return view('admin.informasi.edit', compact('informasi'));

@@ -99,13 +99,31 @@ class PendudukController extends Controller
             'keluarga_id' => ['nullable', 'exists:keluarga,id'],
         ]);
 
-        Penduduk::create($request->all());
+        $data = $request->all();
+        if (empty($data['kewarganegaraan'])) {
+            $data['kewarganegaraan'] = 'WNI';
+        }
+
+        Penduduk::create($data);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data penduduk berhasil ditambahkan'
+            ]);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Data penduduk berhasil ditambahkan'], 201);
         }
 
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan');
+    }
+
+    public function show(Penduduk $penduduk): View
+    {
+        $penduduk->load('keluarga', 'user');
+        return view('admin.penduduk.show', compact('penduduk'));
     }
 
     public function edit(Penduduk $penduduk): View
@@ -137,7 +155,19 @@ class PendudukController extends Controller
             'user_id' => ['nullable', 'exists:users,id'],
         ]);
 
-        $penduduk->update($request->all());
+        $data = $request->all();
+        if (empty($data['kewarganegaraan'])) {
+            $data['kewarganegaraan'] = 'WNI';
+        }
+
+        $penduduk->update($data);
+
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data penduduk berhasil diperbarui'
+            ]);
+        }
 
         if ($request->expectsJson()) {
             return response()->json(['message' => 'Data penduduk berhasil diperbarui'], 200);

@@ -89,6 +89,12 @@ class KeluargaController extends Controller
         return redirect()->route('admin.keluarga.index')->with('success', 'Data keluarga berhasil ditambahkan');
     }
 
+    public function show(Keluarga $keluarga): View
+    {
+        $keluarga->load('penduduk');
+        return view('admin.keluarga.show', compact('keluarga'));
+    }
+
     public function edit(Keluarga $keluarga): View
     {
         return view('admin.keluarga.edit', compact('keluarga'));

@@ -10,343 +10,190 @@
         $prosesSelesai = ($pengaduanStats['total_pengaduan'] ?? 0) > 0 ? round((($pengaduanStats['pengaduan_selesai'] ?? 0) / $pengaduanStats['total_pengaduan']) * 100) : 0;
     @endphp
 
-    <!-- Welcome Hero Section (Purple Theme with Gold Border) -->
-    <section class="relative overflow-hidden rounded-3xl bg-[#6A3297] text-white border-4 border-[#D8B84C] shadow-2xl shadow-[#6A3297]/30">
-        <div class="relative p-6 md:p-10">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
-                <div class="flex-1">
-                    <div class="flex items-center space-x-4 mb-5">
-                        <div class="bg-[#D8B84C] text-[#2A3520] p-3.5 rounded-2xl shadow-md border border-[#F7F0D4]/50">
-                            <span class="material-symbols-outlined text-3xl font-bold">qr_code_scanner</span>
-                        </div>
-                        <div>
-                            <span class="inline-flex items-center px-3.5 py-1.5 rounded-full bg-[#D8B84C] text-[#2A3520] text-xs font-black tracking-wide uppercase shadow-sm border border-[#F7F0D4]/40">
-                                Portal Warga Desa Puspamukti
-                            </span>
-                        </div>
-                    </div>
-
-                    <h1 class="text-3xl md:text-4xl font-black leading-tight mb-2 tracking-tight">
-                        {{ $greeting }}! 👋
-                    </h1>
-
-                    <p class="text-slate-100 text-base md:text-lg mb-1 font-medium">
-                        Selamat datang di <span class="font-bold text-[#F0D878]">{{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}</span>
+    <!-- Welcome Hero Section -->
+    <section class="relative overflow-hidden rounded-[28px] bg-[#6A3297] text-white shadow-xl mb-4 mt-2">
+        <div class="p-5">
+            <div class="flex items-start gap-4 mb-5">
+                <div class="bg-white p-1.5 rounded-2xl flex-shrink-0">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WargaPuspamukti" class="w-[60px] h-[60px] object-cover rounded-xl" alt="QR Code">
+                </div>
+                <div class="flex-1 min-w-0 pt-1">
+                    <p class="text-[13px] text-white/90 font-medium mb-0.5">{{ $greeting }}!</p>
+                    <h2 class="text-[19px] font-extrabold leading-tight tracking-wide truncate">
+                        HAPUNTEN BARAYA
+                    </h2>
+                    <p class="text-[13px] text-white/90 mt-0.5">
+                        Selamat datang di {{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}
                     </p>
-
-
-                    <!-- Hero meta chips -->
-                    <div class="flex flex-wrap gap-3 mt-6">
-
-                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-slate-400/30 backdrop-blur px-4 py-2 rounded-full text-slate-200">
-                            <span class="material-symbols-outlined text-sm">calendar_today</span>
-                            <span class="text-sm font-semibold">{{ now()->translatedFormat('l, d F Y') }}</span>
-                        </div>
-                        <div class="flex items-center space-x-2 bg-[#2A3520]/70 border border-slate-400/30 backdrop-blur px-4 py-2 rounded-full text-slate-200">
-                            <span class="material-symbols-outlined text-sm">visibility</span>
-                            <span class="text-sm font-semibold">{{ $stats['total_scans'] ?? 0 }} kali dibuka</span>
-                        </div>
-                    </div>
-
-                    <!-- Quick actions -->
-                    <div class="flex flex-wrap gap-3 mt-7">
-                        <button onclick="showPengaduanModal()"
-                                class="inline-flex items-center space-x-2 bg-[#D8B84C] hover:bg-[#c9a73b] text-[#2A3520] px-6 py-3.5 rounded-xl font-black shadow-lg hover:scale-105 transition-all">
-                            <span class="material-symbols-outlined font-bold">campaign</span>
-                            <span>Buat Pengaduan</span>
-                        </button>
-                        <button onclick="sharePage()"
-                                class="inline-flex items-center space-x-2 bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur px-5 py-3.5 rounded-xl font-semibold transition-all">
-                            <span class="material-symbols-outlined">share</span>
-                            <span>Bagikan</span>
-                        </button>
-                    </div>
                 </div>
+            </div>
 
-                <!-- Location Confirmation Badge -->
-                <div class="flex-shrink-0">
-                    <div class="bg-[#2A3520]/80 backdrop-blur-xl border border-[#D8B84C]/40 rounded-2xl p-6 w-full md:w-64 shadow-xl">
-                        <div class="flex items-center space-x-3">
-                            <div class="bg-[#D8B84C] text-[#2A3520] p-2.5 rounded-full shadow-md">
-                                <span class="material-symbols-outlined font-bold">check_circle</span>
-                            </div>
-                            <div>
-                                <p class="text-[11px] uppercase tracking-wider text-[#F0D878] font-bold">Lokasi Terhubung</p>
-                                <p class="text-2xl font-black text-white">RT {{ $rt }}</p>
-                            </div>
-                        </div>
-                        <p class="text-[11px] text-slate-200/80 mt-3 font-medium">Pengaduan Anda otomatis tercatat di wilayah ini</p>
-                    </div>
+            <!-- Hero meta chips -->
+            <div class="flex items-center gap-4 mb-6 text-[12px] text-white/90 font-medium">
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">calendar_today</span>
+                    <span>{{ now()->translatedFormat('l, d F Y') }}</span>
                 </div>
+                <div class="flex items-center gap-1.5">
+                    <span class="material-symbols-outlined text-[16px]">visibility</span>
+                    <span>{{ $stats['total_scans'] ?? 0 }} kali dibuka</span>
+                </div>
+            </div>
+
+            <!-- Quick actions -->
+            <div class="flex flex-col gap-3">
+                <button onclick="showPengaduanModal()"
+                        class="w-full flex items-center justify-center bg-[#E4C04A] hover:bg-[#d4b03a] text-[#2A3520] py-3.5 rounded-2xl font-bold shadow-md transition-all text-[15px]">
+                    Buat Pengaduan
+                </button>
+                <button onclick="sharePage()"
+                        class="w-full flex items-center justify-center bg-transparent border border-white/40 hover:bg-white/10 text-white py-3.5 rounded-2xl font-medium transition-all text-[15px]">
+                    Bagikan
+                </button>
             </div>
         </div>
     </section>
 
     <!-- Quick Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div class="stats-card p-6 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-1 bg-red-500"></div>
-            <div class="flex items-center justify-between mb-3">
-                <p class="text-sm font-medium text-gray-500">Pengaduan Masuk</p>
-                <div class="bg-red-100 p-3 rounded-xl">
-                    <span class="material-symbols-outlined text-red-600">campaign</span>
-                </div>
-            </div>
-            <div class="flex items-end justify-between">
-                <h3 class="text-3xl font-extrabold text-gray-900">{{ $pengaduanStats['total_pengaduan'] ?? 0 }}</h3>
-                <div class="flex items-center space-x-2">
-                    <span class="text-xs text-green-700 bg-green-50 px-2.5 py-1 rounded-full font-semibold">
-                        {{ $pengaduanStats['pengaduan_selesai'] ?? 0 }} selesai
-                    </span>
-                    <span class="text-xs text-yellow-700 bg-yellow-50 px-2.5 py-1 rounded-full font-semibold">
-                        {{ $pengaduanStats['pengaduan_diproses'] ?? 0 }} proses
-                    </span>
-                </div>
+    <div class="grid grid-cols-3 gap-3">
+        <div class="bg-white rounded-2xl p-3 text-center border border-gray-100 shadow-sm flex flex-col justify-center">
+            <p class="text-[11px] font-bold text-gray-800 mb-2 leading-tight">Pengaduan Masuk</p>
+            <h3 class="text-2xl font-black text-gray-900 leading-none mb-1">{{ $pengaduanStats['total_pengaduan'] ?? 0 }}</h3>
+            <div class="text-[9px] text-gray-500 font-medium leading-tight">
+                <p>{{ $pengaduanStats['pengaduan_selesai'] ?? 0 }} selesai</p>
+                <p>{{ $pengaduanStats['pengaduan_diproses'] ?? 0 }} proses</p>
             </div>
         </div>
 
-        <div class="stats-card p-6 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-1 bg-blue-500"></div>
-            <div class="flex items-center justify-between mb-3">
-                <p class="text-sm font-medium text-gray-500">Kategori Teratas</p>
-                <div class="bg-blue-100 p-3 rounded-xl">
-                    <span class="material-symbols-outlined text-blue-600">trending_up</span>
-                </div>
-            </div>
-            <h3 class="text-xl font-extrabold text-gray-900 capitalize">
-                {{ $pengaduanStats['kategori_top']->kategori ?? 'Belum Ada' }}
+        <div class="bg-white rounded-2xl p-3 text-center border border-gray-100 shadow-sm flex flex-col justify-center">
+            <p class="text-[11px] font-bold text-gray-800 mb-2 leading-tight">Kategori Teratas</p>
+            <h3 class="text-[17px] font-black text-gray-900 leading-tight capitalize truncate mb-1">
+                {{ $pengaduanStats['kategori_top']->kategori ?? 'Sampah' }}
             </h3>
-            <p class="text-sm text-gray-500 mt-1">
-                {{ $pengaduanStats['kategori_top']->jumlah ?? 0 }} laporan di kategori ini
-            </p>
-        </div>
-
-        <div class="stats-card p-6 relative overflow-hidden group">
-            <div class="absolute top-0 left-0 w-full h-1 bg-emerald-500"></div>
-            <div class="flex items-center justify-between mb-3">
-                <p class="text-sm font-medium text-gray-500">Scan QR Hari Ini</p>
-                <div class="bg-emerald-100 p-3 rounded-xl">
-                    <span class="material-symbols-outlined text-emerald-600">qr_code_scanner</span>
-                </div>
+            <div class="text-[9px] text-gray-500 font-medium leading-tight">
+                <p>{{ $pengaduanStats['kategori_top']->jumlah ?? 0 }} laporan</p>
             </div>
-            <h3 class="text-3xl font-extrabold text-gray-900">{{ $stats['today_scans'] ?? 0 }}</h3>
-            <p class="text-sm text-gray-500 mt-1">
-                Terakhir: {{ !empty($stats['last_scan']) ? \Carbon\Carbon::parse($stats['last_scan'])->diffForHumans() : 'Belum ada' }}
-            </p>
         </div>
-    </div>
 
-    <!-- Pengaduan selesai progress -->
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-        <div class="flex items-center justify-between mb-3">
-            <h3 class="font-bold text-gray-900">Penyelesaian Pengaduan</h3>
-            <span class="text-sm font-extrabold text-emerald-600">{{ $prosesSelesai }}%</span>
-        </div>
-        <div class="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-700"
-                 style="width: {{ $prosesSelesai }}%"></div>
-        </div>
-        <div class="flex justify-between mt-2 text-xs text-gray-400">
-            <span>Dari {{ $pengaduanStats['total_pengaduan'] ?? 0 }} laporan</span>
-            <span>{{ $pengaduanStats['pengaduan_selesai'] ?? 0 }} terselesaikan</span>
+        <div class="bg-white rounded-2xl p-3 text-center border border-gray-100 shadow-sm flex flex-col justify-center">
+            <p class="text-[11px] font-bold text-gray-800 mb-2 leading-tight">Scan QR Hari Ini</p>
+            <h3 class="text-2xl font-black text-gray-900 leading-none mb-1">{{ $stats['today_scans'] ?? 0 }}</h3>
+            <div class="text-[9px] text-gray-500 font-medium leading-tight">
+                <p>Terakhir:</p>
+                <p>{{ !empty($stats['last_scan']) ? \Carbon\Carbon::parse($stats['last_scan'])->diffForHumans(null, true) . ' ago' : 'Belum ada' }}</p>
+            </div>
         </div>
     </div>
 
     <!-- Services Grid -->
-    <div>
-        <div class="flex items-center justify-between mb-6">
-            <div>
-                <h2 class="text-xl md:text-2xl font-bold text-gray-900">Layanan Warga</h2>
-                <p class="text-sm text-gray-500 mt-1">Akses cepat layanan digital untuk warga RT {{ $rt }}</p>
-            </div>
-        </div>
+    <div class="bg-white rounded-[24px] p-5 shadow-sm border border-gray-100">
+        <h2 class="text-[16px] font-bold text-gray-900 mb-5">Layanan Warga</h2>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Pengaduan -->
-            <div class="service-card p-6 cursor-default">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-red-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-red-600 text-2xl">campaign</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Buat Pengaduan</h3>
-                        <p class="text-sm text-gray-600 mb-3">Laporkan masalah di lingkungan RT {{ $rt }}</p>
-                        <div class="flex items-center text-xs text-gray-500">
-                            <span class="material-symbols-outlined text-xs mr-1">timer</span>
-                            <span>Proses cepat, respon 1x24 jam</span>
-                        </div>
-                    </div>
+        <div class="grid grid-cols-3 gap-y-6 gap-x-2">
+            <!-- Buat Pengaduan -->
+            <div class="flex flex-col items-center text-center cursor-pointer" onclick="showPengaduanModal()">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">edit_square</span>
                 </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Buat Pengaduan</span>
             </div>
             
             <!-- Info Desa -->
-            <div class="service-card p-6 cursor-default">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-blue-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-blue-600 text-2xl">newspaper</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Info Desa</h3>
-                        <p class="text-sm text-gray-600 mb-3">Berita, APBDes, dan informasi desa terbaru</p>
-                        <div class="flex items-center text-xs text-gray-500">
-                            <span class="material-symbols-outlined text-xs mr-1">update</span>
-                            <span>Update terbaru setiap minggu</span>
-                        </div>
-                    </div>
+            <a href="{{ route('warga.rt.info', ['rt' => $rt]) }}" class="flex flex-col items-center text-center">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">info</span>
                 </div>
-            </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Info Desa</span>
+            </a>
             
             <!-- Surat Online -->
-            <div class="service-card p-6 cursor-default">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-green-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-green-600 text-2xl">edit_note</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Surat Online</h3>
-                        <p class="text-sm text-gray-600 mb-3">Ajukan surat keterangan tanpa antri</p>
-                        <div class="flex items-center text-xs text-gray-500">
-                            <span class="material-symbols-outlined text-xs mr-1">download</span>
-                            <span>Download langsung setelah disetujui</span>
-                        </div>
-                    </div>
+            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" class="flex flex-col items-center text-center">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">description</span>
                 </div>
-            </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Surat Online</span>
+            </a>
             
             <!-- Data Penduduk -->
-            <div class="service-card p-6 cursor-default text-left block">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-purple-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-purple-600 text-2xl">groups</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Data Penduduk</h3>
-                        <p class="text-sm text-gray-600 mb-3">Informasi data penduduk RT {{ $rt }}</p>
-                        <div class="flex items-center text-xs text-gray-500">
-                            <span class="material-symbols-outlined text-xs mr-1">verified</span>
-                            <span>Data terverifikasi pemerintah desa</span>
-                        </div>
-                    </div>
+            <div class="flex flex-col items-center text-center">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">group</span>
                 </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Data Penduduk</span>
             </div>
             
             <!-- Kegiatan RT -->
-            <div class="service-card p-6 cursor-default text-left w-full block">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-amber-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-amber-700 text-2xl">event</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Kegiatan RT</h3>
-                        <p class="text-sm text-gray-600 mb-3">Jadwal kegiatan dan pertemuan RT {{ $rt }}</p>
-                        <div class="flex items-center text-xs text-gray-500">
-                            <span class="material-symbols-outlined text-xs mr-1">calendar_month</span>
-                            <span>Arisan, kerja bakti, pengajian, remaja</span>
-                        </div>
-                    </div>
+            <div class="flex flex-col items-center text-center cursor-pointer" onclick="showKegiatanRtModal()">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">calendar_month</span>
                 </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Kegiatan RT</span>
             </div>
             
             <!-- Kontak Darurat -->
-            <div class="service-card p-6 cursor-default text-left w-full block">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-rose-100 p-3 rounded-xl">
-                        <span class="material-symbols-outlined text-rose-600 text-2xl">emergency</span>
-                    </div>
-                    <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">Kontak Darurat</h3>
-                        <p class="text-sm text-gray-600 mb-3">Nomor penting untuk keadaan darurat</p>
-                        <div class="grid grid-cols-3 gap-2">
-                            <div class="bg-red-50 rounded-lg py-2 text-center">
-                                <span class="material-symbols-outlined text-red-500 text-base block">local_police</span>
-                                <span class="text-xs font-semibold text-gray-700">110</span>
-                            </div>
-                            <div class="bg-orange-50 rounded-lg py-2 text-center">
-                                <span class="material-symbols-outlined text-orange-500 text-base block">local_fire_department</span>
-                                <span class="text-xs font-semibold text-gray-700">113</span>
-                            </div>
-                            <div class="bg-emerald-50 rounded-lg py-2 text-center">
-                                <span class="material-symbols-outlined text-emerald-500 text-base block">ambulance</span>
-                                <span class="text-xs font-semibold text-gray-700">119</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="flex flex-col items-center text-center cursor-pointer" onclick="showKontakDaruratModal()">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">call</span>
                 </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Kontak Darurat</span>
             </div>
+            
+            <!-- Musrenbang -->
+            <a href="{{ route('warga.musrenbang.index') }}" class="flex flex-col items-center text-center">
+                <div class="w-[52px] h-[52px] bg-[#f5eef9] rounded-[16px] flex items-center justify-center mb-2">
+                    <span class="material-symbols-outlined text-[#6A3297] text-[24px]">how_to_vote</span>
+                </div>
+                <span class="text-[11px] font-bold text-gray-800 leading-tight">Musrenbang</span>
+            </a>
         </div>
     </div>
 
     <!-- Berita & Agenda Wilayah -->
-    @if($beritaTerbaru->count() > 0 || $agendaTerdekat->count() > 0)
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        @if($beritaTerbaru->count() > 0)
-        <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <h2 class="text-xl md:text-2xl font-bold text-gray-900">Berita Terbaru</h2>
-                    <p class="text-sm text-gray-500 mt-1">Informasi terkini untuk warga RT {{ $rt }}</p>
-                </div>
-                <a href="{{ route('warga.rt.info', ['rt' => $rt]) }}"
-                   class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1 whitespace-nowrap">
-                    <span>Semua</span>
-                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                </a>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                @foreach($beritaTerbaru as $berita)
-                <a href="{{ route('informasi.publik', ['rt' => $rt]) }}" class="group block border border-gray-100 rounded-xl overflow-hidden hover:shadow-md transition-all">
-                    @if($berita->gambar)
-                    <div class="h-28 bg-gray-200 overflow-hidden">
-                        <img src="{{ Storage::url($berita->gambar) }}" alt="{{ $berita->judul }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                    </div>
-                    @else
-                    <div class="h-28 bg-gradient-to-br from-emerald-50 to-teal-50 flex items-center justify-center">
-                        <span class="material-symbols-outlined text-3xl text-emerald-300">newspaper</span>
-                    </div>
-                    @endif
-<div class="p-4">
-                        <span class="text-[10px] uppercase tracking-wider font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">Berita</span>
-                        <h3 class="font-semibold text-gray-900 mt-2 line-clamp-2 group-hover:text-emerald-700 transition-colors">{{ $berita->judul }}</h3>
-                        <p class="text-sm text-gray-600 mt-1.5 line-clamp-2">{{ Str::limit(strip_tags($berita->isi ?? ''), 100) }}</p>
-                        <p class="text-xs text-gray-500 mt-2">{{ $berita->published_at?->diffForHumans() }}</p>
-                    </div>
-                </a>
-                @endforeach
-            </div>
-        </div>
-        @endif
-
-        @if($agendaTerdekat->count() > 0)
-        <div class="bg-white rounded-2xl shadow-sm p-6">
-            <div class="flex items-center justify-between mb-5">
-                <div>
-                    <h2 class="text-xl font-bold text-gray-900">Agenda Terdekat</h2>
-                    <p class="text-sm text-gray-500 mt-1">Kegiatan RT {{ $rt }}</p>
-                </div>
-            </div>
-            <div class="space-y-4">
-                @foreach($agendaTerdekat as $agenda)
-                <div class="flex items-start space-x-3 border border-gray-100 rounded-xl p-3 hover:bg-gray-50 transition-colors">
-                    <div class="bg-emerald-100 rounded-lg px-3 py-2 text-center flex-shrink-0">
-                        <p class="text-lg font-bold text-emerald-700 leading-none">{{ $agenda->tanggal_kegiatan?->format('d') }}</p>
-                        <p class="text-[10px] uppercase text-emerald-600 font-semibold">{{ $agenda->tanggal_kegiatan?->translatedFormat('M') }}</p>
-                    </div>
-                    <div class="min-w-0">
-                        <h3 class="font-semibold text-gray-900 text-sm line-clamp-1">{{ $agenda->judul }}</h3>
-                        @if($agenda->lokasi)
-                        <p class="text-xs text-gray-500 mt-1 flex items-center">
-                            <span class="material-symbols-outlined text-xs mr-1">location_on</span>
-                            {{ $agenda->lokasi }}
-                        </p>
+    <div class="grid grid-cols-2 gap-4">
+        <!-- Berita Terbaru -->
+        <div>
+            <h2 class="text-[15px] font-bold text-gray-900 mb-3">Berita Terbaru</h2>
+            @if($beritaTerbaru->count() > 0)
+                @php $berita = $beritaTerbaru->first(); @endphp
+                <a href="{{ route('informasi.publik', ['rt' => $rt]) }}" class="block bg-white rounded-[20px] overflow-hidden shadow-sm border border-gray-100 relative group">
+                    <div class="h-32 w-full bg-gray-200">
+                        @if($berita->gambar)
+                            <img src="{{ Storage::url($berita->gambar) }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
+                        @else
+                            <img src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=500&q=80" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         @endif
                     </div>
+                    <div class="absolute top-2 left-2 bg-[#E4C04A] text-[#2A3520] text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">
+                        Featured
+                    </div>
+                    <div class="absolute bottom-0 left-0 w-full p-2.5 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                        <p class="text-white text-[11px] font-medium line-clamp-2 leading-snug">{{ $berita->judul }}</p>
+                    </div>
+                </a>
+            @else
+                <div class="bg-white rounded-[20px] h-32 flex items-center justify-center border border-gray-100 shadow-sm">
+                    <p class="text-[11px] text-gray-400">Belum ada berita</p>
                 </div>
-                @endforeach
+            @endif
+        </div>
+
+        <!-- Agenda Terdekat -->
+        <div>
+            <h2 class="text-[15px] font-bold text-gray-900 mb-3">Agenda Terdekat</h2>
+            <div class="bg-white rounded-[20px] p-3.5 shadow-sm border border-gray-100 h-32 flex flex-col justify-center">
+                @if($agendaTerdekat->count() > 0)
+                    @php $agenda = $agendaTerdekat->first(); @endphp
+                    <p class="text-[11px] text-gray-500 mb-1.5 font-medium">{{ $agenda->tanggal_kegiatan?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
+                    <h3 class="font-bold text-[13px] text-gray-900 leading-snug line-clamp-2">{{ $agenda->judul }}</h3>
+                    <p class="text-[10px] text-gray-400 mt-auto">{{ $agenda->tanggal_kegiatan?->translatedFormat('d F Y') ?? now()->translatedFormat('d F Y') }}</p>
+                @else
+                    <p class="text-[11px] text-gray-500 mb-1.5 font-medium">{{ now()->translatedFormat('d F Y') }}</p>
+                    <h3 class="font-bold text-[13px] text-gray-900 leading-snug line-clamp-2">Sistem Layanan Puspamukti</h3>
+                    <p class="text-[10px] text-gray-400 mt-auto">{{ now()->translatedFormat('d F Y') }}</p>
+                @endif
             </div>
         </div>
-        @endif
     </div>
-    @endif
 
     <!-- Recent Pengaduan -->
     @php
@@ -358,19 +205,19 @@
     @endphp
     
     @if($recentPengaduan->count() > 0)
-    <div class="bg-white rounded-2xl shadow-sm p-6">
-        <div class="flex items-center justify-between mb-5">
+    <div class="bg-white rounded-[24px] shadow-sm p-5 border border-gray-100 mt-2">
+        <div class="flex items-center justify-between mb-4">
             <div>
-                <h2 class="text-xl md:text-2xl font-bold text-gray-900">Pengaduan Terbaru</h2>
-                <p class="text-sm text-gray-500 mt-1">Laporan terkini warga RT {{ $rt }}</p>
+                <h2 class="text-[16px] font-bold text-gray-900">Pengaduan Terbaru</h2>
+                <p class="text-[11px] text-gray-500 mt-0.5">Laporan terkini warga RT {{ $rt }}</p>
             </div>
         </div>
-        <div class="space-y-4">
+        <div class="space-y-3">
             @foreach($recentPengaduan as $pengaduan)
-            <div class="flex items-start space-x-4 p-4 border border-gray-100 rounded-xl hover:bg-gray-50 hover:border-gray-200 transition-all">
+            <div class="flex items-start space-x-3 p-3.5 border border-gray-100 rounded-[16px] hover:bg-gray-50 transition-all">
                 <div class="flex-shrink-0">
-                    <div class="{{ $pengaduan->status == 'selesai' ? 'bg-green-100 text-green-600' : ($pengaduan->status == 'diproses' ? 'bg-yellow-100 text-yellow-600' : 'bg-blue-100 text-blue-600') }} p-2.5 rounded-xl">
-                        <span class="material-symbols-outlined">
+                    <div class="{{ $pengaduan->status == 'selesai' ? 'bg-[#eef8f2] text-[#2e8b57]' : ($pengaduan->status == 'diproses' ? 'bg-[#fff8e6] text-[#b8860b]' : 'bg-[#eef4ff] text-[#4169e1]') }} p-2.5 rounded-[12px]">
+                        <span class="material-symbols-outlined text-[20px]">
                             {{ $pengaduan->kategori == 'sampah' ? 'delete' : 
                                ($pengaduan->kategori == 'jalan' ? 'directions' : 
                                ($pengaduan->kategori == 'drainase' ? 'water_damage' : 
@@ -379,25 +226,21 @@
                         </span>
                     </div>
                 </div>
-                <div class="flex-1 min-w-0">
-                    <div class="flex items-center justify-between mb-1 gap-3">
-                        <h4 class="font-semibold text-gray-900 truncate">{{ $pengaduan->judul }}</h4>
-                        <span class="text-xs px-2.5 py-1 rounded-full whitespace-nowrap {{ $pengaduan->status == 'selesai' ? 'bg-green-50 text-green-700' : ($pengaduan->status == 'diproses' ? 'bg-yellow-50 text-yellow-700' : 'bg-blue-50 text-blue-700') }}">
+                <div class="flex-1 min-w-0 pt-0.5">
+                    <div class="flex items-center justify-between mb-1 gap-2">
+                        <h4 class="font-bold text-[13px] text-gray-900 truncate">{{ $pengaduan->judul }}</h4>
+                        <span class="text-[10px] px-2 py-0.5 font-bold rounded-full whitespace-nowrap {{ $pengaduan->status == 'selesai' ? 'bg-[#eef8f2] text-[#2e8b57]' : ($pengaduan->status == 'diproses' ? 'bg-[#fff8e6] text-[#b8860b]' : 'bg-[#eef4ff] text-[#4169e1]') }}">
                             {{ ucfirst($pengaduan->status) }}
                         </span>
                     </div>
-                    <p class="text-sm text-gray-600 mb-2 line-clamp-2">{{ Str::limit($pengaduan->deskripsi, 100) }}</p>
-                    <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500">
+                    <p class="text-[11px] text-gray-600 mb-1.5 line-clamp-2 leading-snug">{{ Str::limit($pengaduan->deskripsi, 80) }}</p>
+                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] text-gray-500 font-medium">
                         <span class="flex items-center">
-                            <span class="material-symbols-outlined text-xs mr-1">person</span>
+                            <span class="material-symbols-outlined text-[12px] mr-1">person</span>
                             {{ $pengaduan->nama_pelapor }}
                         </span>
                         <span class="flex items-center">
-                            <span class="material-symbols-outlined text-xs mr-1">confirmation_number</span>
-                            {{ $pengaduan->tiket_id }}
-                        </span>
-                        <span class="flex items-center">
-                            <span class="material-symbols-outlined text-xs mr-1">schedule</span>
+                            <span class="material-symbols-outlined text-[12px] mr-1">schedule</span>
                             {{ $pengaduan->created_at->diffForHumans() }}
                         </span>
                     </div>
@@ -406,34 +249,33 @@
             @endforeach
         </div>
         @if($recentPengaduan->count() >= 5)
-        <div class="text-center mt-6">
-            <p class="text-xs text-gray-400">Menampilkan 5 pengaduan terbaru wilayah ini</p>
+        <div class="text-center mt-4">
+            <p class="text-[10px] text-gray-400 font-medium">Menampilkan 5 pengaduan terbaru wilayah ini</p>
         </div>
         @endif
     </div>
     @endif
 
     <!-- Announcement -->
-    <div class="relative overflow-hidden bg-gradient-to-r from-yellow-50 to-orange-50 border border-yellow-200 rounded-2xl p-6 md:p-8">
-        <div class="absolute -right-8 -top-8 w-40 h-40 bg-yellow-100 rounded-full opacity-60 blur-2xl"></div>
-        <div class="relative flex flex-col md:flex-row items-start md:items-center space-y-4 md:space-y-0 md:space-x-5">
-            <div class="bg-white p-3.5 rounded-2xl shadow-sm">
-                <span class="material-symbols-outlined text-yellow-600 text-3xl">info</span>
+    <div class="relative overflow-hidden bg-gradient-to-r from-[#f3e8f8] to-[#eaddf5] border border-[#d6bdec] rounded-[24px] p-5 mt-2">
+        <div class="absolute -right-8 -top-8 w-32 h-32 bg-white rounded-full opacity-40 blur-2xl"></div>
+        <div class="relative flex flex-col md:flex-row items-start md:items-center gap-4">
+            <div class="bg-white p-3 rounded-[16px] shadow-sm">
+                <span class="material-symbols-outlined text-[#6A3297] text-[24px]">info</span>
             </div>
             <div class="flex-1">
-                <h3 class="font-bold text-gray-900 mb-2 text-lg">Layanan Terhubung dengan Wilayah Anda</h3>
-                <p class="text-sm text-gray-700 mb-3">
-                    Anda mengakses layanan ini melalui QR Code khas <strong>RT {{ $rt }}</strong>. 
-                    Pengaduan yang Anda kirim akan langsung tercatat di wilayah tersebut dan diproses pemerintah desa.
+                <h3 class="font-bold text-gray-900 mb-1.5 text-[14px]">Layanan Terhubung Wilayah</h3>
+                <p class="text-[11px] text-gray-700 mb-2.5 leading-relaxed">
+                    Pengaduan Anda melalui QR Code <strong>RT {{ $rt }}</strong> otomatis tercatat di wilayah ini.
                 </p>
-                <p class="text-xs text-gray-500 flex items-center">
-                    <span class="material-symbols-outlined text-sm mr-1">verified</span>
-                    Data lokasi otomatis terisi — Anda tidak perlu mengisi RT secara manual.
+                <p class="text-[10px] text-gray-500 flex items-center font-medium">
+                    <span class="material-symbols-outlined text-[12px] mr-1 text-green-600">verified</span>
+                    Data otomatis terisi.
                 </p>
             </div>
             <button onclick="showPengaduanModal()"
-                    class="inline-flex items-center space-x-2 bg-gradient-to-r from-red-600 to-red-700 text-white px-5 py-3 rounded-xl font-semibold hover:from-red-700 hover:to-red-800 transition-all whitespace-nowrap">
-                <span class="material-symbols-outlined">campaign</span>
+                    class="w-full md:w-auto inline-flex items-center justify-center space-x-1.5 bg-[#E4C04A] text-[#2A3520] px-4 py-2.5 rounded-[14px] font-bold shadow-sm transition-all text-[12px]">
+                <span class="material-symbols-outlined text-[16px]">campaign</span>
                 <span>Lapor Sekarang</span>
             </button>
         </div>
@@ -443,9 +285,9 @@
 @push('modals')
 <!-- Pengaduan Modal -->
 <div id="pengaduanModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closePengaduanModal()">
-    <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+    <div class="relative bg-white rounded-[24px] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
-        <div class="bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-4">
+        <div class="bg-[#6A3297] text-white px-6 py-4">
             <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <span class="material-symbols-outlined">campaign</span>
@@ -546,7 +388,7 @@
                         Batal
                     </button>
                     <button type="submit"
-                            class="flex-1 bg-gradient-to-r from-red-600 to-red-700 text-white px-6 py-3 rounded-lg font-medium hover:from-red-700 hover:to-red-800 transition-all flex items-center justify-center space-x-2">
+                            class="flex-1 bg-[#6A3297] hover:bg-[#4E2472] text-white px-6 py-3 rounded-lg font-medium transition-all flex items-center justify-center space-x-2">
                         <span class="material-symbols-outlined">send</span>
                         <span>Kirim Pengaduan</span>
                     </button>
@@ -558,7 +400,7 @@
 
 <!-- Modal Kegiatan RT -->
 <div id="kegiatanRtModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKegiatanRtModal()">
-    <div class="relative bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
+    <div class="relative bg-white rounded-[24px] max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
         <!-- Header Banner -->
         <div class="bg-[#6A3297] text-white px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">
@@ -633,7 +475,7 @@
 
 <!-- Modal Kontak Darurat -->
 <div id="kontakDaruratModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKontakDaruratModal()">
-    <div class="relative bg-white rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
+    <div class="relative bg-white rounded-[24px] max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
         <!-- Red Header Banner -->
         <div class="bg-[#c82333] text-white px-6 py-4 flex items-center justify-between">
             <div class="flex items-center space-x-3">

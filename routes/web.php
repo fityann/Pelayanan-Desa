@@ -163,6 +163,7 @@ Route::prefix('admin')->name('admin.')
         Route::get('keluarga', [KeluargaController::class, 'index'])->middleware('permission:R Keluarga')->name('keluarga.index');
         Route::get('keluarga/create', [KeluargaController::class, 'create'])->middleware('permission:C Keluarga')->name('keluarga.create');
         Route::post('keluarga', [KeluargaController::class, 'store'])->middleware('permission:C Keluarga')->name('keluarga.store');
+        Route::get('keluarga/{keluarga}', [KeluargaController::class, 'show'])->middleware('permission:R Keluarga')->name('keluarga.show');
         Route::get('keluarga/{keluarga}/edit', [KeluargaController::class, 'edit'])->middleware('permission:U Keluarga')->name('keluarga.edit');
         Route::match(['put', 'patch'], 'keluarga/{keluarga}', [KeluargaController::class, 'update'])->middleware('permission:U Keluarga')->name('keluarga.update');
         Route::delete('keluarga/{keluarga}', [KeluargaController::class, 'destroy'])->middleware('permission:D Keluarga')->name('keluarga.destroy');
@@ -171,6 +172,7 @@ Route::prefix('admin')->name('admin.')
         Route::get('penduduk', [PendudukController::class, 'index'])->middleware('permission:R Penduduk')->name('penduduk.index');
         Route::get('penduduk/create', [PendudukController::class, 'create'])->middleware('permission:C Penduduk')->name('penduduk.create');
         Route::post('penduduk', [PendudukController::class, 'store'])->middleware('permission:C Penduduk')->name('penduduk.store');
+        Route::get('penduduk/{penduduk}', [PendudukController::class, 'show'])->middleware('permission:R Penduduk')->name('penduduk.show');
         Route::get('penduduk/{penduduk}/edit', [PendudukController::class, 'edit'])->middleware('permission:U Penduduk')->name('penduduk.edit');
         Route::match(['put', 'patch'], 'penduduk/{penduduk}', [PendudukController::class, 'update'])->middleware('permission:U Penduduk')->name('penduduk.update');
         Route::delete('penduduk/{penduduk}', [PendudukController::class, 'destroy'])->middleware('permission:D Penduduk')->name('penduduk.destroy');
@@ -264,6 +266,7 @@ Route::prefix('admin')->name('admin.')
         Route::get('informasi', [InformasiController::class, 'index'])->middleware('permission:R Informasi')->name('informasi.index');
         Route::get('informasi/create', [InformasiController::class, 'create'])->middleware('permission:C Informasi')->name('informasi.create');
         Route::post('informasi', [InformasiController::class, 'store'])->middleware('permission:C Informasi')->name('informasi.store');
+        Route::get('informasi/{informasi}', [InformasiController::class, 'show'])->middleware('permission:R Informasi')->name('informasi.show');
         Route::get('informasi/{informasi}/edit', [InformasiController::class, 'edit'])->middleware('permission:U Informasi')->name('informasi.edit');
         Route::match(['put', 'patch'], 'informasi/{informasi}', [InformasiController::class, 'update'])->middleware('permission:U Informasi')->name('informasi.update');
         Route::post('informasi/{informasi}/publish', [InformasiController::class, 'publish'])->middleware('permission:U Informasi')->name('informasi.publish');
