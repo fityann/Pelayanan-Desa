@@ -150,45 +150,44 @@
                                 <p class="text-sm text-gray-600 italic mt-2">"{{ $userVote->alasan }}"</p>
                             @endif
                         </div>
-                        <p class="text-xs text-center text-gray-500 mb-4">Ingin mengubah suara?</p>
-                    @endif
-
-                    <form action="{{ route('warga.musrenbang.support', $musrenbang) }}" method="POST" class="flex flex-col gap-4">
-                        @csrf
-                        <div>
-                            <label class="block text-sm font-bold text-gray-900 mb-3">Berikan Suara Anda</label>
-                            <div class="grid grid-cols-3 gap-3">
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="tipe_suara" value="dukung" class="peer sr-only" required {{ ($userVote && $userVote->tipe_suara == 'dukung') ? 'checked' : '' }}>
-                                    <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 peer-checked:border-emerald-500 transition-all hover:bg-gray-50">
-                                        Dukung
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="tipe_suara" value="tolak" class="peer sr-only" required {{ ($userVote && $userVote->tipe_suara == 'tolak') ? 'checked' : '' }}>
-                                    <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-red-50 peer-checked:text-red-700 peer-checked:border-red-500 transition-all hover:bg-gray-50">
-                                        Tolak
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer">
-                                    <input type="radio" name="tipe_suara" value="abstain" class="peer sr-only" required {{ ($userVote && $userVote->tipe_suara == 'abstain') ? 'checked' : '' }}>
-                                    <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-gray-100 peer-checked:text-gray-900 peer-checked:border-gray-400 transition-all hover:bg-gray-50">
-                                        Abstain
-                                    </div>
-                                </label>
+                    @else
+                        <form action="{{ route('warga.musrenbang.support', $musrenbang) }}" method="POST" class="flex flex-col gap-4">
+                            @csrf
+                            <div>
+                                <label class="block text-sm font-bold text-gray-900 mb-3">Berikan Suara Anda</label>
+                                <div class="grid grid-cols-3 gap-3">
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="tipe_suara" value="dukung" class="peer sr-only" required>
+                                        <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-emerald-50 peer-checked:text-emerald-700 peer-checked:border-emerald-500 transition-all hover:bg-gray-50">
+                                            Dukung
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="tipe_suara" value="tolak" class="peer sr-only" required>
+                                        <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-red-50 peer-checked:text-red-700 peer-checked:border-red-500 transition-all hover:bg-gray-50">
+                                            Tolak
+                                        </div>
+                                    </label>
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="tipe_suara" value="abstain" class="peer sr-only" required>
+                                        <div class="text-center py-2.5 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 peer-checked:bg-gray-100 peer-checked:text-gray-900 peer-checked:border-gray-400 transition-all hover:bg-gray-50">
+                                            Abstain
+                                        </div>
+                                    </label>
+                                </div>
                             </div>
-                        </div>
 
-                        <div>
-                            <label class="block text-sm font-bold text-gray-900 mb-2">Alasan / Komentar (Opsional)</label>
-                            <textarea name="alasan" rows="3" class="w-full bg-gray-50 rounded-xl border-gray-200 px-4 py-3 text-sm text-gray-700 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Tuliskan alasan Anda...">{{ $userVote ? $userVote->alasan : '' }}</textarea>
-                        </div>
+                            <div>
+                                <label class="block text-sm font-bold text-gray-900 mb-2">Alasan / Komentar (Opsional)</label>
+                                <textarea name="alasan" rows="3" class="w-full bg-gray-50 rounded-xl border-gray-200 px-4 py-3 text-sm text-gray-700 focus:ring-emerald-500 focus:border-emerald-500" placeholder="Tuliskan alasan Anda..."></textarea>
+                            </div>
 
-                        <button type="submit" class="w-full bg-emerald-600 text-white font-bold text-base py-3.5 rounded-xl hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 mt-2 shadow-sm shadow-emerald-200">
-                            <span class="material-symbols-outlined">how_to_vote</span>
-                            Kirim Suara
-                        </button>
-                    </form>
+                            <button type="submit" class="w-full bg-emerald-600 text-white font-bold text-base py-3.5 rounded-xl hover:bg-emerald-700 transition-all flex items-center justify-center gap-2 mt-2 shadow-sm shadow-emerald-200">
+                                <span class="material-symbols-outlined">how_to_vote</span>
+                                Kirim Suara
+                            </button>
+                        </form>
+                    @endif
                 @else
                     <div class="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
                         <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-sm">

@@ -3,11 +3,17 @@
 @section('title', 'Jenis Surat - SILAPU')
 
 @section('content')
-<div class="flex flex-col gap-lg">
-    <div class="flex items-center justify-between">
+<div class="flex flex-col gap-lg" x-data="{ search: '' }">
+    <div class="flex items-center justify-between flex-wrap gap-4">
         <div>
             <h1 class="text-headline-md font-bold text-on-surface">Jenis Surat</h1>
             <p class="text-body-sm text-on-surface-variant">Kelola jenis surat desa</p>
+        </div>
+        
+        <!-- Search Input -->
+        <div class="relative w-full sm:w-72">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+            <input type="text" x-model="search" placeholder="Cari jenis surat..." class="w-full pl-10 pr-4 py-2 bg-surface-container rounded-xl border-none focus:ring-2 focus:ring-primary focus:outline-none transition-shadow text-body-md placeholder:text-on-surface-variant/70">
         </div>
     </div>
 
@@ -20,7 +26,8 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
         @foreach ($jenisSurat as $jenis)
-            <div class="bg-surface-container-lowest rounded-xl shadow-sm p-lg hover:shadow-md transition-all {{ $jenis->aktif ? '' : 'opacity-60' }}">
+            <div x-show="search === '' || '{{ strtolower(addslashes($jenis->nama)) }}'.includes(search.toLowerCase()) || '{{ strtolower(addslashes($jenis->kode)) }}'.includes(search.toLowerCase())" 
+                 class="bg-surface-container-lowest rounded-xl shadow-sm p-lg hover:shadow-md transition-all {{ $jenis->aktif ? '' : 'opacity-60' }}">
                 <div class="flex items-start justify-between mb-md">
                     <div class="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                         <span class="material-symbols-outlined">description</span>
@@ -29,7 +36,10 @@
                         {{ $jenis->aktif ? 'Aktif' : 'Nonaktif' }}
                     </span>
                 </div>
-                <h3 class="text-title-md font-bold text-on-surface mb-1">{{ $jenis->nama }}</h3>
+                <a href="{{ route('admin.surat.jenis.preview', $jenis) }}" target="_blank" class="text-title-md font-bold text-blue-600 hover:text-blue-800 hover:underline mb-1 flex items-center gap-1 w-fit" title="Preview Template PDF">
+                    {{ $jenis->nama }}
+                    <span class="material-symbols-outlined text-[16px]">open_in_new</span>
+                </a>
                 <p class="text-label-sm text-on-surface-variant mb-md">Kode: <span class="font-mono font-bold">{{ $jenis->kode }}</span></p>
                 @if ($jenis->deskripsi)
                     <p class="text-body-sm text-on-surface-variant mb-md line-clamp-2">{{ $jenis->deskripsi }}</p>

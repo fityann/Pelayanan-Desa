@@ -182,6 +182,7 @@ Route::prefix('admin')->name('admin.')
 
         // Surat (jenis surat)
         Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->middleware('permission:R Surat')->name('surat.jenis');
+        Route::get('surat/jenis/{jenisSurat}/preview', [SuratController::class, 'previewJenis'])->middleware('permission:R Surat')->name('surat.jenis.preview');
         Route::post('surat/jenis', [SuratController::class, 'storeJenisSurat'])->middleware('permission:C Surat')->name('surat.jenis.store');
 
         // Pengajuan Surat (pemrosesan)

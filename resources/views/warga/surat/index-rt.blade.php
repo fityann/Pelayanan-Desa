@@ -3,7 +3,7 @@
 @section('title', "Surat Online - RT $rt")
 
 @section('content')
-<div class="space-y-8">
+<div class="space-y-8" x-data="{ search: '' }">
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
@@ -31,6 +31,12 @@
         </div>
     </div>
 
+    <!-- Search Input -->
+    <div class="relative max-w-lg">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+        <input type="text" x-model="search" placeholder="Cari jenis atau layanan surat..." class="w-full pl-12 pr-4 py-3.5 bg-white rounded-2xl border border-gray-100 shadow-sm focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 focus:outline-none transition-shadow text-gray-700 font-medium">
+    </div>
+
     @if (session('success'))
         <div class="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg flex items-center space-x-3">
             <span class="material-symbols-outlined text-green-600">check_circle</span>
@@ -48,7 +54,8 @@
     <!-- Daftar Jenis Surat -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($jenisSurat as $jenis)
-        <div class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-100 flex flex-col">
+        <div x-show="search === '' || '{{ strtolower(addslashes($jenis->nama)) }}'.includes(search.toLowerCase()) || '{{ strtolower(addslashes($jenis->deskripsi)) }}'.includes(search.toLowerCase())" 
+             class="bg-white rounded-2xl shadow-sm p-6 hover:shadow-md hover:-translate-y-0.5 transition-all border border-gray-100 flex flex-col">
             <div class="flex items-start justify-between mb-4">
                 <div class="bg-emerald-100 w-12 h-12 rounded-xl flex items-center justify-center">
                     <span class="material-symbols-outlined text-emerald-600">description</span>

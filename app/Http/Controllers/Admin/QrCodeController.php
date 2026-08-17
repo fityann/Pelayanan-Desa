@@ -43,7 +43,7 @@ class QrCodeController extends Controller
 
             // Auto-generate QR code image if not generated yet
             if (!$qr->qr_code_path || !Storage::disk('public')->exists($qr->qr_code_path)) {
-                $this->generateQrImage($qr);
+                $this->generateForRecord($qr);
             }
         }
 

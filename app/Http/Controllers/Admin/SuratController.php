@@ -270,6 +270,29 @@ class SuratController extends Controller
         return $pdf->download($filename);
     }
 
+    public function previewJenis(JenisSurat $jenisSurat): \Illuminate\Http\Response
+    {
+        $pengajuan = new PengajuanSurat([
+            'kode_tracking_val' => '12345',
+            'nomor_surat' => '123/Des/2026',
+            'pemohon_name' => 'Nama Pemohon (Contoh)',
+            'pemohon_nik' => '1234567890123456',
+            'pemohon_alamat' => 'Alamat Pemohon (Contoh)',
+        ]);
+        
+        $pengajuan->setRelation('jenisSurat', $jenisSurat);
+        $pengajuan->tanggal_disetujui = now();
+        
+        $viewName = view()->exists('pdf.surat_' . strtolower($jenisSurat->kode)) 
+            ? 'pdf.surat_' . strtolower($jenisSurat->kode) 
+            : 'pdf.surat';
+
+        $pdf = Pdf::loadView($viewName, ['surat' => $pengajuan])
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('preview-' . strtolower($jenisSurat->kode) . '.pdf');
+    }
+
     public function arsip(): View
     {
         $arsip = PengajuanSurat::with(['user', 'jenisSurat'])

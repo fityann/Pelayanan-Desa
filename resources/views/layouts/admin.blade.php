@@ -215,7 +215,7 @@
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
                      class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
-                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/apbdes') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.apbdes.index') }}">
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ ($isActive('admin/apbdes') && !$isActive('admin/apbdes/dashboard')) ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.apbdes.index') }}">
                         <span class="material-symbols-outlined text-[18px]">account_balance</span>
                         <span class="text-label-md">APBDes Ringkasan</span>
                     </a>

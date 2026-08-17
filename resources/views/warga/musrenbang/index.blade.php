@@ -22,7 +22,7 @@
             <select name="tahun" class="bg-transparent border-none focus:ring-0 text-sm font-medium text-gray-700 w-full" onchange="this.form.submit()">
                 <option value="">Semua Tahun</option>
                 @for($i = date('Y') + 1; $i >= date('Y') - 2; $i--)
-                    <option value="{{ $i }}" {{ request('tahun') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                    <option value="{{ $i }}" {{ $tahun == $i ? 'selected' : '' }}>{{ $i }}</option>
                 @endfor
             </select>
         </form>
