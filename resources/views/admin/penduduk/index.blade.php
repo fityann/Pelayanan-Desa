@@ -290,51 +290,51 @@
             <div class="p-lg border-t border-surface-variant/20">{{ $penduduk->links() }}</div>
         @endif
     </div>
-</div>
-@endsection
 
-@include('components.penduduk-modal')
+    @include('components.penduduk-modal')
 
-<!-- Custom Delete Modal Penduduk -->
-<div id="deletePendudukModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
-    <div class="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-center">
-        <button onclick="closeDeletePendudukModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors">
-            <span class="material-symbols-outlined text-xl">close</span>
-        </button>
+    <!-- Custom Delete Modal Penduduk -->
+    <div id="deletePendudukModal" class="fixed inset-0 z-50 hidden overflow-y-auto bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="relative bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 transform transition-all text-center">
+            <button onclick="closeDeletePendudukModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-1.5 rounded-full hover:bg-slate-100 transition-colors">
+                <span class="material-symbols-outlined text-xl">close</span>
+            </button>
 
-        <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto mb-4 flex items-center justify-center border-4 border-red-50 shadow-inner">
-            <span class="material-symbols-outlined text-3xl">delete_forever</span>
+            <div class="w-16 h-16 rounded-full bg-red-100 text-red-600 mx-auto mb-4 flex items-center justify-center border-4 border-red-50 shadow-inner">
+                <span class="material-symbols-outlined text-3xl">delete_forever</span>
+            </div>
+
+            <h3 class="text-xl font-black text-slate-900 mb-1">Konfirmasi Hapus Data</h3>
+            <p class="text-xs text-slate-500 mb-4">Apakah Anda yakin ingin menghapus data penduduk berikut?</p>
+
+            <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 text-left text-xs space-y-1.5">
+                <div class="flex justify-between">
+                    <span class="text-slate-400 font-medium">Nama Penduduk:</span>
+                    <span id="deletePendudukNama" class="font-bold text-slate-900"></span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400 font-medium">NIK KTP:</span>
+                    <span id="deletePendudukNik" class="font-mono font-bold text-slate-900"></span>
+                </div>
+            </div>
+
+            <form id="deletePendudukForm" method="POST" action="">
+                @csrf
+                @method('DELETE')
+                <div class="flex gap-3">
+                    <button type="button" onclick="closeDeletePendudukModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-xs transition-all">
+                        Batal
+                    </button>
+                    <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-3 px-4 rounded-xl text-xs shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-1.5">
+                        <span class="material-symbols-outlined text-base">delete</span>
+                        <span>Ya, Hapus Data</span>
+                    </button>
+                </div>
+            </form>
         </div>
-
-        <h3 class="text-xl font-black text-slate-900 mb-1">Konfirmasi Hapus Data</h3>
-        <p class="text-xs text-slate-500 mb-4">Apakah Anda yakin ingin menghapus data penduduk berikut?</p>
-
-        <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 mb-6 text-left text-xs space-y-1.5">
-            <div class="flex justify-between">
-                <span class="text-slate-400 font-medium">Nama Penduduk:</span>
-                <span id="deletePendudukNama" class="font-bold text-slate-900"></span>
-            </div>
-            <div class="flex justify-between">
-                <span class="text-slate-400 font-medium">NIK KTP:</span>
-                <span id="deletePendudukNik" class="font-mono font-bold text-slate-900"></span>
-            </div>
-        </div>
-
-        <form id="deletePendudukForm" method="POST" action="">
-            @csrf
-            @method('DELETE')
-            <div class="flex gap-3">
-                <button type="button" onclick="closeDeletePendudukModal()" class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-4 rounded-xl text-xs transition-all">
-                    Batal
-                </button>
-                <button type="submit" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-extrabold py-3 px-4 rounded-xl text-xs shadow-lg shadow-red-600/30 transition-all flex items-center justify-center gap-1.5">
-                    <span class="material-symbols-outlined text-base">delete</span>
-                    <span>Ya, Hapus Data</span>
-                </button>
-            </div>
-        </form>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
@@ -404,9 +404,15 @@ function showPendudukModal(penduduk = null) {
         
         // Update form action for update
         form.action = `/admin/penduduk/${penduduk.id}`;
-        form.method = 'POST';
-        form.innerHTML = form.innerHTML.replace('@method('PUT')', '');
-        form.innerHTML += '@method('PUT')';
+        
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
     } else {
         // Add mode
         title.textContent = 'Tambah Data Penduduk';
@@ -415,9 +421,20 @@ function showPendudukModal(penduduk = null) {
         
         // Reset form action for create
         form.action = '{{ route("admin.penduduk.store") }}';
-        form.method = 'POST';
+        
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (methodInput) {
+            methodInput.remove();
+        }
     }
     
+    // Reset error alert in modal
+    const errorAlert = document.getElementById('modalErrorAlert');
+    if (errorAlert) {
+        errorAlert.classList.add('hidden');
+        document.getElementById('modalErrorMsg').innerHTML = '';
+    }
+
     modal.classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
@@ -427,64 +444,29 @@ function closePendudukModal() {
     document.body.style.overflow = 'auto';
 }
 
-// Handle form submission with AJAX
+@if($errors->any())
+document.addEventListener('DOMContentLoaded', function() {
+    showPendudukModal();
+    const errorAlert = document.getElementById('modalErrorAlert');
+    if (errorAlert) {
+        errorAlert.classList.remove('hidden');
+    }
+});
+@endif
+
+// Form submit loading indicator
 document.addEventListener('DOMContentLoaded', function() {
     const pendudukForm = document.getElementById('pendudukForm');
     if (pendudukForm) {
-        pendudukForm.addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
+        pendudukForm.addEventListener('submit', function() {
             const submitBtn = this.querySelector('button[type="submit"]');
-            const originalText = submitBtn.innerHTML;
-            
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">sync</span> Menyimpan...';
-            
-            try {
-                const response = await fetch(this.action, {
-                    method: this.method,
-                    body: formData,
-                    headers: {
-                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                        'Accept': 'application/json'
-                    }
-                });
-                
-                const result = await response.json();
-                
-                if (response.ok) {
-                    // Success
-                    showToast('Data penduduk berhasil disimpan!', 'success');
-                    closePendudukModal();
-                    
-                    // Refresh page after delay
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 1500);
-                } else {
-                    // Error
-                    let errorMessage = 'Terjadi kesalahan saat menyimpan data.';
-                    if (result.message) {
-                        errorMessage = result.message;
-                    } else if (result.errors) {
-                        errorMessage = Object.values(result.errors).join('<br>');
-                    }
-                    showToast(errorMessage, 'error');
-                }
-            } catch (error) {
-                showToast('Koneksi jaringan bermasalah.', 'error');
-                console.error('Form submission error:', error);
-            } finally {
-                // Reset button state
-                if (submitBtn) {
-                    submitBtn.disabled = false;
-                    submitBtn.innerHTML = originalText;
-                }
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-sm">sync</span> Menyimpan...';
             }
         });
     }
+});
     
     // Auto submit filter form on change
     const filterForm = document.getElementById('pendudukFilterForm');

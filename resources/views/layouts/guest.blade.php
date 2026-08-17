@@ -1,9 +1,14 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>@yield('title', 'SILAPU - Puspamukti Smart Village')</title>
+
+    <!-- Favicon / Logo Tab -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @layer base {

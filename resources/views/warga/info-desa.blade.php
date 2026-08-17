@@ -188,22 +188,22 @@
         <h2 class="text-xl font-bold text-gray-900 mb-6">Layanan Desa Tersedia</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($infoDesa['layanan'] as $layanan)
-            <div class="border border-gray-200 rounded-lg p-6 hover:bg-gray-50 transition-colors">
-                <div class="flex items-start space-x-4">
-                    <div class="bg-blue-100 p-3 rounded-lg">
-                        <span class="material-symbols-outlined text-blue-600 text-xl">{{ $layanan['icon'] }}</span>
+            <div class="border border-gray-200 rounded-xl p-6 hover:bg-gray-50/80 hover:border-blue-300 transition-all flex flex-col justify-between shadow-xs">
+                <div class="flex items-start space-x-4 mb-4">
+                    <div class="bg-blue-100 p-3 rounded-xl flex-shrink-0 text-blue-600">
+                        <span class="material-symbols-outlined text-xl">{{ $layanan['icon'] }}</span>
                     </div>
                     <div class="flex-1">
-                        <h3 class="font-bold text-gray-900 mb-2">{{ $layanan['nama'] }}</h3>
-                        <p class="text-sm text-gray-600 mb-3">{{ $layanan['desc'] }}</p>
-                        @if($layanan['nama'] == 'Pengaduan')
-                        <button onclick="window.location.href='{{ route('warga.rt.landing', ['rt' => $rt]) }}'"
-                                class="text-blue-600 hover:text-blue-700 text-sm font-medium flex items-center space-x-1">
-                            <span>Akses Layanan</span>
-                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
-                        </button>
-                        @endif
+                        <h3 class="font-bold text-gray-900 mb-1">{{ $layanan['nama'] }}</h3>
+                        <p class="text-sm text-gray-600 leading-relaxed">{{ $layanan['desc'] }}</p>
                     </div>
+                </div>
+                <div class="pt-2">
+                    <a href="{{ $layanan['url'] ?? route('warga.rt.landing', ['rt' => $rt]) }}"
+                       class="inline-flex items-center space-x-1.5 text-blue-600 hover:text-blue-700 text-sm font-semibold hover:underline transition-colors group">
+                        <span>Akses Layanan</span>
+                        <span class="material-symbols-outlined text-base group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+                    </a>
                 </div>
             </div>
             @endforeach

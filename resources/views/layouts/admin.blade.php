@@ -3,8 +3,13 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <meta name="csrf-token" content="{{ csrf_token() }}"/>
     <title>@yield('title', 'SILAPU - Sistem Layanan Puspamukti')</title>
+
+    <!-- Favicon / Logo Tab -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         @layer base {
@@ -24,8 +29,8 @@
     <!-- Sidebar (Solid #6A3297 Green Theme) -->
     <aside class="fixed left-0 top-0 h-full w-72 bg-[#6A3297] border-r border-[#D8B84C]/30 z-50 flex flex-col shadow-2xl sidebar-scrollbar overflow-y-auto">
         <div class="p-lg flex items-center gap-md border-b border-[#D8B84C]/25 mb-md">
-            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#D8B84C] to-[#F0D878] p-0.5 shadow-lg shadow-[#D8B84C]/20 flex items-center justify-center">
-                <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-lg bg-white p-0.5">
+            <div class="w-10 h-10 rounded-[16px] bg-white border-2 border-[#D8B84C] p-1 shadow-lg shadow-black/20 flex items-center justify-center flex-shrink-0">
+                <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-[10px]">
             </div>
             <div class="flex flex-col">
                 <span class="text-white font-black text-headline-sm tracking-tight">SILAPU</span>

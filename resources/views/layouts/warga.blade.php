@@ -5,10 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#15803d"/>
     <meta name="description" content="SILAPU - Sistem Layanan Puspamukti. Layanan digital mudah untuk warga RT {{ $rt ?? '' }}">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SILAPU - Sistem Layanan Puspamukti')</title>
 
+    <!-- Favicon / Logo Tab -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
@@ -241,8 +246,8 @@
             <div class="flex items-center justify-between h-16 gap-4">
                 <!-- Brand -->
                 <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="flex items-center space-x-3 flex-shrink-0">
-                    <div class="bg-white/20 p-2 rounded-xl hidden sm:block">
-                        <span class="material-symbols-outlined text-white">holiday_village</span>
+                    <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-[16px] bg-white border-2 border-[#D8B84C] p-1 shadow-md shadow-black/25 flex items-center justify-center flex-shrink-0">
+                        <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-[10px]">
                     </div>
                     <div>
                         <h1 class="text-[19px] sm:text-lg font-bold leading-tight tracking-wide">SILAPU</h1>
@@ -295,9 +300,7 @@
 
                 <!-- Right actions -->
                 <div class="flex items-center space-x-2 flex-shrink-0">
-                    <button class="md:hidden block text-white/90 hover:text-white p-1 rounded-lg transition-colors">
-                        <span class="material-symbols-outlined text-[28px]">menu</span>
-                    </button>                    @auth('warga')
+                    @auth('warga')
                         @if ($isRtScoped)
                             <div x-data="wargaNotif()" x-init="init()" class="relative">
                                 <button @click="toggle()" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg transition-colors relative" title="Notifikasi">
@@ -479,15 +482,15 @@
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div>
                     <h3 class="text-base font-bold mb-3">Desa Puspamukti</h3>
-                    <p class="text-gray-300 text-xs mb-3">
-                        Jl. Raya Puspamukti No. 1<br>Kecamatan Bojong, Kabupaten Tegal
+                    <p class="text-gray-300 text-xs mb-3 leading-relaxed">
+                        Desa Puspamukti, Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat 46463
                     </p>
                     <div class="space-y-2">
                         <div class="flex items-center text-xs text-gray-300">
                             <span class="material-symbols-outlined text-sm mr-2">call</span><span>(0281) 123456</span>
                         </div>
                         <div class="flex items-center text-xs text-gray-300">
-                            <span class="material-symbols-outlined text-sm mr-2">chat</span><span>0812-3456-7890</span>
+                            <span class="material-symbols-outlined text-sm mr-2">chat</span><a href="https://wa.me/62853351165000" target="_blank" class="hover:text-green-400 transition-colors">0853351165000</a>
                         </div>
                     </div>
                 </div>
@@ -499,10 +502,7 @@
                             <span class="material-symbols-outlined text-sm mr-2">schedule</span><span>Senin - Jumat: 08:00 - 16:00</span>
                         </li>
                         <li class="flex items-center">
-                            <span class="material-symbols-outlined text-sm mr-2">schedule</span><span>Sabtu: 08:00 - 12:00</span>
-                        </li>
-                        <li class="flex items-center">
-                            <span class="material-symbols-outlined text-sm mr-2">event_busy</span><span>Minggu & Hari Libur: Tutup</span>
+                            <span class="material-symbols-outlined text-sm mr-2">event_busy</span><span>Sabtu & Minggu: Tutup</span>
                         </li>
                     </ul>
                 </div>
@@ -512,7 +512,7 @@
                         <h3 class="text-base font-bold mb-3">Kontak RT</h3>
                         <ul class="space-y-2 text-xs text-gray-300">
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Ketua RT {{ $rt }}: 0813-1234-567</span>
+                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Ketua RT {{ $rt }}: 0853351165000</span>
                             </li>
                             <li class="flex items-center">
                                 <span class="material-symbols-outlined text-sm mr-2">info</span><span>Untuk keadaan darurat segera hubungi</span>
@@ -524,13 +524,10 @@
                         <h3 class="text-base font-bold mb-3">Kontak Desa</h3>
                         <ul class="space-y-2 text-xs text-gray-300">
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Kepala Desa: 0813-1234-567</span>
+                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Kantor Desa: 0853351165000</span>
                             </li>
                             <li class="flex items-center">
-                                <span class="material-symbols-outlined text-sm mr-2">person</span><span>Sekretaris Desa: 0821-9876-543</span>
-                            </li>
-                            <li class="flex items-center">
-                                <span class="material-symbols-outlined text-sm mr-2">info</span><span>Untuk informasi lebih lanjut</span>
+                                <span class="material-symbols-outlined text-sm mr-2">info</span><span>Untuk informasi & pelayanan warga</span>
                             </li>
                         </ul>
                     </div>
@@ -557,18 +554,12 @@
             <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.surat.index') ? 'active' : '' }}">
                 <span class="material-symbols-outlined">edit_note</span> Surat
             </a>
-            <a onclick="showPengaduanModal()" style="cursor:pointer" class="{{ $inMenu('warga.rt.landing') ? '' : '' }}">
+            <button type="button" onclick="showPengaduanModal()" class="{{ $inMenu('warga.rt.landing') ? '' : '' }} flex flex-col items-center justify-center">
                 <span class="material-symbols-outlined">campaign</span> Lapor
+            </button>
+            <a href="{{ route('warga.rt.chat', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
+                <span class="material-symbols-outlined">forum</span> Chat Admin
             </a>
-            @auth('warga')
-                <a href="{{ route('warga.rt.chat', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
-                    <span class="material-symbols-outlined">forum</span> Chat
-                </a>
-            @else
-                <a href="{{ route('warga.rt.login', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.login') ? 'active' : '' }}">
-                    <span class="material-symbols-outlined">login</span> Masuk
-                </a>
-            @endauth
         @else
             <a href="{{ route('apbdes.publik') }}" class="{{ $inMenu('apbdes.publik') ? 'active' : '' }}">
                 <span class="material-symbols-outlined">account_balance</span> APBDes
@@ -647,34 +638,62 @@
             icon.textContent = menu.classList.contains('hidden') ? 'menu' : 'close';
         }
 
+        window.openSilapuModal = function(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.removeProperty('display');
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+        };
+
+        window.closeSilapuModal = function(id) {
+            const modal = document.getElementById(id);
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        };
+
         window.showPengaduanModal = function() {
             const modal = document.getElementById('pengaduanModal');
-            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+            if (modal) {
+                window.openSilapuModal('pengaduanModal');
+            } else {
+                window.location.href = "{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}?lapor=1";
+            }
         };
 
         window.closePengaduanModal = function() {
-            const modal = document.getElementById('pengaduanModal');
-            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+            window.closeSilapuModal('pengaduanModal');
         };
 
         window.showKegiatanRtModal = function() {
             const modal = document.getElementById('kegiatanRtModal');
-            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+            if (modal) {
+                window.openSilapuModal('kegiatanRtModal');
+            } else {
+                window.location.href = "{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}?kegiatan=1";
+            }
         };
 
         window.closeKegiatanRtModal = function() {
-            const modal = document.getElementById('kegiatanRtModal');
-            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+            window.closeSilapuModal('kegiatanRtModal');
         };
 
         window.showKontakDaruratModal = function() {
             const modal = document.getElementById('kontakDaruratModal');
-            if (modal) { modal.style.display = 'flex'; document.body.style.overflow = 'hidden'; }
+            if (modal) {
+                window.openSilapuModal('kontakDaruratModal');
+            } else {
+                window.location.href = "{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}?kontak=1";
+            }
         };
 
         window.closeKontakDaruratModal = function() {
-            const modal = document.getElementById('kontakDaruratModal');
-            if (modal) { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }
+            window.closeSilapuModal('kontakDaruratModal');
         };
 
         document.addEventListener('DOMContentLoaded', function () {
@@ -686,13 +705,16 @@
                 }
             });
 
-            document.querySelectorAll('.modal-overlay').forEach(overlay => {
-                overlay.addEventListener('click', function (e) {
-                    if (e.target.classList.contains('modal-overlay')) {
-                        const modal = e.target.closest('.fixed');
-                        if (modal) { modal.classList.add('hidden'); document.body.style.overflow = 'auto'; }
-                    }
-                });
+            // Close modal when clicking backdrop
+            ['pengaduanModal', 'kegiatanRtModal', 'kontakDaruratModal'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('click', function(e) {
+                        if (e.target === this) {
+                            window.closeSilapuModal(id);
+                        }
+                    });
+                }
             });
 
             setTimeout(() => {
@@ -811,25 +833,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             window.SilapuPushNotification.init();
-
-            // Gulir mulus ke atas jika mengeklik menu yang sedang aktif/dilihat
-            const currentUrl = window.location.href.split('#')[0].replace(/\/$/, "");
-            const navLinks = document.querySelectorAll('a.masy-navlink, .bottom-nav a');
-            
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    if (this.href) {
-                        const linkUrl = this.href.split('#')[0].replace(/\/$/, "");
-                        if (linkUrl === currentUrl) {
-                            e.preventDefault();
-                            window.scrollTo({
-                                top: 0,
-                                behavior: 'smooth'
-                            });
-                        }
-                    }
-                });
-            });
         });
     </script>
 

@@ -280,6 +280,22 @@ class SuratController extends Controller
         return view('admin.surat.arsip', compact('arsip'));
     }
 
+    public function destroyArsip(PengajuanSurat $pengajuan): RedirectResponse
+    {
+        // Hapus file pendukung jika tersimpan di disk
+        if ($pengajuan->file_pendukung && \Illuminate\Support\Facades\Storage::disk('public')->exists($pengajuan->file_pendukung)) {
+            \Illuminate\Support\Facades\Storage::disk('public')->delete($pengajuan->file_pendukung);
+        }
+
+        // Hapus riwayat status
+        $pengajuan->riwayatStatus()->delete();
+
+        // Hapus arsip pengajuan surat
+        $pengajuan->delete();
+
+        return redirect()->route('admin.surat.arsip')->with('success', 'Arsip surat berhasil dihapus');
+    }
+
     public function exportArsip(Request $request)
     {
         $query = PengajuanSurat::with(['user', 'jenisSurat'])

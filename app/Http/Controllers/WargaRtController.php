@@ -69,9 +69,7 @@ class WargaRtController extends Controller
         $agendaTerdekat = Informasi::where('published', true)
             ->where('kategori', 'agenda')
             ->untukWilayah($rt, $rw)
-            ->where('tanggal_kegiatan', '>=', now())
-            ->orderBy('tanggal_kegiatan')
-            ->take(3)
+            ->orderBy('tanggal_kegiatan', 'asc')
             ->get();
 
         return view('warga.rt-landing', compact('rt', 'rw', 'qrCode', 'stats', 'pengaduanStats', 'beritaTerbaru', 'agendaTerdekat'));
@@ -91,7 +89,7 @@ class WargaRtController extends Controller
             'berita' => \App\Models\Informasi::where('published', true)->where('kategori', 'berita')->latest('published_at')->take(6)->get(),
             'pengumuman' => \App\Models\Informasi::where('published', true)->where('kategori', 'pengumuman')->latest('published_at')->take(5)->get(),
             'agenda' => \App\Models\Informasi::where('published', true)->where('kategori', 'agenda')->where('tanggal_kegiatan', '>=', now())->orderBy('tanggal_kegiatan')->take(5)->get(),
-            'layanan' => $this->getLayananList(),
+            'layanan' => $this->getLayananList($rt),
             'kontak_desa' => $this->getKontakDesa(),
         ];
 
@@ -323,15 +321,45 @@ class WargaRtController extends Controller
         ]);
     }
 
-    private function getLayananList()
+    private function getLayananList($rt = '01')
     {
         return [
-            ['nama' => 'Pengaduan', 'icon' => 'campaign', 'desc' => 'Laporkan masalah di lingkungan RT'],
-            ['nama' => 'Surat Online', 'icon' => 'edit_note', 'desc' => 'Ajukan surat keterangan online'],
-            ['nama' => 'Data Penduduk', 'icon' => 'groups', 'desc' => 'Informasi data penduduk RT'],
-            ['nama' => 'Kegiatan RT', 'icon' => 'event', 'desc' => 'Jadwal kegiatan RT'],
-            ['nama' => 'APBDes', 'icon' => 'account_balance', 'desc' => 'Anggaran dan belanja desa'],
-            ['nama' => 'Info Desa', 'icon' => 'newspaper', 'desc' => 'Berita dan pengumuman desa']
+            [
+                'nama' => 'Pengaduan',
+                'icon' => 'campaign',
+                'desc' => 'Laporkan masalah di lingkungan RT',
+                'url' => route('warga.rt.landing', ['rt' => $rt]),
+            ],
+            [
+                'nama' => 'Surat Online',
+                'icon' => 'edit_note',
+                'desc' => 'Ajukan surat keterangan online',
+                'url' => route('warga.rt.surat.index', ['rt' => $rt]),
+            ],
+            [
+                'nama' => 'Data Penduduk',
+                'icon' => 'groups',
+                'desc' => 'Informasi data penduduk RT',
+                'url' => route('warga.rt.landing', ['rt' => $rt]),
+            ],
+            [
+                'nama' => 'Kegiatan RT',
+                'icon' => 'event',
+                'desc' => 'Jadwal kegiatan RT',
+                'url' => route('warga.rt.landing', ['rt' => $rt]),
+            ],
+            [
+                'nama' => 'APBDes',
+                'icon' => 'account_balance',
+                'desc' => 'Anggaran dan belanja desa',
+                'url' => route('apbdes.publik'),
+            ],
+            [
+                'nama' => 'Info Desa',
+                'icon' => 'newspaper',
+                'desc' => 'Berita dan pengumuman desa',
+                'url' => route('informasi.publik'),
+            ]
         ];
     }
 
@@ -339,14 +367,14 @@ class WargaRtController extends Controller
     {
         return [
             'desa' => 'Puspamukti',
-            'alamat' => 'Jl. Raya Puspamukti No. 1',
+            'alamat' => 'Desa Puspamukti, Kecamatan Cigalontang, Kabupaten Tasikmalaya, Jawa Barat 46463',
             'telepon' => '(0281) 123456',
-            'whatsapp' => '0812-3456-7890',
+            'whatsapp' => '0853351165000',
             'email' => 'desa@puspamukti.desa.id',
             'jam_operasional' => 'Senin - Jumat: 08:00 - 16:00',
             'ketua_rt' => [
-                'umum' => 'Bapak RT (0813-1234-567)',
-                'khusus' => 'Ibu RW (0821-9876-543)'
+                'umum' => 'Bapak RT (0853351165000)',
+                'khusus' => 'Ibu RW (0853351165000)'
             ]
         ];
     }

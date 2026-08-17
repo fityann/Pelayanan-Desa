@@ -2,8 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="utf-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>SILAPU - Puspamukti Smart Village</title>
+
+    <!-- Favicon / Logo Tab -->
+    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet"/>
@@ -13,8 +18,8 @@
     <header class="fixed top-0 left-0 right-0 z-50 bg-emerald-900/90 backdrop-blur-xl border-b border-emerald-700/40 shadow-lg shadow-emerald-950/20">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
             <a href="/" class="flex items-center space-x-3 group">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-white font-black shadow-md shadow-emerald-500/30 group-hover:scale-105 transition-transform">
-                    <span class="material-symbols-outlined text-2xl">holiday_village</span>
+                <div class="w-10 h-10 rounded-[16px] bg-white border-2 border-[#D8B84C] p-1 shadow-md shadow-black/20 flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                    <img src="{{ asset('images/logo-desa-puspamukti.jpg') }}" alt="Logo Puspamukti" class="w-full h-full object-contain rounded-[10px]">
                 </div>
                 <div>
                     <span class="font-black text-lg text-white tracking-tight leading-none block">SILAPU</span>

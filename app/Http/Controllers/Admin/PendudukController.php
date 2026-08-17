@@ -53,14 +53,17 @@ class PendudukController extends Controller
         }
         
         // Sorting
-        $sortBy = $request->get('sort_by', 'created_at');
+        $sortBy = $request->get('sort_by', 'id');
         $sortOrder = $request->get('sort_order', 'desc');
         
-        $allowedSort = ['nik', 'nama', 'tanggal_lahir', 'rt', 'rw', 'created_at'];
+        $allowedSort = ['nik', 'nama', 'tanggal_lahir', 'rt', 'rw', 'created_at', 'id'];
         if (in_array($sortBy, $allowedSort)) {
             $query->orderBy($sortBy, $sortOrder);
+            if ($sortBy !== 'id') {
+                $query->orderBy('id', 'desc');
+            }
         } else {
-            $query->latest();
+            $query->orderBy('id', 'desc');
         }
         
         // Get filter lists for dropdowns
@@ -80,7 +83,22 @@ class PendudukController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $input = $request->all();
+        // Bersihkan string kosong menjadi null agar lolos validasi nullable
+        foreach (['no_kk', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'rt', 'rw', 'agama', 'status_perkawinan', 'pekerjaan', 'pendidikan_terakhir', 'hubungan_keluarga', 'keluarga_id'] as $field) {
+            if (isset($input[$field]) && trim((string)$input[$field]) === '') {
+                $input[$field] = null;
+            }
+        }
+        if (!empty($input['rt'])) {
+            $input['rt'] = sprintf('%02d', (int)$input['rt']);
+        }
+        if (!empty($input['rw'])) {
+            $input['rw'] = sprintf('%02d', (int)$input['rw']);
+        }
+        $request->merge($input);
+
+        $rules = [
             'nik' => ['required', 'string', 'size:16', 'unique:penduduk,nik'],
             'nama' => ['required', 'string', 'max:255'],
             'tempat_lahir' => ['nullable', 'string', 'max:100'],
@@ -97,7 +115,18 @@ class PendudukController extends Controller
             'no_kk' => ['nullable', 'string', 'size:16'],
             'hubungan_keluarga' => ['nullable', 'string', 'max:50'],
             'keluarga_id' => ['nullable', 'exists:keluarga,id'],
-        ]);
+        ];
+
+        $messages = [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.size' => 'NIK harus berjumlah 16 digit angka.',
+            'nik.unique' => 'NIK tersebut sudah terdaftar di sistem.',
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'no_kk.size' => 'Nomor KK harus berjumlah 16 digit angka.',
+            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+        ];
+
+        $request->validate($rules, $messages);
 
         $data = $request->all();
         if (empty($data['kewarganegaraan'])) {
@@ -106,15 +135,11 @@ class PendudukController extends Controller
 
         Penduduk::create($data);
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Data penduduk berhasil ditambahkan'
             ]);
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Data penduduk berhasil ditambahkan'], 201);
         }
 
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan');
@@ -135,7 +160,21 @@ class PendudukController extends Controller
 
     public function update(Request $request, Penduduk $penduduk)
     {
-        $request->validate([
+        $input = $request->all();
+        foreach (['no_kk', 'tempat_lahir', 'tanggal_lahir', 'alamat', 'rt', 'rw', 'agama', 'status_perkawinan', 'pekerjaan', 'pendidikan_terakhir', 'hubungan_keluarga', 'keluarga_id', 'user_id'] as $field) {
+            if (isset($input[$field]) && trim((string)$input[$field]) === '') {
+                $input[$field] = null;
+            }
+        }
+        if (!empty($input['rt'])) {
+            $input['rt'] = sprintf('%02d', (int)$input['rt']);
+        }
+        if (!empty($input['rw'])) {
+            $input['rw'] = sprintf('%02d', (int)$input['rw']);
+        }
+        $request->merge($input);
+
+        $rules = [
             'nik' => ['required', 'string', 'size:16', 'unique:penduduk,nik,' . $penduduk->id],
             'nama' => ['required', 'string', 'max:255'],
             'tempat_lahir' => ['nullable', 'string', 'max:100'],
@@ -153,7 +192,18 @@ class PendudukController extends Controller
             'hubungan_keluarga' => ['nullable', 'string', 'max:50'],
             'keluarga_id' => ['nullable', 'exists:keluarga,id'],
             'user_id' => ['nullable', 'exists:users,id'],
-        ]);
+        ];
+
+        $messages = [
+            'nik.required' => 'NIK wajib diisi.',
+            'nik.size' => 'NIK harus berjumlah 16 digit angka.',
+            'nik.unique' => 'NIK tersebut sudah terdaftar di sistem.',
+            'nama.required' => 'Nama lengkap wajib diisi.',
+            'no_kk.size' => 'Nomor KK harus berjumlah 16 digit angka.',
+            'tanggal_lahir.date' => 'Format tanggal lahir tidak valid.',
+        ];
+
+        $request->validate($rules, $messages);
 
         $data = $request->all();
         if (empty($data['kewarganegaraan'])) {
@@ -162,15 +212,11 @@ class PendudukController extends Controller
 
         $penduduk->update($data);
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Data penduduk berhasil diperbarui'
             ]);
-        }
-
-        if ($request->expectsJson()) {
-            return response()->json(['message' => 'Data penduduk berhasil diperbarui'], 200);
         }
 
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil diperbarui');

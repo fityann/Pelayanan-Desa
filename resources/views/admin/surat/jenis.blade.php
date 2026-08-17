@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Jenis Surat - SILAPU')
 
@@ -9,10 +9,6 @@
             <h1 class="text-headline-md font-bold text-on-surface">Jenis Surat</h1>
             <p class="text-body-sm text-on-surface-variant">Kelola jenis surat desa</p>
         </div>
-        <button onclick="document.getElementById('modalTambah').classList.remove('hidden')" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all flex items-center gap-sm">
-            <span class="material-symbols-outlined text-[18px]">add</span>
-            Tambah Jenis Surat
-        </button>
     </div>
 
     @if (session('success'))
@@ -52,48 +48,6 @@
                 </p>
             </div>
         @endforeach
-    </div>
-</div>
-
-<div id="modalTambah" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center hidden">
-    <div class="bg-surface-container-lowest rounded-2xl shadow-2xl w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-        <div class="p-lg border-b border-surface-variant/30 flex items-center justify-between">
-            <h2 class="text-title-md font-bold text-on-surface">Tambah Jenis Surat</h2>
-            <button onclick="document.getElementById('modalTambah').classList.add('hidden')" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <form method="POST" action="{{ route('admin.surat.jenis.store') }}" class="p-lg space-y-lg">
-            @csrf
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Kode Surat</label>
-                <input type="text" name="kode" required maxlength="20" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: SKDU">
-            </div>
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Nama Surat</label>
-                <input type="text" name="nama" required maxlength="200" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Surat Keterangan Domisili Usaha">
-            </div>
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Deskripsi</label>
-                <textarea name="deskripsi" rows="2" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant"></textarea>
-            </div>
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Syarat & Dokumen Pendukung</label>
-                <textarea name="syarat" rows="3" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Fotokopi KK, Fotokopi KTP, Pas Foto"></textarea>
-            </div>
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Masa Berlaku (hari)</label>
-                <input type="number" name="masa_berlaku" min="1" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Kosongkan jika tidak terbatas">
-            </div>
-            <div class="flex items-center gap-md">
-                <input type="checkbox" name="butuh_ttd_fisik" id="butuh_ttd_fisik" value="1" checked class="w-4 h-4 accent-[#51007a]">
-                <label for="butuh_ttd_fisik" class="text-label-sm font-bold text-on-surface">Butuh tanda tangan fisik Kepala Desa</label>
-            </div>
-            <div class="flex gap-md justify-end pt-md border-t border-surface-variant/30">
-                <button type="button" onclick="document.getElementById('modalTambah').classList.add('hidden')" class="px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all">Batal</button>
-                <button type="submit" class="bg-primary text-on-primary px-lg py-2 rounded-full text-label-md font-bold hover:bg-primary/90 transition-all">Simpan</button>
-            </div>
-        </form>
     </div>
 </div>
 @endsection

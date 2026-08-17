@@ -31,15 +31,20 @@ class Informasi extends Model
      * Filter informasi yang berlaku untuk wilayah RT/RW tertentu.
      * Berita tanpa RT/RW (NULL) dianggap berlaku untuk seluruh desa.
      */
-    public function scopeUntukWilayah($query, $rt, $rw)
+    public function scopeUntukWilayah($query, $rt, $rw = '01')
     {
         return $query->where(function ($q) use ($rt, $rw) {
-            $q->whereNull('rt')
-                ->whereNull('rw')
-                ->orWhere(function ($q2) use ($rt, $rw) {
-                    $q2->whereRaw('rt + 0 = ?', [(int) $rt])
-                        ->whereRaw('rw + 0 = ?', [(int) $rw]);
-                });
+            $q->where(function ($all) {
+                $all->whereNull('rt')->whereNull('rw');
+            })
+            ->orWhere(function ($specific) use ($rt, $rw) {
+                $specific->whereNotNull('rt')
+                    ->whereRaw('CAST(rt AS INTEGER) = ?', [(int) $rt])
+                    ->where(function ($rwQuery) use ($rw) {
+                        $rwQuery->whereNull('rw')
+                            ->orWhereRaw('CAST(rw AS INTEGER) = ?', [(int) $rw]);
+                    });
+            });
         });
     }
 }

@@ -195,6 +195,7 @@ Route::prefix('admin')->name('admin.')
         // Arsip Surat
         Route::get('surat/arsip', [SuratController::class, 'arsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip');
         Route::get('surat/arsip-export', [SuratController::class, 'exportArsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip.export');
+        Route::delete('surat/arsip/{pengajuan}', [SuratController::class, 'destroyArsip'])->middleware('permission:D Arsip Surat')->name('surat.arsip.destroy');
         Route::get('surat/tracking', [SuratController::class, 'tracking'])->middleware('permission:R Pengajuan Surat')->name('surat.tracking');
 
         // APBDes Dashboard (Fase 2)

@@ -14,6 +14,20 @@
         
         <!-- Form Content -->
         <div class="p-lg overflow-y-auto" style="max-height: calc(90vh - 80px)">
+            @if ($errors->any())
+                <div class="mb-md p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs">
+                    <div class="font-bold mb-1 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm">error</span>
+                        <span>Terdapat kesalahan pengisian:</span>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-0.5">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
             <form id="pendudukForm" action="{{ route('admin.penduduk.store') }}" method="POST">
                 @csrf
                 <input type="hidden" name="id" id="pendudukId">
@@ -26,10 +40,11 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="nik" id="nik" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono"
                                    placeholder="16 digit angka"
-                                   pattern="[0-9]{16}"
                                    maxlength="16"
+                                   inputmode="numeric"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                    required>
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">badge</span>
@@ -43,10 +58,11 @@
                         </label>
                         <div class="relative">
                             <input type="text" name="no_kk" id="no_kk" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all font-mono"
                                    placeholder="Kosongkan jika belum"
-                                   pattern="[0-9]{16}"
-                                   maxlength="16">
+                                   maxlength="16"
+                                   inputmode="numeric"
+                                   oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">group</span>
                             </div>
@@ -116,11 +132,8 @@
                         </label>
                         <div class="relative">
                             <input type="date" name="tanggal_lahir" id="tanggal_lahir" 
-                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
                                    max="{{ date('Y-m-d') }}">
-                            <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none">
-                                <span class="material-symbols-outlined text-base">calendar_today</span>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -133,9 +146,9 @@
                         </label>
                         <div class="relative">
                             <textarea name="alamat" id="alamat" rows="3"
-                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-11 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                                   class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-14 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
                                    placeholder="Alamat lengkap"></textarea>
-                            <div class="absolute right-3 top-3 text-on-surface-variant">
+                            <div class="absolute right-4 top-3 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">home</span>
                             </div>
                         </div>

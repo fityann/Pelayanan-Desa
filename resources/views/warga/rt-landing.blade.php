@@ -18,11 +18,8 @@
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=WargaPuspamukti" class="w-[60px] h-[60px] object-cover rounded-xl" alt="QR Code">
                 </div>
                 <div class="flex-1 min-w-0 pt-1">
-                    <p class="text-[13px] text-white/90 font-medium mb-0.5">{{ $greeting }}!</p>
-                    <h2 class="text-[19px] font-extrabold leading-tight tracking-wide truncate">
-                        HAPUNTEN BARAYA
-                    </h2>
-                    <p class="text-[13px] text-white/90 mt-0.5">
+                    <p class="text-[15px] text-white font-bold mb-0.5">{{ $greeting }}!</p>
+                    <p class="text-[17px] text-white font-extrabold mt-1">
                         Selamat datang di {{ trim(preg_replace('/RW\s*\d+/i', '', $qrCode->nama_rt ?? "RT $rt")) }}
                     </p>
                 </div>
@@ -284,7 +281,7 @@
 
 @push('modals')
 <!-- Pengaduan Modal -->
-<div id="pengaduanModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closePengaduanModal()">
+<div id="pengaduanModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4">
     <div class="relative bg-white rounded-[24px] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
         <!-- Modal Header -->
         <div class="bg-[#6A3297] text-white px-6 py-4">
@@ -370,14 +367,17 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Foto Bukti (Maks. 5 foto, opsional)
                     </label>
-                    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-red-300 transition-colors">
+                    <label for="fotoInput" class="block w-full border-2 border-dashed border-gray-300 hover:border-[#6A3297] rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70 hover:bg-purple-50/40 transition-all select-none group">
                         <input type="file" name="foto[]" id="fotoInput" accept="image/*" capture="environment" multiple class="hidden">
-                        <label for="fotoInput" class="cursor-pointer">
-                            <span class="material-symbols-outlined text-4xl text-gray-400 mb-2 block">add_photo_alternate</span>
-                            <p class="text-sm text-gray-600 mb-2">Ambil beberapa foto langsung dari kamera</p>
-                            <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 5MB, format: JPG, PNG, WEBP</p>
-                        </label>
-                    </div>
+                        <div class="pointer-events-none flex flex-col items-center justify-center">
+                            <div class="w-12 h-12 rounded-2xl bg-purple-100 text-[#6A3297] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-xs">
+                                <span class="material-symbols-outlined text-2xl">add_photo_alternate</span>
+                            </div>
+                            <p class="text-sm font-bold text-gray-800 mb-1">Klik di sini untuk pilih / ambil foto</p>
+                            <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 5MB (JPG, PNG, WEBP)</p>
+                            <span id="fotoCounter" class="hidden mt-2 inline-flex items-center gap-1 text-xs font-bold bg-[#6A3297] text-white px-3 py-1 rounded-full shadow-xs"></span>
+                        </div>
+                    </label>
                     <div id="fotoPreview" class="mt-3 hidden grid grid-cols-3 gap-2"></div>
                 </div>
                 
@@ -399,7 +399,7 @@
 </div>
 
 <!-- Modal Kegiatan RT -->
-<div id="kegiatanRtModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKegiatanRtModal()">
+<div id="kegiatanRtModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4" onclick="if(event.target === this) closeKegiatanRtModal()">
     <div class="relative bg-white rounded-[24px] max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
         <!-- Header Banner -->
         <div class="bg-[#6A3297] text-white px-6 py-4 flex items-center justify-between">
@@ -419,50 +419,45 @@
 
         <!-- Body -->
         <div class="p-6 space-y-3 max-h-[70vh] overflow-y-auto">
-            <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 flex items-start space-x-3">
-                <div class="bg-[#6A3297] text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
-                    <span class="text-[10px] font-black block">MINGGU</span>
-                    <span class="text-base font-black leading-none">08:00</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-black text-slate-900">Kerja Bakti Masal RT {{ $rt }}</h4>
-                    <p class="text-xs text-slate-600 mt-0.5">Pembersihan selokan drainase & fasilitas umum lingkungan.</p>
-                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-amber-900 font-bold">
-                        <span class="material-symbols-outlined text-sm text-amber-700">location_on</span>
-                        <span>Area Balai RT {{ $rt }} & Lapangan Warga</span>
+            @forelse ($agendaTerdekat as $agenda)
+                <div class="bg-amber-50/80 border border-amber-200 rounded-xl p-4 flex items-start space-x-3">
+                    <div class="bg-[#6A3297] text-white rounded-xl px-3 py-2 text-center flex-shrink-0 min-w-[68px]">
+                        @if ($agenda->tanggal_kegiatan)
+                            <span class="text-[10px] font-black block uppercase tracking-wider">{{ \Carbon\Carbon::parse($agenda->tanggal_kegiatan)->locale('id')->isoFormat('dddd') }}</span>
+                            <span class="text-sm font-black leading-tight block">{{ \Carbon\Carbon::parse($agenda->tanggal_kegiatan)->format('H:i') != '00:00' ? \Carbon\Carbon::parse($agenda->tanggal_kegiatan)->format('H:i') : \Carbon\Carbon::parse($agenda->tanggal_kegiatan)->format('d/m') }}</span>
+                        @else
+                            <span class="text-[10px] font-black block">KEGIATAN</span>
+                            <span class="material-symbols-outlined text-base">event</span>
+                        @endif
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="text-sm font-black text-slate-900">{{ $agenda->judul }}</h4>
+                        <p class="text-xs text-slate-600 mt-0.5 leading-relaxed">{{ $agenda->isi }}</p>
+                        @if ($agenda->lokasi)
+                            <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-amber-900 font-bold">
+                                <span class="material-symbols-outlined text-sm text-amber-700">location_on</span>
+                                <span>{{ $agenda->lokasi }}</span>
+                            </div>
+                        @endif
+                        @if ($agenda->tanggal_kegiatan)
+                            <div class="flex items-center space-x-1.5 mt-1 text-[11px] text-slate-500 font-medium">
+                                <span class="material-symbols-outlined text-sm text-slate-400">schedule</span>
+                                <span>{{ \Carbon\Carbon::parse($agenda->tanggal_kegiatan)->locale('id')->isoFormat('D MMMM Y, HH:mm') }} WIB</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start space-x-3">
-                <div class="bg-amber-600 text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
-                    <span class="text-[10px] font-black block">BULANAN</span>
-                    <span class="text-base font-black leading-none">19:30</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-black text-slate-900">Arisan & Pengajian Bulanan Warga</h4>
-                    <p class="text-xs text-slate-600 mt-0.5">Silaturahmi warga, pembacaan yasin, dan diskusi lingkungan RT.</p>
-                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-slate-500 font-bold">
-                        <span class="material-symbols-outlined text-sm text-slate-400">home</span>
-                        <span>Rumah Bapak Ketua RT {{ $rt }}</span>
+            @empty
+                <div class="py-10 px-4 text-center">
+                    <div class="w-16 h-16 bg-purple-50 text-[#6A3297] rounded-2xl flex items-center justify-center mx-auto mb-3 border border-purple-100 shadow-sm">
+                        <span class="material-symbols-outlined text-3xl">event_busy</span>
                     </div>
+                    <h4 class="text-sm font-black text-slate-800">Belum Ada Jadwal Kegiatan</h4>
+                    <p class="text-xs text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
+                        Saat ini belum ada jadwal kegiatan yang diagendakan untuk wilayah RT {{ $rt }}.
+                    </p>
                 </div>
-            </div>
-
-            <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 flex items-start space-x-3">
-                <div class="bg-blue-600 text-white rounded-xl px-3 py-2 text-center flex-shrink-0">
-                    <span class="text-[10px] font-black block">SABTU</span>
-                    <span class="text-base font-black leading-none">20:00</span>
-                </div>
-                <div class="flex-1">
-                    <h4 class="text-sm font-black text-slate-900">Kumpul Karang Taruna & Remaja RT {{ $rt }}</h4>
-                    <p class="text-xs text-slate-600 mt-0.5">Pertemuan pemuda-pemudi untuk kegiatan olahraga dan seni desa.</p>
-                    <div class="flex items-center space-x-1.5 mt-2 text-[11px] text-slate-500 font-bold">
-                        <span class="material-symbols-outlined text-sm text-slate-400">location_on</span>
-                        <span>Pos Ronda Utama RT {{ $rt }}</span>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
 
         <div class="bg-slate-50 px-6 py-3 border-t border-slate-100 text-right">
@@ -474,7 +469,7 @@
 </div>
 
 <!-- Modal Kontak Darurat -->
-<div id="kontakDaruratModal" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md items-center justify-center p-4" onclick="if(event.target === this) closeKontakDaruratModal()">
+<div id="kontakDaruratModal" class="hidden fixed inset-0 z-50 overflow-y-auto bg-slate-950/70 backdrop-blur-md flex items-center justify-center p-4" onclick="if(event.target === this) closeKontakDaruratModal()">
     <div class="relative bg-white rounded-[24px] max-w-lg w-full shadow-2xl overflow-hidden transform transition-all text-left border border-slate-100">
         <!-- Red Header Banner -->
         <div class="bg-[#c82333] text-white px-6 py-4 flex items-center justify-between">
@@ -565,44 +560,25 @@
 
 @push('scripts')
 <script>
-window.showKegiatanRtModal = function() {
-    const m = document.getElementById('kegiatanRtModal');
-    if (m) {
-        m.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-};
-window.closeKegiatanRtModal = function() {
-    const m = document.getElementById('kegiatanRtModal');
-    if (m) {
-        m.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-};
-window.showKontakDaruratModal = function() {
-    const m = document.getElementById('kontakDaruratModal');
-    if (m) {
-        m.classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    }
-};
-window.closeKontakDaruratModal = function() {
-    const m = document.getElementById('kontakDaruratModal');
-    if (m) {
-        m.classList.add('hidden');
-        document.body.style.overflow = 'auto';
-    }
-};
-
-// Handle Foto Preview (multiple images)
+// Handle Foto Preview & Counter (multiple images)
 document.getElementById('fotoInput')?.addEventListener('change', function(e) {
     const files = Array.from(e.target.files || []);
     const preview = document.getElementById('fotoPreview');
+    const counter = document.getElementById('fotoCounter');
     preview.innerHTML = '';
 
     if (files.length === 0) {
         preview.classList.add('hidden');
+        if (counter) {
+            counter.classList.add('hidden');
+            counter.textContent = '';
+        }
         return;
+    }
+
+    if (counter) {
+        counter.innerHTML = `<span class="material-symbols-outlined text-[14px]">check</span> ${files.length} Foto Terpilih`;
+        counter.classList.remove('hidden');
     }
 
     files.slice(0, 5).forEach((file) => {
@@ -610,10 +586,10 @@ document.getElementById('fotoInput')?.addEventListener('change', function(e) {
         const reader = new FileReader();
         reader.onload = function(ev) {
             const wrap = document.createElement('div');
-            wrap.className = 'relative rounded-lg overflow-hidden border border-gray-200';
+            wrap.className = 'relative rounded-xl overflow-hidden border border-purple-200 shadow-xs';
             wrap.innerHTML = `
                 <img src="${ev.target.result}" class="h-24 w-full object-cover" alt="Preview">
-                <span class="absolute top-1 right-1 bg-black/50 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs">${'✓'}</span>
+                <span class="absolute top-1.5 right-1.5 bg-black/60 backdrop-blur-xs text-white rounded-full w-5 h-5 flex items-center justify-center text-[10px] font-bold">✓</span>
             `;
             preview.appendChild(wrap);
         };
@@ -621,6 +597,18 @@ document.getElementById('fotoInput')?.addEventListener('change', function(e) {
     });
 
     preview.classList.remove('hidden');
+});
+
+// Auto-open modal if ?lapor=1, ?kegiatan=1, or ?kontak=1 is in URL
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('lapor') === '1') {
+        setTimeout(showPengaduanModal, 100);
+    } else if (params.get('kegiatan') === '1') {
+        setTimeout(showKegiatanRtModal, 100);
+    } else if (params.get('kontak') === '1') {
+        setTimeout(showKontakDaruratModal, 100);
+    }
 });
 
 // Submit Pengaduan Form

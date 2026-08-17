@@ -60,10 +60,10 @@
                     </label>
                     <div class="relative">
                         <textarea name="alamat" id="alamat" rows="3"
-                               class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
-                               placeholder="Jalan, Dusun, Desa"
+                               class="w-full bg-surface border border-outline-variant rounded-lg pl-md pr-14 py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all resize-none"
+                               placeholder="Blok/Jalan, No. Rumah"
                                required></textarea>
-                        <div class="absolute right-3 top-3 text-on-surface-variant">
+                        <div class="absolute right-4 top-3 text-on-surface-variant">
                             <span class="material-symbols-outlined text-base">home</span>
                         </div>
                     </div>
@@ -155,9 +155,15 @@ function showKeluargaModal(keluarga = null) {
         
         // Update form action for update
         form.action = `/admin/keluarga/${keluarga.id}`;
-        form.method = 'POST';
-        form.innerHTML = form.innerHTML.replace('@method('PUT')', '');
-        form.innerHTML += '@method('PUT')';
+        
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (!methodInput) {
+            methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            form.appendChild(methodInput);
+        }
+        methodInput.value = 'PUT';
     } else {
         // Add mode
         title.textContent = 'Tambah Data Keluarga';
@@ -168,7 +174,11 @@ function showKeluargaModal(keluarga = null) {
         
         // Reset form action for create
         form.action = '{{ route("admin.keluarga.store") }}';
-        form.method = 'POST';
+        
+        let methodInput = form.querySelector('input[name="_method"]');
+        if (methodInput) {
+            methodInput.remove();
+        }
     }
     
     modal.classList.remove('hidden');
