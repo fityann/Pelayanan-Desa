@@ -39,10 +39,10 @@ class Informasi extends Model
             })
             ->orWhere(function ($specific) use ($rt, $rw) {
                 $specific->whereNotNull('rt')
-                    ->whereRaw('CAST(rt AS INTEGER) = ?', [(int) $rt])
+                    ->whereRaw('CAST(rt AS UNSIGNED) = ?', [(int) $rt])
                     ->where(function ($rwQuery) use ($rw) {
                         $rwQuery->whereNull('rw')
-                            ->orWhereRaw('CAST(rw AS INTEGER) = ?', [(int) $rw]);
+                            ->orWhereRaw('CAST(rw AS UNSIGNED) = ?', [(int) $rw]);
                     });
             });
         });
