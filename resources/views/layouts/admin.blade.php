@@ -59,7 +59,7 @@
             @if (!$isGuest)
             <a class="flex items-center gap-md px-md py-3 transition-all {{ $isActive('dashboard') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('dashboard') }}">
                 <span class="material-symbols-outlined">dashboard</span>
-                <span class="text-label-md">Dashboard</span>
+                <span class="text-label-md uppercase tracking-wider">DASHBOARD</span>
             </a>
             @endif
 
