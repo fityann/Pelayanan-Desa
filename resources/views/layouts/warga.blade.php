@@ -542,34 +542,49 @@
     </footer>
 
     <!-- Bottom Navigation (mobile) -->
-    <nav class="bottom-nav md:hidden">
+    <nav class="bottom-nav md:hidden overflow-x-auto" style="justify-content: flex-start; flex-wrap: nowrap; scrollbar-width: none; -ms-overflow-style: none;">
+        <style>
+            .bottom-nav::-webkit-scrollbar { display: none; }
+            .bottom-nav a, .bottom-nav button { flex: 0 0 72px !important; }
+        </style>
+        
         <a href="{{ $isRtScoped ? route('warga.rt.landing', ['rt' => $rt]) : '/' }}" class="{{ $inMenu('warga.rt.landing') || $inMenu('dashboard') ? 'active' : '' }}">
             <span class="material-symbols-outlined">home</span> Beranda
         </a>
-        <a href="{{ route('informasi.publik', $isRtScoped ? ['rt' => $rt] : []) }}" class="{{ $inMenu('informasi.publik') ? 'active' : '' }}">
+        <a href="{{ $isRtScoped ? route('warga.rt.info', ['rt' => $rt]) : route('informasi.publik', $rtQuery ?? []) }}" class="{{ $inMenu('warga.rt.info') ? 'active' : '' }}">
+            <span class="material-symbols-outlined">info</span> Info Desa
+        </a>
+        <a href="{{ route('apbdes.publik', $rtQuery ?? []) }}" class="{{ $inMenu('apbdes.publik') ? 'active' : '' }}">
+            <span class="material-symbols-outlined">account_balance</span> APBDes
+        </a>
+        <a href="{{ route('aset.publik') }}" class="{{ $inMenu('aset.publik') ? 'active' : '' }}">
+            <span class="material-symbols-outlined">inventory_2</span> Aset
+        </a>
+        <a href="{{ route('informasi.publik', $rtQuery ?? []) }}" class="{{ $inMenu('informasi.publik') ? 'active' : '' }}">
             <span class="material-symbols-outlined">newspaper</span> Berita
         </a>
 
-        @if ($isRtScoped)
-            <a href="{{ route('warga.rt.surat.index', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.surat.index') ? 'active' : '' }}">
+        @if ($isRtScoped || auth()->check())
+            <a href="{{ $isRtScoped ? route('warga.rt.surat.index', ['rt' => $rt]) : route('warga.surat.index') }}" class="{{ $inMenu('warga.rt.surat.index') || $inMenu('warga.surat.index') ? 'active' : '' }}">
                 <span class="material-symbols-outlined">edit_note</span> Surat
             </a>
-            <button type="button" onclick="showPengaduanModal()" class="{{ $inMenu('warga.rt.landing') ? '' : '' }} flex flex-col items-center justify-center">
-                <span class="material-symbols-outlined">campaign</span> Lapor
+            <a href="{{ $isRtScoped ? route('warga.rt.surat.riwayat', ['rt' => $rt]) : route('warga.surat.index') }}" class="{{ $inMenu('warga.rt.surat.riwayat') ? 'active' : '' }}">
+                <span class="material-symbols-outlined">lan</span> Tracking
+            </a>
+        @endif
+
+        <a href="{{ route('warga.musrenbang.index') }}" class="{{ $inMenu('warga.musrenbang.index') || $inMenu('warga.musrenbang.show') ? 'active' : '' }}">
+            <span class="material-symbols-outlined">architecture</span> Usulan
+        </a>
+
+        @if ($isRtScoped)
+            <button type="button" onclick="showPengaduanModal()" class="flex flex-col items-center justify-center text-[rgba(255,255,255,0.6)] hover:text-white transition-colors text-[10.5px] font-semibold gap-[3px] pt-[9px] pb-[8px]">
+                <span class="material-symbols-outlined text-[22px]">campaign</span> Lapor
             </button>
             <a href="{{ route('warga.rt.chat', ['rt' => $rt]) }}" class="{{ $inMenu('warga.rt.chat') ? 'active' : '' }}">
-                <span class="material-symbols-outlined">forum</span> Chat Admin
+                <span class="material-symbols-outlined">forum</span> Chat
             </a>
         @else
-            <a href="{{ route('apbdes.publik') }}" class="{{ $inMenu('apbdes.publik') ? 'active' : '' }}">
-                <span class="material-symbols-outlined">account_balance</span> APBDes
-            </a>
-            <a href="{{ route('informasi.publik') }}" class="{{ $inMenu('informasi.publik') ? 'active' : '' }}">
-                <span class="material-symbols-outlined">newspaper</span> Berita
-            </a>
-            <a href="{{ route('warga.musrenbang.index') }}" class="{{ $inMenu('warga.musrenbang.index') ? 'active' : '' }}">
-                <span class="material-symbols-outlined">architecture</span> Musrenbang
-            </a>
             <a href="{{ route('login') }}">
                 <span class="material-symbols-outlined">login</span> Login
             </a>

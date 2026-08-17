@@ -118,7 +118,7 @@
 </head>
 <body>
     @php
-        $logoPath = public_path('images/logo-desa-puspamukti.jpg');
+        $logoPath = public_path('images/logo-pemkab-tasikmalaya.jpg');
         $logoData = file_exists($logoPath) ? base64_encode(file_get_contents($logoPath)) : null;
 
         $rawAlamat = $surat->pemohon_alamat ?: ($surat->user?->penduduk?->alamat ?? '');

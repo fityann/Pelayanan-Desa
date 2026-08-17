@@ -12,13 +12,15 @@ class MusrenbangController extends Controller
     {
         $query = Musrenbang::with(['pengusul', 'wilayah']);
         
-        if ($request->filled('tahun')) {
-            $query->where('tahun', $request->tahun);
+        $tahun = $request->has('tahun') ? $request->input('tahun') : date('Y');
+        
+        if ($tahun) {
+            $query->where('tahun', $tahun);
         }
         
         $musrenbangs = $query->latest('tanggal_musrenbang')->latest()->paginate(15)->withQueryString();
         
-        return view('warga.musrenbang.index', compact('musrenbangs'));
+        return view('warga.musrenbang.index', compact('musrenbangs', 'tahun'));
     }
 
     public function show(Musrenbang $musrenbang)

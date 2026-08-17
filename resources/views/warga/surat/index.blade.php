@@ -3,7 +3,7 @@
 @section('title', 'Layanan Surat - SILAPU')
 
 @section('content')
-<div class="space-y-8 max-w-5xl mx-auto py-6">
+<div class="space-y-8 max-w-5xl mx-auto py-6" x-data="{ search: '' }">
     <!-- Hero Header -->
     <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-purple-900 via-fuchsia-900 to-slate-900 text-white p-6 sm:p-8 shadow-xl border border-white/10">
         <div class="absolute -top-24 -right-24 w-72 h-72 bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -22,6 +22,12 @@
                 <span>Cek Status Surat</span>
             </a>
         </div>
+    </div>
+
+    <!-- Search Input -->
+    <div class="relative max-w-lg">
+        <span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-gray-400">search</span>
+        <input type="text" x-model="search" placeholder="Cari jenis atau layanan surat..." class="w-full pl-12 pr-4 py-3.5 bg-white rounded-2xl border border-gray-100 shadow-sm focus:ring-2 focus:ring-purple-500 focus:border-purple-500 focus:outline-none transition-shadow text-gray-700 font-medium">
     </div>
 
     @if (session('success'))
@@ -43,7 +49,8 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         @foreach ($jenisSurat as $jenis)
-            <a href="{{ route('warga.surat.create', $jenis) }}" class="block bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 p-6 flex flex-col justify-between group">
+            <a x-show="search === '' || '{{ strtolower(addslashes($jenis->nama)) }}'.includes(search.toLowerCase()) || '{{ strtolower(addslashes($jenis->deskripsi)) }}'.includes(search.toLowerCase())" 
+               href="{{ route('warga.surat.create', $jenis) }}" class="block bg-white rounded-3xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-gray-100 p-6 flex flex-col justify-between group">
                 <div>
                     <div class="flex items-center justify-between mb-4">
                         <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-purple-500/10 to-fuchsia-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">

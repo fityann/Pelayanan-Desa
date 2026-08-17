@@ -138,6 +138,46 @@ class JenisSuratSeeder extends Seeder
                 'masa_berlaku' => 30,
                 'butuh_ttd_fisik' => true,
             ],
+            [
+                'kode' => 'SKKehilangan',
+                'nama' => 'Surat Keterangan Kehilangan',
+                'deskripsi' => 'Surat keterangan pengantar kehilangan barang/dokumen',
+                'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat Pengantar RT/RW",
+                'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
+            ],
+            [
+                'kode' => 'SPPAD',
+                'nama' => 'Surat Pengantar Pindah Antar Desa',
+                'deskripsi' => 'Surat pengantar pindah ke desa lain dalam satu kecamatan',
+                'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat Pengantar RT/RW",
+                'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
+            ],
+            [
+                'kode' => 'SPPAK',
+                'nama' => 'Surat Pengantar Pindah Antar Kecamatan',
+                'deskripsi' => 'Surat pengantar pindah ke kecamatan lain dalam satu kabupaten',
+                'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat Pengantar RT/RW",
+                'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
+            ],
+            [
+                'kode' => 'SPPDK',
+                'nama' => 'Surat Pengantar Pindah Antar Kabupaten/Provinsi',
+                'deskripsi' => 'Surat pengantar pindah ke kabupaten atau provinsi lain',
+                'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Surat Pengantar RT/RW",
+                'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
+            ],
+            [
+                'kode' => 'SKBedaNama',
+                'nama' => 'Surat Keterangan Beda Nama',
+                'deskripsi' => 'Surat keterangan pengantar beda nama pada identitas kependudukan',
+                'syarat' => "1. Fotokopi KK\n2. Fotokopi KTP\n3. Fotokopi KKS/Ijazah\n4. Surat Pengantar RT/RW",
+                'masa_berlaku' => 30,
+                'butuh_ttd_fisik' => true,
+            ],
         ];
 
         foreach ($surat as $s) {
