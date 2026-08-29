@@ -190,7 +190,7 @@ class MasyarakatPortalTest extends TestCase
 
     public function test_surat_online_warga_tetap_pakai_panel_admin(): void
     {
-        $response = $this->actingAs($this->warga())
+        $response = $this->actingAs($this->warga(), 'warga')
             ->get(route('warga.surat.index'));
 
         $response->assertOk();
@@ -241,15 +241,15 @@ class MasyarakatPortalTest extends TestCase
             'nama' => $penduduk->nama,
         ]);
 
-        $response->assertRedirect(route('warga.rt.surat.index', ['rt' => '01', 'rw' => '01']));
-        $this->assertAuthenticated();
+        $response->assertRedirect(route('warga.rt.surat.index', ['rt' => '01']));
+        $this->assertAuthenticated('warga');
 
         // Akun otomatis dibuat & terhubung ke penduduk, berperan Warga
         $user = $penduduk->fresh()->user;
         $this->assertNotNull($user);
         $this->assertSame($penduduk->nama, $user->name);
         $this->assertTrue($user->hasRole('Warga'));
-        $this->assertAuthenticatedAs($user);
+        $this->assertAuthenticatedAs($user, 'warga');
     }
 
     public function test_login_warga_ditolak_jika_nik_belum_terdaftar(): void
@@ -265,9 +265,10 @@ class MasyarakatPortalTest extends TestCase
         $this->assertGuest();
     }
 
-    public function test_login_warga_ditolak_jika_nik_terdaftar_di_wilayah_lain(): void
+    public function test_login_warga_di_rt_lain_arahkan_balik_ke_rt_sendiri(): void
     {
         // Penduduk terdaftar di RT 01 RW 01, tapi login lewat halaman RT 02 RW 01
+        // Sistem memaklumi (login from anywhere) lalu mengarahkan ke RT miliknya
         $penduduk = $this->pendudukRt01();
 
         $response = $this->from(route('warga.rt.login', ['rt' => '02', 'rw' => '01']))
@@ -276,8 +277,8 @@ class MasyarakatPortalTest extends TestCase
                 'nama' => $penduduk->nama,
             ]);
 
-        $response->assertSessionHasErrors('nik');
-        $this->assertGuest();
+        $response->assertRedirect(route('warga.rt.surat.index', ['rt' => '01']));
+        $this->assertAuthenticated('warga');
     }
 
     public function test_login_warga_ditolak_jika_nama_tidak_cocok(): void
@@ -297,7 +298,7 @@ class MasyarakatPortalTest extends TestCase
     {
         // Sebelum login -> diarahkan ke halaman login warga RT/RW
         $this->get(route('warga.rt.surat.index', ['rt' => '01', 'rw' => '01']))
-            ->assertRedirect(route('warga.rt.login', ['rt' => '01', 'rw' => '01']));
+            ->assertRedirect(route('warga.rt.login', ['rt' => '01']));
 
         // Setelah login -> bisa membuka daftar surat
         $penduduk = $this->pendudukRt01();
@@ -319,10 +320,10 @@ class MasyarakatPortalTest extends TestCase
             'nama' => $penduduk->nama,
         ]);
 
-        $this->assertAuthenticated();
+        $this->assertAuthenticated('warga');
 
         $this->post(route('warga.rt.logout', ['rt' => '01', 'rw' => '01']))
-            ->assertRedirect(route('warga.rt.landing', ['rt' => '01', 'rw' => '01']));
+            ->assertRedirect(route('warga.rt.landing', ['rt' => '01']));
 
         $this->assertGuest();
     }

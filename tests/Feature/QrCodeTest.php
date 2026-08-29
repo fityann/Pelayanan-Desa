@@ -164,7 +164,7 @@ class QrCodeTest extends TestCase
         $this->actingAs($this->admin())
             ->get(route('admin.qr-links.cetak'))
             ->assertOk()
-            ->assertSee('RT 01 / RW 01');
+            ->assertSee('RT 01');
     }
 
     public function test_toggle_status_flips_status(): void

@@ -469,17 +469,18 @@ document.addEventListener('DOMContentLoaded', function() {
 });
     
     // Auto submit filter form on change
-    const filterForm = document.getElementById('pendudukFilterForm');
-    if (filterForm) {
-        // Auto-submit for selects on change
-        const selects = filterForm.querySelectorAll('select');
-        selects.forEach(select => {
-            select.addEventListener('change', function() {
-                filterForm.submit();
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterForm = document.getElementById('pendudukFilterForm');
+        if (filterForm) {
+            // Auto-submit for selects on change
+            const selects = filterForm.querySelectorAll('select');
+            selects.forEach(select => {
+                select.addEventListener('change', function() {
+                    filterForm.submit();
+                });
             });
-        });
-    }
-});
+        }
+    });
 
 // Toast notification function
 function showToast(message, type = 'info') {

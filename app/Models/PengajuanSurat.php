@@ -115,7 +115,7 @@ class PengajuanSurat extends Model
         $this->riwayatStatus()->create([
             'status' => $status,
             'catatan' => $catatan,
-            'oleh_user_id' => $olehUserId ?? auth()->id(),
+            'oleh_user_id' => $olehUserId ?? auth()->id() ?? auth('warga')->id(),
         ]);
     }
 }

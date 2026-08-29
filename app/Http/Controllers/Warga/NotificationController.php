@@ -38,7 +38,7 @@ class NotificationController extends Controller
         ]);
     }
 
-    public function markRead(int $id): JsonResponse
+    public function markRead(string $rt, int $id): JsonResponse
     {
         Notification::untuk(auth('warga')->id())->findOrFail($id)->tandaiDibaca();
 

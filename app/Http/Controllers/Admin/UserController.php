@@ -36,7 +36,8 @@ class UserController extends Controller
             'rt' => ['nullable', 'string', 'max:3'],
             'rw' => ['nullable', 'string', 'max:3'],
             'password' => ['required', Rules\Password::defaults()],
-            'role' => ['required', 'exists:roles,id'],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['exists:roles,id'],
         ]);
 
         $user = User::create([
@@ -50,8 +51,7 @@ class UserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
-        $role = Role::findById($request->role);
-        $user->assignRole($role);
+        $user->syncRoles($request->roles);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil ditambahkan');
     }
@@ -72,7 +72,8 @@ class UserController extends Controller
             'address' => ['nullable', 'string', 'max:500'],
             'rt' => ['nullable', 'string', 'max:3'],
             'rw' => ['nullable', 'string', 'max:3'],
-            'role' => ['required', 'exists:roles,id'],
+            'roles' => ['required', 'array'],
+            'roles.*' => ['exists:roles,id'],
         ]);
 
         $user->update([
@@ -90,8 +91,7 @@ class UserController extends Controller
             $user->update(['password' => Hash::make($request->password)]);
         }
 
-        $role = Role::findById($request->role);
-        $user->syncRoles([$role]);
+        $user->syncRoles($request->roles);
 
         return redirect()->route('admin.users.index')->with('success', 'Pengguna berhasil diperbarui');
     }

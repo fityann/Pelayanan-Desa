@@ -40,17 +40,20 @@
                 <!-- Kepala Keluarga -->
                 <div class="mb-md">
                     <label class="block text-label-sm font-medium text-on-surface mb-xs">
-                        Nama Kepala Keluarga <span class="text-error">*</span>
+                        Nama Kepala Keluarga <span class="text-xs text-on-surface-variant font-normal">(Opsional)</span>
                     </label>
                     <div class="relative">
                         <input type="text" name="kepala_keluarga" id="kepala_keluarga" 
                                class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                               placeholder="Nama lengkap kepala keluarga"
-                               required>
+                               placeholder="Kosongkan jika ingin otomatis dari Anggota KK">
                         <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
                             <span class="material-symbols-outlined text-base">person</span>
                         </div>
                     </div>
+                    <p class="text-[11px] text-emerald-700 font-medium mt-xs flex items-center gap-1">
+                        <span class="material-symbols-outlined text-sm text-emerald-600">info</span>
+                        <span>Otomatis terisi jika menambahkan Anggota KK berperan 'Kepala Keluarga' (Misal: Bapak Apong)</span>
+                    </p>
                 </div>
                 
                 <!-- Alamat -->
@@ -110,7 +113,7 @@
                         <div class="relative">
                             <input type="text" name="kecamatan" id="kecamatan" 
                                    class="w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                                   value="Bojong">
+                                   value="Cigalontang">
                             <div class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant">
                                 <span class="material-symbols-outlined text-base">map</span>
                             </div>
@@ -151,7 +154,7 @@ function showKeluargaModal(keluarga = null) {
         document.getElementById('rt').value = keluarga.rt || '';
         document.getElementById('rw').value = keluarga.rw || '';
         document.getElementById('desa').value = keluarga.desa || 'Puspamukti';
-        document.getElementById('kecamatan').value = keluarga.kecamatan || 'Bojong';
+        document.getElementById('kecamatan').value = keluarga.kecamatan || 'Cigalontang';
         
         // Update form action for update
         form.action = `/admin/keluarga/${keluarga.id}`;
@@ -170,7 +173,7 @@ function showKeluargaModal(keluarga = null) {
         form.reset();
         document.getElementById('keluargaId').value = '';
         document.getElementById('desa').value = 'Puspamukti';
-        document.getElementById('kecamatan').value = 'Bojong';
+        document.getElementById('kecamatan').value = 'Cigalontang';
         
         // Reset form action for create
         form.action = '{{ route("admin.keluarga.store") }}';

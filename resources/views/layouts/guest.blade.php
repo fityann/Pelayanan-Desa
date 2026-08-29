@@ -5,9 +5,9 @@
     <title>@yield('title', 'SILAPU - Puspamukti Smart Village')</title>
 
     <!-- Favicon / Logo Tab -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>

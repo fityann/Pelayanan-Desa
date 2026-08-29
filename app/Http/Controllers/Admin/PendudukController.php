@@ -133,13 +133,42 @@ class PendudukController extends Controller
             $data['kewarganegaraan'] = 'WNI';
         }
 
-        Penduduk::create($data);
+        // Auto-assign keluarga_id if no_kk matches an existing Keluarga
+        if (!empty($data['no_kk']) && empty($data['keluarga_id'])) {
+            $keluarga = Keluarga::where('no_kk', $data['no_kk'])->first();
+            if ($keluarga) {
+                $data['keluarga_id'] = $keluarga->id;
+            }
+        }
+
+        $penduduk = Penduduk::create($data);
+
+        // Auto-sync kepala_keluarga in Keluarga table
+        if (!empty($data['keluarga_id'])) {
+            $keluarga = Keluarga::find($data['keluarga_id']);
+            if ($keluarga) {
+                if (
+                    ($data['hubungan_keluarga'] ?? '') === 'Kepala Keluarga' || 
+                    empty($keluarga->kepala_keluarga) || 
+                    $keluarga->kepala_keluarga === 'Belum Ditetapkan'
+                ) {
+                    $keluarga->update([
+                        'kepala_keluarga' => $penduduk->nama,
+                        'kepala_keluarga_id' => $penduduk->id,
+                    ]);
+                }
+            }
+        }
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
                 'success' => true,
                 'message' => 'Data penduduk berhasil ditambahkan'
             ]);
+        }
+
+        if (!empty($data['keluarga_id'])) {
+            return redirect()->route('admin.keluarga.show', $data['keluarga_id'])->with('success', 'Data anggota keluarga berhasil ditambahkan');
         }
 
         return redirect()->route('admin.penduduk.index')->with('success', 'Data penduduk berhasil ditambahkan');
@@ -210,7 +239,32 @@ class PendudukController extends Controller
             $data['kewarganegaraan'] = 'WNI';
         }
 
+        // Auto-assign keluarga_id if no_kk matches an existing Keluarga
+        if (!empty($data['no_kk']) && empty($data['keluarga_id'])) {
+            $keluarga = Keluarga::where('no_kk', $data['no_kk'])->first();
+            if ($keluarga) {
+                $data['keluarga_id'] = $keluarga->id;
+            }
+        }
+
         $penduduk->update($data);
+
+        // Auto-sync kepala_keluarga in Keluarga table
+        if (!empty($penduduk->keluarga_id)) {
+            $keluarga = Keluarga::find($penduduk->keluarga_id);
+            if ($keluarga) {
+                if (
+                    ($penduduk->hubungan_keluarga ?? '') === 'Kepala Keluarga' || 
+                    empty($keluarga->kepala_keluarga) || 
+                    $keluarga->kepala_keluarga === 'Belum Ditetapkan'
+                ) {
+                    $keluarga->update([
+                        'kepala_keluarga' => $penduduk->nama,
+                        'kepala_keluarga_id' => $penduduk->id,
+                    ]);
+                }
+            }
+        }
 
         if ($request->expectsJson() || $request->ajax()) {
             return response()->json([
@@ -266,6 +320,14 @@ class PendudukController extends Controller
             if (Penduduk::where('nik', $data['nik'])->exists()) {
                 $errors[] = "Baris " . ($index + 2) . ": NIK {$data['nik']} sudah ada, dilewati";
                 continue;
+            }
+
+            // Auto-assign keluarga_id if no_kk matches an existing Keluarga
+            if (!empty($data['no_kk']) && empty($data['keluarga_id'])) {
+                $keluarga = Keluarga::where('no_kk', $data['no_kk'])->first();
+                if ($keluarga) {
+                    $data['keluarga_id'] = $keluarga->id;
+                }
             }
 
             try {

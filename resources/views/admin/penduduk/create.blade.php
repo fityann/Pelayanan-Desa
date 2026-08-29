@@ -1,4 +1,4 @@
-﻿@extends('layouts.admin')
+@extends('layouts.admin')
 
 @section('title', 'Tambah Penduduk - SILAPU')
 
@@ -8,6 +8,25 @@
         <h1 class="text-headline-md font-bold text-on-surface">Tambah Penduduk</h1>
         <p class="text-body-sm text-on-surface-variant">Input data penduduk baru</p>
     </div>
+
+    @if(request('no_kk'))
+        <div class="bg-emerald-50 border border-emerald-200 text-emerald-800 p-4 rounded-2xl flex items-center justify-between shadow-xs">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold">
+                    <span class="material-symbols-outlined text-xl">group_add</span>
+                </div>
+                <div>
+                    <h4 class="text-xs font-black uppercase tracking-wider text-emerald-900">Mode Tambah Anggota KK</h4>
+                    <p class="text-xs font-semibold text-emerald-700 mt-0.5">
+                        Menambahkan Anggota Keluarga untuk KK No: <span class="font-mono font-bold underline">{{ request('no_kk') }}</span>
+                    </p>
+                </div>
+            </div>
+            <span class="bg-emerald-100 text-emerald-800 text-[11px] font-bold px-3 py-1 rounded-full">
+                Auto-filled
+            </span>
+        </div>
+    @endif
 
     @if ($errors->any())
         <div class="bg-error/10 border border-error/20 text-error px-lg py-3 rounded-xl">
@@ -79,15 +98,15 @@
             </div>
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">RT</label>
-                <input type="text" name="rt" value="{{ old('rt') }}" maxlength="3" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
+                <input type="text" name="rt" value="{{ old('rt', request('rt')) }}" maxlength="3" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
             </div>
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">RW</label>
-                <input type="text" name="rw" value="{{ old('rw') }}" maxlength="3" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
+                <input type="text" name="rw" value="{{ old('rw', request('rw')) }}" maxlength="3" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
             </div>
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">No. KK</label>
-                <input type="text" name="no_kk" value="{{ old('no_kk') }}" maxlength="16" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
+                <input type="text" name="no_kk" value="{{ old('no_kk', request('no_kk')) }}" maxlength="16" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
             </div>
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">Hubungan Keluarga</label>
@@ -99,17 +118,17 @@
                 </select>
             </div>
             <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">ID Keluarga (opsional)</label>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Keluarga (KK Terhubung)</label>
                 <select name="keluarga_id" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
                     <option value="">-- Pilih KK --</option>
                     @foreach ($keluargaList as $k)
-                        <option value="{{ $k->id }}" {{ old('keluarga_id') == $k->id ? 'selected' : '' }}>{{ $k->no_kk }} - {{ $k->kepala_keluarga }}</option>
+                        <option value="{{ $k->id }}" {{ old('keluarga_id', request('keluarga_id')) == $k->id ? 'selected' : '' }}>{{ $k->no_kk }} - {{ $k->kepala_keluarga }}</option>
                     @endforeach
                 </select>
             </div>
             <div class="md:col-span-2">
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">Alamat</label>
-                <textarea name="alamat" rows="2" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">{{ old('alamat') }}</textarea>
+                <textarea name="alamat" rows="2" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">{{ old('alamat', request('alamat')) }}</textarea>
             </div>
         </div>
         <div class="flex gap-md justify-end mt-lg pt-md border-t border-surface-variant/30">

@@ -151,4 +151,12 @@ class InformasiController extends Controller
 
         return view('informasi-publik', compact('berita', 'pengumuman', 'agenda'));
     }
+
+    public function publikDetail(Informasi $informasi): View
+    {
+        if (!$informasi->published) {
+            abort(404);
+        }
+        return view('informasi-publik-detail', compact('informasi'));
+    }
 }

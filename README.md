@@ -1,4 +1,4 @@
-# SIPANDA — Puspamukti Smart Village
+# SILAPU — Puspamukti Smart Village
 
 Platform digital terpadu pelayanan Desa Puspamukti, Kecamatan Cigalontang, Kabupaten Tasikmalaya.
 Dibangun bertahap sesuai `PRD-Roadmap-Puspamukti-Smart-Village.md` (Fase 1 sebagai komitmen utama).

@@ -113,8 +113,33 @@
                             <!-- Action Column -->
                             <td class="px-6 py-4 text-right whitespace-nowrap">
                                 <div class="flex items-center justify-end gap-2 flex-wrap">
-                                    <!-- Action 1: Verifikasi (Admin) -->
+                                    <!-- Action 1: Verifikasi (Admin) & Lihat Detail -->
                                     @if ($item->status === 'diajukan')
+                                        <button type="button" 
+                                                data-detail="{{ json_encode([
+                                                    'pemohon' => $item->pemohon_name,
+                                                    'nik' => $item->pemohon_nik,
+                                                    'no_whatsapp' => $item->no_whatsapp,
+                                                    'alamat' => $item->pemohon_alamat,
+                                                    'jenis_surat' => $item->jenisSurat->nama,
+                                                    'keterangan' => $item->keterangan,
+                                                    'file_pendukung' => !empty($item->file_pendukung),
+                                                    'file_pendukung_url' => $item->file_pendukung ? Storage::url($item->file_pendukung) : null,
+                                                    'data_isian' => (array) ($item->data_isian ?? []),
+                                                    'form_fields' => (array) ($item->jenisSurat->form_fields ?? []),
+                                                ]) }}"
+                                                onclick="openDetailModal(this)"
+                                                class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center space-x-1 border border-slate-200">
+                                            <span class="material-symbols-outlined text-base">visibility</span>
+                                            <span>Lihat Detail</span>
+                                        </button>
+
+                                        <a href="{{ route('admin.surat.preview', $item) }}" target="_blank"
+                                           class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center space-x-1">
+                                            <span class="material-symbols-outlined text-base">preview</span>
+                                            <span>Pratinjau Surat</span>
+                                        </a>
+                                        
                                         <form method="POST" action="{{ route('admin.surat.verifikasi', $item) }}" class="inline">
                                             @csrf
                                             <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm transition-all flex items-center space-x-1">
@@ -126,9 +151,15 @@
 
                                     <!-- Action 2: Setujui (Kades) & Tolak -->
                                     @if ($item->status === 'diverifikasi_admin')
+                                        <a href="{{ route('admin.surat.preview', $item) }}" target="_blank"
+                                           class="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 text-xs font-bold px-3 py-1.5 rounded-xl shadow-xs transition-all flex items-center space-x-1">
+                                            <span class="material-symbols-outlined text-base">preview</span>
+                                            <span>Pratinjau Surat</span>
+                                        </a>
+
                                         <button type="button" 
                                                 onclick="openApproveModal({{ $item->id }}, '{{ addslashes($item->pemohon_name) }}', '{{ addslashes($item->jenisSurat->nama) }}')"
-                                                class="bg-[#4B5D3A] hover:bg-[#364329] text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm hover:scale-[1.02] transition-all flex items-center space-x-1 border border-[#D8B84C]/40">
+                                                class="bg-[#6A3297] hover:bg-[#55287A] text-white text-xs font-bold px-3.5 py-1.5 rounded-xl shadow-sm hover:scale-[1.02] transition-all flex items-center space-x-1 border border-[#D8B84C]/40">
                                             <span class="material-symbols-outlined text-base text-[#F0D878]">verified_user</span>
                                             <span>Setujui (Kades)</span>
                                         </button>
@@ -159,8 +190,8 @@
                                     @if ($item->status === 'menunggu_ttd_fisik')
                                         <button type="button" 
                                                 onclick="openSelesaiModal({{ $item->id }}, '{{ addslashes($item->pemohon_name) }}')"
-                                                class="bg-emerald-800 hover:bg-emerald-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center space-x-1">
-                                            <span class="material-symbols-outlined text-base text-emerald-300">task_alt</span>
+                                                class="bg-purple-800 hover:bg-purple-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm transition-all flex items-center space-x-1">
+                                            <span class="material-symbols-outlined text-base text-purple-300">task_alt</span>
                                             <span>Tandai Selesai</span>
                                         </button>
                                     @endif
@@ -201,7 +232,7 @@
 <!-- ================= MODAL 1: CONFIRM APPROVE (KADES) ================= -->
 <div id="modalApprove" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 transition-all">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-scale-up">
-        <div class="bg-[#4B5D3A] p-6 text-white text-left relative overflow-hidden">
+        <div class="bg-[#6A3297] p-6 text-white text-left relative overflow-hidden">
             <div class="absolute -right-8 -top-8 w-32 h-32 bg-[#D8B84C]/20 rounded-full blur-2xl pointer-events-none"></div>
             <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-3">
                 <span class="material-symbols-outlined text-2xl text-[#F0D878]">verified_user</span>
@@ -219,7 +250,7 @@
                 </div>
                 <div class="flex justify-between">
                     <span class="text-slate-500 font-medium">Jenis Surat:</span>
-                    <span id="approveSurat" class="font-bold text-[#4B5D3A]"></span>
+                    <span id="approveSurat" class="font-bold text-[#6A3297]"></span>
                 </div>
                 <div class="pt-2 border-t border-slate-200 text-[11px] text-slate-500 flex items-start gap-1">
                     <span class="material-symbols-outlined text-sm text-[#D8B84C] mt-0.5">info</span>
@@ -231,7 +262,7 @@
                 <button type="button" onclick="closeApproveModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
                     Batal
                 </button>
-                <button type="submit" class="bg-[#4B5D3A] hover:bg-[#364329] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 border border-[#D8B84C]/40">
+                <button type="submit" class="bg-[#6A3297] hover:bg-[#55287A] text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5 border border-[#D8B84C]/40">
                     <span class="material-symbols-outlined text-base text-[#F0D878]">check_circle</span>
                     <span>Ya, Setujui Sekarang</span>
                 </button>
@@ -276,22 +307,22 @@
 <!-- ================= MODAL 3: SELESAI SURAT ================= -->
 <div id="modalSelesai" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 transition-all">
     <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-200 animate-scale-up">
-        <div class="bg-emerald-800 p-6 text-white text-left relative overflow-hidden">
+        <div class="bg-purple-800 p-6 text-white text-left relative overflow-hidden">
             <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-3">
-                <span class="material-symbols-outlined text-2xl text-emerald-300">task_alt</span>
+                <span class="material-symbols-outlined text-2xl text-purple-300">task_alt</span>
             </div>
             <h3 class="text-lg font-black tracking-tight">Tandai Pengajuan Selesai</h3>
-            <p class="text-xs text-emerald-100 mt-0.5">Konfirmasi bahwa dokumen fisik telah ditandatangani dan diserahkan.</p>
+            <p class="text-xs text-purple-100 mt-0.5">Konfirmasi bahwa dokumen fisik telah ditandatangani dan diserahkan.</p>
         </div>
 
         <form id="formSelesai" method="POST" class="p-6 space-y-4">
             @csrf
-            <div class="bg-emerald-50 p-4 rounded-2xl border border-emerald-200 text-xs text-emerald-900 space-y-1.5">
+            <div class="bg-purple-50 p-4 rounded-2xl border border-purple-200 text-xs text-purple-900 space-y-1.5">
                 <p class="font-bold flex items-center gap-1.5">
-                    <span class="material-symbols-outlined text-emerald-600 text-sm">verified</span>
+                    <span class="material-symbols-outlined text-purple-600 text-sm">verified</span>
                     <span>Verifikasi Penyerahan Dokumen</span>
                 </p>
-                <p class="text-[11px] text-emerald-800/90 leading-relaxed">
+                <p class="text-[11px] text-purple-800/90 leading-relaxed">
                     Pastikan lembar fisik surat pengajuan untuk <strong id="selesaiName"></strong> sudah mendapatkan Tanda Tangan Basah / Cap Stempel Kepala Desa Puspamukti.
                 </p>
             </div>
@@ -300,17 +331,139 @@
                 <button type="button" onclick="closeSelesaiModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
                     Batal
                 </button>
-                <button type="submit" class="bg-emerald-800 hover:bg-emerald-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5">
-                    <span class="material-symbols-outlined text-base text-emerald-300">check_circle</span>
+                <button type="submit" class="bg-purple-800 hover:bg-purple-900 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5">
+                    <span class="material-symbols-outlined text-base text-purple-300">check_circle</span>
                     <span>Ya, Tandai Selesai</span>
                 </button>
             </div>
         </form>
     </div>
 </div>
+<!-- ================= MODAL 4: DETAIL SURAT ================= -->
+<div id="modalDetail" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden border border-slate-200 animate-scale-up">
+        <div class="bg-slate-100 p-6 text-slate-800 text-left border-b border-slate-200">
+            <h3 class="text-lg font-black tracking-tight flex items-center gap-2">
+                <span class="material-symbols-outlined text-slate-500">description</span>
+                Detail Pengajuan Surat
+            </h3>
+        </div>
+
+        <div class="p-6 max-h-[60vh] overflow-y-auto">
+            <div class="space-y-4 text-sm">
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 space-y-3">
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-medium text-xs">Pemohon:</span>
+                        <span id="detailName" class="font-extrabold text-slate-900 text-right"></span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-medium text-xs">NIK:</span>
+                        <span id="detailNik" class="font-mono font-bold text-slate-800 text-right"></span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-medium text-xs">No. WhatsApp:</span>
+                        <span id="detailWa" class="font-medium text-emerald-700 text-right"></span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-medium text-xs">Alamat:</span>
+                        <span id="detailAlamat" class="font-medium text-slate-800 text-right"></span>
+                    </div>
+                    <div class="flex justify-between gap-4">
+                        <span class="text-slate-500 font-medium text-xs">Jenis Surat:</span>
+                        <span id="detailSurat" class="font-bold text-[#6A3297] text-right"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <span class="text-slate-500 font-medium block text-xs">Keperluan / Keterangan:</span>
+                    <p id="detailKeterangan" class="font-medium text-slate-800 mt-1 whitespace-pre-line"></p>
+                </div>
+
+                <div>
+                    <span class="text-slate-500 font-medium block text-xs">Dokumen Pendukung:</span>
+                    <div id="detailLampiran" class="mt-1"></div>
+                </div>
+
+                <div class="border-t border-slate-100 pt-4">
+                    <span class="text-slate-500 font-medium block text-xs mb-2">Form Isian (Data Dinamis):</span>
+                    <div id="detailDataContainer" class="bg-slate-50 rounded-xl p-4 border border-slate-200/60 space-y-3">
+                        <!-- Data will be injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-slate-100 flex justify-end">
+            <button type="button" onclick="closeDetailModal()" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
+                Tutup
+            </button>
+        </div>
+    </div>
+</div>
 
 @push('scripts')
 <script>
+function escapeHtml(str) {
+    return String(str ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
+}
+
+function openDetailModal(el) {
+    const data = JSON.parse(el.dataset.detail);
+    document.getElementById('detailName').textContent = data.pemohon || '-';
+    document.getElementById('detailNik').textContent = data.nik || '-';
+    document.getElementById('detailWa').textContent = data.no_whatsapp || '-';
+    document.getElementById('detailAlamat').textContent = data.alamat || '-';
+    document.getElementById('detailSurat').textContent = data.jenis_surat || '-';
+    document.getElementById('detailKeterangan').textContent = data.keterangan || '-';
+    
+    const lampiran = document.getElementById('detailLampiran');
+    if (data.file_pendukung && data.file_pendukung_url) {
+        lampiran.innerHTML = `
+            <a href="${escapeHtml(data.file_pendukung_url)}" target="_blank" class="inline-flex items-center space-x-1 text-xs font-bold text-blue-700 hover:text-blue-800 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200/60 shadow-xs hover:bg-blue-100">
+                <span class="material-symbols-outlined text-[14px]">attach_file</span>
+                <span>Lihat Lampiran</span>
+            </a>`;
+    } else {
+        lampiran.innerHTML = `<span class="text-xs text-slate-400 italic">Tidak ada lampiran.</span>`;
+    }
+    
+    const container = document.getElementById('detailDataContainer');
+    container.innerHTML = '';
+    
+    const formFields = data.form_fields || [];
+    const dataIsian = data.data_isian || {};
+    const keys = formFields.length > 0
+        ? formFields.map(f => f.name)
+        : Object.keys(dataIsian);
+
+    const rows = keys
+        .map(key => ({ key, val: dataIsian[key] }))
+        .filter(r => r.val !== undefined && r.val !== null && r.val !== '');
+
+    if (rows.length > 0) {
+        rows.forEach(row => {
+            const field = formFields.find(f => f.name === row.key);
+            const label = field && field.label
+                ? field.label
+                : row.key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+
+            container.innerHTML += `
+                <div>
+                    <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">${escapeHtml(label)}</span>
+                    <p class="font-medium text-slate-800 text-sm mt-0.5 whitespace-pre-line">${escapeHtml(row.val)}</p>
+                </div>
+            `;
+        });
+    } else {
+        container.innerHTML = `<p class="text-xs text-slate-400 italic">Tidak ada data isian tambahan.</p>`;
+    }
+    
+    document.getElementById('modalDetail').classList.remove('hidden');
+}
+
+function closeDetailModal() {
+    document.getElementById('modalDetail').classList.add('hidden');
+}
 function openApproveModal(id, pemohon, jenisSurat) {
     document.getElementById('formApprove').action = '/admin/surat/' + id + '/approve';
     document.getElementById('approveName').textContent = pemohon;

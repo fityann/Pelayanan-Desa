@@ -58,14 +58,23 @@ class SuratController extends Controller
         $rw = $rw ?: '01';
         abort_if(!$jenisSurat->aktif, 404);
 
-        $request->validate([
+        $rules = [
             'nama' => ['required', 'string', 'max:100'],
             'nik' => ['required', 'digits:16'],
             'no_whatsapp' => ['required', 'string', 'max:20'],
             'alamat' => ['nullable', 'string', 'max:255'],
             'keterangan' => ['required', 'string', 'max:1000'],
-            'file_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
-        ]);
+            'file_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:15360'],
+            'data_isian' => ['nullable', 'array'],
+        ];
+
+        if (!empty($jenisSurat->form_fields)) {
+            foreach ($jenisSurat->form_fields as $field) {
+                $rules['data_isian.' . $field['name']] = $field['required'] ? ['required', 'string'] : ['nullable', 'string'];
+            }
+        }
+
+        $request->validate($rules);
 
         $pengajuan = $this->buatPengajuan($request, $jenisSurat);
 
@@ -132,15 +141,23 @@ class SuratController extends Controller
     {
         abort_if(!$jenisSurat->aktif, 404);
 
-        $request->validate([
+        $rules = [
             'nama' => ['required', 'string', 'max:100'],
             'nik' => ['required', 'digits:16'],
             'no_whatsapp' => ['required', 'string', 'max:20'],
             'alamat' => ['nullable', 'string', 'max:255'],
             'keterangan' => ['required', 'string', 'max:1000'],
             'data_isian' => ['nullable', 'array'],
-            'file_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:2048'],
-        ]);
+            'file_pendukung' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:15360'],
+        ];
+
+        if (!empty($jenisSurat->form_fields)) {
+            foreach ($jenisSurat->form_fields as $field) {
+                $rules['data_isian.' . $field['name']] = $field['required'] ? ['required', 'string'] : ['nullable', 'string'];
+            }
+        }
+
+        $request->validate($rules);
 
         $pengajuan = $this->buatPengajuan($request, $jenisSurat);
 
@@ -212,7 +229,7 @@ class SuratController extends Controller
         ]);
 
         // Kirim notifikasi bukti pengajuan ke Warga
-        $userId = $user?->id ?? \App\Models\User::where('nik', $request->nik)->value('id');
+        $userId = $wargaUser?->id ?? \App\Models\User::where('nik', $request->nik)->value('id');
         if ($userId) {
             Notification::buat($userId, [
                 'judul' => 'Pengajuan Surat Terkirim 📬',

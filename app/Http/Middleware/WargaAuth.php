@@ -18,6 +18,10 @@ class WargaAuth
     public function handle(Request $request, Closure $next): Response
     {
         if (! Auth::guard('warga')->check()) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Sesi telah berakhir. Silakan masuk kembali.'], 401);
+            }
+
             $rt = $request->route('rt') ?? session('warga_rt', '01');
 
             return redirect()->route('warga.rt.login', [
@@ -27,15 +31,22 @@ class WargaAuth
 
         $user = Auth::guard('warga')->user();
 
-        // Jika route memiliki parameter RT dan RW, pastikan disesuaikan dengan wilayah user
-        if ($request->route('rt') && $request->route('rw')) {
+        // Jika route memiliki parameter RT, pastikan sesuai wilayah user.
+        // Warga hanya boleh mengakses RT/RW miliknya — selain itu dialihkan ke RT-nya.
+        if ($request->route('rt')) {
             $userRt = $user->penduduk?->rt ?? $user->rt;
             $userRw = $user->penduduk?->rw ?? $user->rw;
 
-            if (!is_null($userRt) && !is_null($userRw)) {
-                if ((int) $userRt !== (int) $request->route('rt') || (int) $userRw !== (int) $request->route('rw')) {
-                    session(['warga_rt' => sprintf('%02d', $userRt), 'warga_rw' => sprintf('%02d', $userRw)]);
-                }
+            if (!is_null($userRt) && (int) $userRt !== (int) $request->route('rt')) {
+                session([
+                    'warga_rt' => sprintf('%02d', $userRt),
+                    'warga_rw' => sprintf('%02d', $userRw ?? '01'),
+                ]);
+
+                return redirect()->route($request->route()->getName(), array_merge(
+                    $request->route()->parameters(),
+                    ['rt' => sprintf('%02d', $userRt)]
+                ));
             }
         }
 

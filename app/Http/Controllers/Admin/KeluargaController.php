@@ -68,9 +68,27 @@ class KeluargaController extends Controller
 
     public function store(Request $request)
     {
+        $input = $request->all();
+        if (!empty($input['rt'])) {
+            $input['rt'] = sprintf('%02d', (int)$input['rt']);
+        }
+        if (!empty($input['rw'])) {
+            $input['rw'] = sprintf('%02d', (int)$input['rw']);
+        }
+        if (empty($input['desa']) || trim($input['desa']) === '') {
+            $input['desa'] = 'Puspamukti';
+        }
+        if (empty($input['kecamatan']) || trim($input['kecamatan']) === '') {
+            $input['kecamatan'] = 'Cigalontang';
+        }
+        if (empty($input['kepala_keluarga']) || trim($input['kepala_keluarga']) === '') {
+            $input['kepala_keluarga'] = 'Belum Ditetapkan';
+        }
+        $request->merge($input);
+
         $request->validate([
             'no_kk' => ['required', 'string', 'size:16', 'unique:keluarga,no_kk'],
-            'kepala_keluarga' => ['required', 'string', 'max:255'],
+            'kepala_keluarga' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string', 'max:500'],
             'rt' => ['nullable', 'string', 'max:3'],
             'rw' => ['nullable', 'string', 'max:3'],
@@ -80,9 +98,12 @@ class KeluargaController extends Controller
             'provinsi' => ['nullable', 'string', 'max:100'],
         ]);
 
-        Keluarga::create($request->all());
+        Keluarga::create($request->only([
+            'no_kk', 'kepala_keluarga', 'alamat', 'rt', 'rw',
+            'desa', 'kecamatan', 'kabupaten', 'provinsi',
+        ]));
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
             return response()->json(['message' => 'Data keluarga berhasil ditambahkan'], 201);
         }
 
@@ -102,9 +123,27 @@ class KeluargaController extends Controller
 
     public function update(Request $request, Keluarga $keluarga)
     {
+        $input = $request->all();
+        if (!empty($input['rt'])) {
+            $input['rt'] = sprintf('%02d', (int)$input['rt']);
+        }
+        if (!empty($input['rw'])) {
+            $input['rw'] = sprintf('%02d', (int)$input['rw']);
+        }
+        if (empty($input['desa']) || trim($input['desa']) === '') {
+            $input['desa'] = 'Puspamukti';
+        }
+        if (empty($input['kecamatan']) || trim($input['kecamatan']) === '') {
+            $input['kecamatan'] = 'Cigalontang';
+        }
+        if (empty($input['kepala_keluarga']) || trim($input['kepala_keluarga']) === '') {
+            $input['kepala_keluarga'] = 'Belum Ditetapkan';
+        }
+        $request->merge($input);
+
         $request->validate([
             'no_kk' => ['required', 'string', 'size:16', 'unique:keluarga,no_kk,' . $keluarga->id],
-            'kepala_keluarga' => ['required', 'string', 'max:255'],
+            'kepala_keluarga' => ['nullable', 'string', 'max:255'],
             'alamat' => ['nullable', 'string', 'max:500'],
             'rt' => ['nullable', 'string', 'max:3'],
             'rw' => ['nullable', 'string', 'max:3'],
@@ -114,9 +153,12 @@ class KeluargaController extends Controller
             'provinsi' => ['nullable', 'string', 'max:100'],
         ]);
 
-        $keluarga->update($request->all());
+        $keluarga->update($request->only([
+            'no_kk', 'kepala_keluarga', 'alamat', 'rt', 'rw',
+            'desa', 'kecamatan', 'kabupaten', 'provinsi',
+        ]));
 
-        if ($request->expectsJson()) {
+        if ($request->expectsJson() || $request->ajax() || $request->wantsJson()) {
             return response()->json(['message' => 'Data keluarga berhasil diperbarui'], 200);
         }
 

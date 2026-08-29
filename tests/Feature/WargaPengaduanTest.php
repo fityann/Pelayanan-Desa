@@ -24,11 +24,11 @@ class WargaPengaduanTest extends TestCase
         ]);
         $warga->assignRole($role);
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->get(route('pengaduan.buat', ['qr' => 1]))
             ->assertOk();
 
-        $response = $this->actingAs($warga)
+        $response = $this->actingAs($warga, 'warga')
             ->post(route('pengaduan.store', ['qr' => 1]), [
                 'kategori' => 'Infrastruktur',
                 'judul' => 'Jalan rusak',

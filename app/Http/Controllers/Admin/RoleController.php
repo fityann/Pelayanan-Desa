@@ -39,6 +39,26 @@ class RoleController extends Controller
         return view('admin.roles.index', compact('roles', 'permissions', 'roleCount', 'permissionCount', 'matrix'));
     }
 
+    public function create(): View
+    {
+        $permissions = Permission::all()->groupBy(fn($p) => explode(' ', $p->name)[1] ?? $p->name);
+        return view('admin.roles.create', compact('permissions'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
+            'permissions' => ['array'],
+            'permissions.*' => ['exists:permissions,name'],
+        ]);
+
+        $role = Role::create(['name' => $request->name, 'guard_name' => 'web']);
+        $role->syncPermissions($request->permissions ?? []);
+
+        return redirect()->route('admin.roles.index')->with('success', 'Role berhasil dibuat');
+    }
+
     public function update(Request $request): RedirectResponse
     {
         $request->validate([
@@ -59,6 +79,17 @@ class RoleController extends Controller
         }
 
         return back()->with('success', 'Izin berhasil diperbarui');
+    }
+
+    public function destroy(Role $role): RedirectResponse
+    {
+        $protected = ['Super Admin', 'Kepala Desa', 'Warga', 'RT', 'RW'];
+        abort_if(in_array($role->name, $protected), 403, 'Role sistem tidak dapat dihapus');
+
+        abort_if($role->users()->exists(), 409, 'Role masih digunakan oleh pengguna');
+
+        $role->delete();
+        return back()->with('success', 'Role berhasil dihapus');
     }
 
     public function syncAll(): RedirectResponse

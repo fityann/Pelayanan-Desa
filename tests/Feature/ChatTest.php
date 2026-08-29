@@ -63,12 +63,12 @@ class ChatTest extends TestCase
         $warga = $this->warga();
         $admin = $this->admin();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->get(route('warga.rt.chat', ['rt' => '01', 'rw' => '01']))
             ->assertOk()
             ->assertSee('Chat dengan Admin Desa');
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->post(route('warga.rt.chat.store', ['rt' => '01', 'rw' => '01']), [
                 'isi' => 'Assalamualaikum, saya mau tanya soal surat keterangan',
             ])->assertOk();
@@ -91,7 +91,7 @@ class ChatTest extends TestCase
         $this->admin();
         $warga = $this->warga();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->post(route('warga.rt.chat.store', ['rt' => '01', 'rw' => '01']), ['isi' => 'Halo admin']);
 
         $chat = Chat::first();
@@ -123,7 +123,7 @@ class ChatTest extends TestCase
             ->assertOk();
 
         // Warga menerima balasan via polling (tandai sudah dibaca warga)
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->getJson(route('warga.rt.chat.data', ['rt' => '01', 'rw' => '01']))
             ->assertOk()
             ->assertJsonPath('pesans.1.isi', 'Waalaikumsalam, silakan datang ke balai desa')
@@ -135,7 +135,7 @@ class ChatTest extends TestCase
         $admin = $this->admin();
         $warga = $this->warga();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->post(route('warga.rt.chat.store', ['rt' => '01', 'rw' => '01']), ['isi' => 'Pesan belum dibaca admin']);
 
         $this->assertEquals(1, Chat::unreadAdminCount());
@@ -152,7 +152,7 @@ class ChatTest extends TestCase
     {
         $warga = $this->warga();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->get(route('admin.chat.index'))
             ->assertForbidden();
     }
@@ -162,7 +162,7 @@ class ChatTest extends TestCase
         $this->admin();
         $warga = $this->warga();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->post(route('warga.rt.chat.store', ['rt' => '01', 'rw' => '01']), ['isi' => 'Halo admin']);
 
         $chat = Chat::first();
@@ -172,7 +172,7 @@ class ChatTest extends TestCase
             ->assertOk();
 
         // Warga melihat notifikasi di lonceng
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->getJson(route('warga.rt.notif.data', ['rt' => '01', 'rw' => '01']))
             ->assertOk()
             ->assertJsonPath('unread', 1)
@@ -182,11 +182,11 @@ class ChatTest extends TestCase
         // Tandai sudah dibaca
         $notifId = \App\Models\Notification::where('user_id', $warga->id)->first()->id;
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->post(route('warga.rt.notif.read', ['rt' => '01', 'rw' => '01', 'id' => $notifId]))
             ->assertOk();
 
-        $this->actingAs($warga)
+        $this->actingAs($warga, 'warga')
             ->getJson(route('warga.rt.notif.data', ['rt' => '01', 'rw' => '01']))
             ->assertJsonPath('unread', 0);
     }
@@ -194,6 +194,6 @@ class ChatTest extends TestCase
     public function test_guest_tidak_bisa_akses_chat_warga(): void
     {
         $this->get(route('warga.rt.chat', ['rt' => '01', 'rw' => '01']))
-            ->assertRedirect(route('warga.rt.login', ['rt' => '01', 'rw' => '01']));
+            ->assertRedirect(route('warga.rt.login', ['rt' => '01']));
     }
 }

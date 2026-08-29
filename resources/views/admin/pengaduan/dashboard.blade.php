@@ -533,57 +533,71 @@
     
     // Action Functions
     function processPengaduan(id) {
-        if (confirm('Proses pengaduan ini?')) {
-            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
-            fetch(`/admin/pengaduan/${id}/proses`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(async response => {
-                const data = await response.json().catch(() => ({}));
-                if (response.ok && data.success !== false) {
-                    showToast(data.message || 'Pengaduan berhasil diproses', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.message || 'Gagal memproses pengaduan', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error processing complaint:', error);
-                showToast('Terjadi kesalahan koneksi/server', 'error');
-            });
-        }
+        showConfirmModal(
+            'Proses Pengaduan',
+            'Konfirmasi bahwa pengaduan ini sedang ditindaklanjuti oleh perangkat desa.',
+            'Proses Sekarang',
+            'hourglass_top',
+            'bg-amber-600 hover:bg-amber-700',
+            function() {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+                fetch(`/admin/pengaduan/${id}/proses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async response => {
+                    const data = await response.json().catch(() => ({}));
+                    if (response.ok && data.success !== false) {
+                        showToast(data.message || 'Pengaduan berhasil diproses', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast(data.message || 'Gagal memproses pengaduan', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error processing complaint:', error);
+                    showToast('Terjadi kesalahan koneksi/server', 'error');
+                });
+            }
+        );
     }
     
     function completePengaduan(id) {
-        if (confirm('Tandai pengaduan sebagai selesai?')) {
-            const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
-            fetch(`/admin/pengaduan/${id}/selesai`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrf,
-                    'Accept': 'application/json'
-                }
-            })
-            .then(async response => {
-                const data = await response.json().catch(() => ({}));
-                if (response.ok && data.success !== false) {
-                    showToast(data.message || 'Pengaduan berhasil diselesaikan', 'success');
-                    setTimeout(() => location.reload(), 1000);
-                } else {
-                    showToast(data.message || 'Gagal menyelesaikan pengaduan', 'error');
-                }
-            })
-            .catch(error => {
-                console.error('Error completing complaint:', error);
-                showToast('Terjadi kesalahan koneksi/server', 'error');
-            });
-        }
+        showConfirmModal(
+            'Selesaikan Pengaduan',
+            'Konfirmasi bahwa pengaduan ini telah selesai ditangani dan masalah sudah terselesaikan.',
+            'Ya, Tandai Selesai',
+            'task_alt',
+            'bg-emerald-600 hover:bg-emerald-700',
+            function() {
+                const csrf = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '{{ csrf_token() }}';
+                fetch(`/admin/pengaduan/${id}/selesai`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrf,
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(async response => {
+                    const data = await response.json().catch(() => ({}));
+                    if (response.ok && data.success !== false) {
+                        showToast(data.message || 'Pengaduan berhasil diselesaikan', 'success');
+                        setTimeout(() => location.reload(), 1000);
+                    } else {
+                        showToast(data.message || 'Gagal menyelesaikan pengaduan', 'error');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error completing complaint:', error);
+                    showToast('Terjadi kesalahan koneksi/server', 'error');
+                });
+            }
+        );
     }
     
     // Toast Notification
@@ -615,8 +629,67 @@
         if (e.key === 'Escape') {
             closeDetailModal();
             closePhotoModal();
+            closeConfirmModal();
         }
     });
+
+    // ===== Custom Confirm Modal (pengganti browser confirm()) =====
+    let _confirmCallback = null;
+
+    function showConfirmModal(judul, pesan, labelOk, icon, okClass, callback) {
+        document.getElementById('confirmModalTitle').textContent   = judul;
+        document.getElementById('confirmModalMessage').textContent = pesan;
+        document.getElementById('confirmModalIcon').textContent    = icon;
+        document.getElementById('confirmModalOkBtn').className     =
+            `${okClass} text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5`;
+        document.getElementById('confirmModalOkLabel').textContent = labelOk;
+        _confirmCallback = callback;
+        document.getElementById('confirmModal').classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConfirmModal() {
+        document.getElementById('confirmModal').classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        _confirmCallback = null;
+    }
+
+    function executeConfirm() {
+        const callback = _confirmCallback;
+        closeConfirmModal();
+        if (typeof callback === 'function') callback();
+    }
 </script>
 @endpush
+
+{{-- ===== Custom Confirm Modal HTML ===== --}}
+<div id="confirmModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[999] flex items-center justify-center hidden p-4 transition-all">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-200 animate-scale-up">
+        {{-- Header --}}
+        <div class="bg-slate-800 p-6 text-white text-left relative overflow-hidden">
+            <div class="absolute -right-8 -top-8 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center mb-3">
+                <span id="confirmModalIcon" class="material-symbols-outlined text-2xl text-white">help</span>
+            </div>
+            <h3 id="confirmModalTitle" class="text-base font-black tracking-tight">Konfirmasi</h3>
+        </div>
+
+        {{-- Body --}}
+        <div class="p-6 space-y-4">
+            <p id="confirmModalMessage" class="text-sm text-slate-600 leading-relaxed"></p>
+
+            <div class="flex gap-3 justify-end pt-2">
+                <button type="button" onclick="closeConfirmModal()"
+                        class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition-all">
+                    Batal
+                </button>
+                <button id="confirmModalOkBtn" type="button" onclick="executeConfirm()"
+                        class="bg-amber-600 hover:bg-amber-700 text-white px-5 py-2.5 rounded-xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5">
+                    <span class="material-symbols-outlined text-base" id="confirmModalOkIcon">check_circle</span>
+                    <span id="confirmModalOkLabel">Ya, Lanjutkan</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection

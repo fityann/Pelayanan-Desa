@@ -61,6 +61,7 @@
             <tr><td class="label">Jenis Kelamin</td><td class="colon">:</td><td>{{ $surat->user?->penduduk?->jenis_kelamin ?? '-' }}</td></tr>
             <tr><td class="label">Pekerjaan</td><td class="colon">:</td><td>{{ $surat->user?->penduduk?->pekerjaan ?? '-' }}</td></tr>
             <tr><td class="label">Alamat</td><td class="colon">:</td><td>{{ $alamatLengkap }}</td></tr>
+            @include('partials.pdf-data-isian')
         </table>
 
         <p style="text-indent: 30px;">Menerangkan bahwa nama di atas betul-betul warga Desa Puspamukti Kecamatan Cigalontang Kabupaten Tasikmalaya.</p>

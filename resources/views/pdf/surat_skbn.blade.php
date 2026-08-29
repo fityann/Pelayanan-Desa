@@ -62,6 +62,7 @@
             <tr><td class="label">Pekerjaan</td><td class="colon">:</td><td>{{ $surat->user?->penduduk?->pekerjaan ?? '-' }}</td></tr>
             <tr><td class="label">Alamat</td><td class="colon">:</td><td>Kp. {{ $rawAlamat }} Rt. {{ $rtNumber }} / Rw. {{ $rwNumber }} Desa Puspamukti</td></tr>
             <tr><td></td><td></td><td>Kec.Cigalontang Kab.Tasikmalaya</td></tr>
+            @include('partials.pdf-data-isian')
         </table>
 
         <p style="text-indent: 30px;">Orang tersebut diatas adalah benar penduduk Desa Puspamukti Kecamatan Cigalontang Kabupaten Tasikmalaya dan Domisili sebagai tercantum diatas dan Sepengetahuan kami bahwa orang tersebut <strong>Belum Menikah/Lajang</strong>.</p>

@@ -59,6 +59,7 @@
             <tr><td class="label">Pekerjaan</td><td class="colon">:</td><td>{{ $surat->user?->penduduk?->pekerjaan ?? '-' }}</td></tr>
             <tr><td class="label">Alamat</td><td class="colon">:</td><td>Kp. {{ $rawAlamat }} RT/RW {{ $rtNumber }}/{{ $rwNumber }} Desa Puspamukti</td></tr>
             <tr><td></td><td></td><td>Kecamatan Cigalontang Kab. Tasikmalaya</td></tr>
+            @include('partials.pdf-data-isian')
         </table>
 
         <p>Orang tersebut masih beralamat sesuai dengan data kependudukan yang ada pada administrasi kependudukan di desa Puspamukti, akan tetapi orang tersebut sudah tidak bertempat tinggal di alamat tersebut <strong>namun masih berada di wilayah kesatuan negara republik indonesia dan tidak di ketahui pasti alamat tinggal yang sekarang</strong>.</p>

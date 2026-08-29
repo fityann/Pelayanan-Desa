@@ -43,10 +43,6 @@
                         class="w-full flex items-center justify-center bg-[#E4C04A] hover:bg-[#d4b03a] text-[#2A3520] py-3.5 rounded-2xl font-bold shadow-md transition-all text-[15px]">
                     Buat Pengaduan
                 </button>
-                <button onclick="sharePage()"
-                        class="w-full flex items-center justify-center bg-transparent border border-white/40 hover:bg-white/10 text-white py-3.5 rounded-2xl font-medium transition-all text-[15px]">
-                    Bagikan
-                </button>
             </div>
         </div>
     </section>
@@ -347,10 +343,29 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Judul Pengaduan <span class="text-red-500">*</span>
                     </label>
-                    <input type="text" name="judul" required
+                    <input type="text" name="judul" id="judulInputRt" required
                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition-all"
                            placeholder="Contoh: Sampah menumpuk di gang RT {{ $rt }}">
                 </div>
+
+                <script>
+                    // Placeholder dinamis berdasarkan kategori yang dipilih
+                    const judulPlaceholdersRt = {
+                        'sampah'     : 'Contoh: Sampah menumpuk di gang RT {{ $rt }}',
+                        'jalan'      : 'Contoh: Jalan berlubang di Jl. Merdeka RT {{ $rt }}',
+                        'drainase'   : 'Contoh: Saluran air tersumbat di RT {{ $rt }} banjir setiap hujan',
+                        'penerangan' : 'Contoh: Lampu jalan mati di pertigaan RT {{ $rt }}',
+                        'air'        : 'Contoh: Air PDAM tidak mengalir sejak 2 hari lalu RT {{ $rt }}',
+                        'lainnya'    : 'Contoh: Pohon tumbang menghalangi jalan RT {{ $rt }}',
+                    };
+
+                    document.querySelectorAll('input[name="kategori"]').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            const judulInput = document.getElementById('judulInputRt');
+                            judulInput.placeholder = judulPlaceholdersRt[this.value] || 'Masukkan judul pengaduan';
+                        });
+                    });
+                </script>
                 
                 <!-- Deskripsi -->
                 <div>
@@ -368,13 +383,13 @@
                         Foto Bukti (Maks. 5 foto, opsional)
                     </label>
                     <label for="fotoInput" class="block w-full border-2 border-dashed border-gray-300 hover:border-[#6A3297] rounded-2xl p-6 text-center cursor-pointer bg-slate-50/70 hover:bg-purple-50/40 transition-all select-none group">
-                        <input type="file" name="foto[]" id="fotoInput" accept="image/*" capture="environment" multiple class="hidden">
+                        <input type="file" name="foto[]" id="fotoInput" accept="image/*" multiple class="hidden">
                         <div class="pointer-events-none flex flex-col items-center justify-center">
                             <div class="w-12 h-12 rounded-2xl bg-purple-100 text-[#6A3297] flex items-center justify-center mb-2 group-hover:scale-110 transition-transform shadow-xs">
                                 <span class="material-symbols-outlined text-2xl">add_photo_alternate</span>
                             </div>
                             <p class="text-sm font-bold text-gray-800 mb-1">Klik di sini untuk pilih / ambil foto</p>
-                            <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 5MB (JPG, PNG, WEBP)</p>
+                            <p class="text-xs text-gray-500">Maksimal 5 foto, masing-masing 15MB (JPG, PNG, WEBP)</p>
                             <span id="fotoCounter" class="hidden mt-2 inline-flex items-center gap-1 text-xs font-bold bg-[#6A3297] text-white px-3 py-1 rounded-full shadow-xs"></span>
                         </div>
                     </label>

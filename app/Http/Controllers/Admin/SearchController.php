@@ -52,25 +52,26 @@ class SearchController extends Controller
         // 2. Cari Pengajuan Surat
         $surats = PengajuanSurat::with(['user', 'jenisSurat'])
             ->where('kode_tracking', 'like', "%{$q}%")
-            ->orWhere('keperluan', 'like', "%{$q}%")
+            ->orWhere('nomor_surat', 'like', "%{$q}%")
+            ->orWhere('keterangan', 'like', "%{$q}%")
             ->orWhereHas('user', function ($query) use ($q) {
                 $query->where('name', 'like', "%{$q}%")
                     ->orWhere('nik', 'like', "%{$q}%");
             })
             ->orWhereHas('jenisSurat', function ($query) use ($q) {
-                $query->where('nama_surat', 'like', "%{$q}%");
+                $query->where('nama', 'like', "%{$q}%");
             })
             ->take(5)
             ->get();
 
         foreach ($surats as $s) {
             $pemohon = $s->user?->name ?? 'Warga';
-            $jenis = $s->jenisSurat?->nama_surat ?? 'Surat';
+            $jenis = $s->jenisSurat?->nama ?? 'Surat';
             $results[] = [
                 'type' => 'Surat',
                 'category' => 'Layanan Surat',
                 'title' => "[$s->kode_tracking] $jenis",
-                'subtitle' => "Pemohon: $pemohon — Keperluan: " . Str::limit($s->keperluan ?? '-', 50),
+                'subtitle' => "Pemohon: $pemohon — Keterangan: " . Str::limit($s->keterangan ?? '-', 50),
                 'icon' => 'description',
                 'badge_color' => 'bg-teal-100 text-teal-800',
                 'url' => route('admin.surat.pengajuan', ['search' => $s->kode_tracking]),
@@ -79,9 +80,9 @@ class SearchController extends Controller
 
         // 3. Cari Pengaduan Warga
         $pengaduans = Pengaduan::where('judul', 'like', "%{$q}%")
-            ->orWhere('isi', 'like', "%{$q}%")
+            ->orWhere('deskripsi', 'like', "%{$q}%")
             ->orWhere('nama_pelapor', 'like', "%{$q}%")
-            ->orWhere('nik_pelapor', 'like', "%{$q}%")
+            ->orWhere('tiket_id', 'like', "%{$q}%")
             ->take(5)
             ->get();
 
@@ -99,8 +100,7 @@ class SearchController extends Controller
 
         // 4. Cari Informasi / Berita / Agenda
         $informasis = Informasi::where('judul', 'like', "%{$q}%")
-            ->orWhere('ringkasan', 'like', "%{$q}%")
-            ->orWhere('konten', 'like', "%{$q}%")
+            ->orWhere('isi', 'like', "%{$q}%")
             ->take(4)
             ->get();
 
@@ -109,7 +109,7 @@ class SearchController extends Controller
                 'type' => 'Informasi',
                 'category' => 'Berita & Agenda',
                 'title' => $inf->judul,
-                'subtitle' => "Kategori: " . ucfirst($inf->kategori) . " — " . Str::limit($inf->ringkasan ?? $inf->konten ?? '-', 50),
+                'subtitle' => "Kategori: " . ucfirst($inf->kategori) . " — " . Str::limit($inf->isi ?? '-', 50),
                 'icon' => 'newspaper',
                 'badge_color' => 'bg-blue-100 text-blue-800',
                 'url' => route('admin.informasi.index', ['search' => $inf->judul]),

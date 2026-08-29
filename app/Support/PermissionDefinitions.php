@@ -38,6 +38,8 @@ class PermissionDefinitions
             'R Arsip Surat', 'D Arsip Surat', 'C Pengaduan', 'R Pengaduan', 'U Pengaduan', 'D Pengaduan',
             'C Informasi', 'R Informasi', 'U Informasi', 'D Informasi',
             'C APBDes', 'R APBDes', 'U APBDes', 'D APBDes',
+            'C Manajemen User', 'R Manajemen User', 'U Manajemen User', 'D Manajemen User',
+            'R Role & Permission', 'U Role & Permission',
         ],
         'Sekretaris Desa' => [
             'C Penduduk', 'R Penduduk', 'U Penduduk', 'D Penduduk',
@@ -66,8 +68,6 @@ class PermissionDefinitions
             'C Pengaduan', 'R Pengaduan', 'U Pengaduan', 'D Pengaduan',
             'C Informasi', 'R Informasi', 'U Informasi', 'D Informasi',
             'C APBDes', 'R APBDes', 'U APBDes', 'D APBDes',
-            'C Manajemen User', 'R Manajemen User', 'U Manajemen User', 'D Manajemen User',
-            'R Role & Permission', 'U Role & Permission',
         ],
         'Warga' => [
             'R Penduduk', 'C Pengaduan', 'R Informasi', 'C Pengajuan Surat',

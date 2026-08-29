@@ -93,7 +93,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
                                         <span class="material-symbols-outlined text-xl">badge</span>
                                     </div>
-                                    <input type="text" id="nik" name="nik" value="{{ old('nik') }}" required maxlength="16" pattern="\d{16}"
+                                    <input type="text" id="nik" name="nik" value="{{ old('nik') }}" required 
                                            class="w-full pl-11 pr-4 py-3 sm:py-3.5 bg-slate-50 border {{ $errors->has('nik') ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-slate-200' }} rounded-xl text-slate-900 text-sm font-medium placeholder-slate-400 focus:bg-white focus:border-[#6A3297] focus:ring-4 focus:ring-[#6A3297]/10 transition-all"
                                            placeholder="Contoh: 3206xxxxxxxxxxxx">
                                 </div>

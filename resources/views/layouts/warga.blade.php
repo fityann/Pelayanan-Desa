@@ -5,12 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="theme-color" content="#15803d"/>
     <meta name="description" content="SILAPU - Sistem Layanan Puspamukti. Layanan digital mudah untuk warga RT {{ $rt ?? '' }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SILAPU - Sistem Layanan Puspamukti')</title>
 
     <!-- Favicon / Logo Tab -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script src="https://cdn.tailwindcss.com"></script>
@@ -446,33 +447,39 @@
     </header>
 
     <!-- Main Content -->
-    <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        @if(session('success'))
-            <div class="alert-success bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
-                <div class="flex items-center">
-                    <span class="material-symbols-outlined text-green-500 mr-3">check_circle</span>
-                    <div class="flex-1"><p class="text-sm font-medium text-green-800">{{ session('success') }}</p></div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-green-500 hover:text-green-700">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+    @hasSection('full_width_content')
+        <main class="w-full">
+            @yield('full_width_content')
+        </main>
+    @else
+        <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+            @if(session('success'))
+                <div class="alert-success bg-green-50 border-l-4 border-green-500 p-4 mb-6 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined text-green-500 mr-3">check_circle</span>
+                        <div class="flex-1"><p class="text-sm font-medium text-green-800">{{ session('success') }}</p></div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-green-500 hover:text-green-700">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        @if(session('error'))
-            <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg">
-                <div class="flex items-center">
-                    <span class="material-symbols-outlined text-red-500 mr-3">error</span>
-                    <div class="flex-1"><p class="text-sm font-medium text-red-800">{{ session('error') }}</p></div>
-                    <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-red-500 hover:text-red-700">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
+            @if(session('error'))
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-6 rounded-lg">
+                    <div class="flex items-center">
+                        <span class="material-symbols-outlined text-red-500 mr-3">error</span>
+                        <div class="flex-1"><p class="text-sm font-medium text-red-800">{{ session('error') }}</p></div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-auto text-red-500 hover:text-red-700">
+                            <span class="material-symbols-outlined">close</span>
+                        </button>
+                    </div>
                 </div>
-            </div>
-        @endif
+            @endif
 
-        @yield('content')
-    </main>
+            @yield('content')
+        </main>
+    @endif
 
 
 
