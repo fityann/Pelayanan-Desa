@@ -121,9 +121,9 @@
                 @endif
             </div>
 
-            <!-- Konten Utama -->
+            <!-- Konten Utama: strip_tags membatasi hanya tag HTML aman yang boleh ditampilkan -->
             <div class="prose prose-slate max-w-none text-on-surface">
-                {!! $informasi->isi !!}
+                {!! strip_tags($informasi->isi, '<p><br><strong><b><em><i><u><ul><ol><li><h1><h2><h3><h4><h5><h6><blockquote><a><img><table><thead><tbody><tr><th><td><span><div>') !!}
             </div>
         </div>
     </article>

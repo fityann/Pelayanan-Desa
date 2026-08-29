@@ -79,8 +79,8 @@
             <p class="text-[10px] text-on-surface-variant mt-xs">Kosongkan jika informasi berlaku untuk seluruh desa. Pilih RT jika hanya untuk wilayah tertentu.</p>
         </div>
         <div class="flex items-center gap-md">
-            <input type="checkbox" name="publish" id="publish" value="1" {{ old('publish', $informasi->published) ? 'checked' : '' }} class="rounded border-outline-variant text-primary focus:ring-primary">
-            <label for="publish" class="text-body-md text-on-surface">Publikasikan</label>
+            <input type="checkbox" name="publish" id="publish" value="1" {{ old('publish', $informasi->published) ? 'checked' : '' }} class="rounded border-2 border-slate-400 w-5 h-5 text-primary focus:ring-primary cursor-pointer">
+            <label for="publish" class="text-body-md text-on-surface cursor-pointer font-medium">Publikasikan</label>
         </div>
         <div class="flex gap-md justify-end pt-md border-t border-surface-variant/30">
             <a href="{{ route('admin.informasi.index') }}" class="px-lg py-2 rounded-full text-label-md font-bold text-on-surface-variant hover:bg-surface-container transition-all">Batal</a>

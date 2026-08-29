@@ -19,23 +19,23 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
             <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">NIK</label>
-                <input type="text" name="nik" value="{{ old('nik', auth()->check() ? auth()->user()->nik : '') }}" required pattern="\d{16}" maxlength="16" inputmode="numeric" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="16 digit NIK">
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">NIK <span class="text-error">*</span></label>
+                <input type="text" name="nik" value="{{ old('nik', (auth()->check() && auth()->user()->hasRole('Warga')) ? auth()->user()->nik : '') }}" required pattern="\d{16}" maxlength="16" inputmode="numeric" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="16 digit NIK">
                 @error('nik') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Nama Lengkap</label>
-                <input type="text" name="nama" value="{{ old('nama', auth()->check() ? auth()->user()->name : '') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Nama sesuai KTP">
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Nama Lengkap <span class="text-error">*</span></label>
+                <input type="text" name="nama" value="{{ old('nama', (auth()->check() && auth()->user()->hasRole('Warga')) ? auth()->user()->name : '') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Nama sesuai KTP">
                 @error('nama') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
             <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">No. WhatsApp</label>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">No. WhatsApp <span class="text-error">*</span></label>
                 <input type="text" name="no_whatsapp" value="{{ old('no_whatsapp') }}" required maxlength="20" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: 081234567890">
                 @error('no_whatsapp') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
             <div>
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">Alamat</label>
-                <input type="text" name="alamat" value="{{ old('alamat', auth()->check() ? auth()->user()->penduduk?->alamat : '') }}" maxlength="255" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Alamat lengkap / RT">
+                <input type="text" name="alamat" value="{{ old('alamat', (auth()->check() && auth()->user()->hasRole('Warga')) ? auth()->user()->penduduk?->alamat : '') }}" maxlength="255" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Alamat lengkap / RT">
                 @error('alamat') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
         </div>
@@ -47,44 +47,53 @@
             </div>
         @endif
 
-        @if ($jenisSurat->kode === 'SKU')
+        @php
+            $placeholderKeperluan = match($jenisSurat->kode) {
+                'SKD' => 'Contoh: untuk keperluan administrasi kependudukan / pembuatan rekening...',
+                'SKU' => 'Contoh: untuk keperluan pengajuan pinjaman bank / KUR...',
+                'SKTM' => 'Contoh: untuk keperluan pengajuan beasiswa / bantuan sosial...',
+                'SPN' => 'Contoh: untuk persyaratan pendaftaran pernikahan di KUA...',
+                'SKematian' => 'Contoh: untuk keperluan mengurus asuransi / warisan / BPJS...',
+                'SKBB' => 'Contoh: untuk persyaratan melamar pekerjaan...',
+                'SKCerai' => 'Contoh: untuk keperluan administrasi pengadilan agama...',
+                'SKWali' => 'Contoh: untuk persyaratan pernikahan anak / beasiswa yatim...',
+                'SKKB' => 'Contoh: untuk pengantar pembuatan SKCK di kepolisian...',
+                'SPPD' => 'Contoh: untuk permohonan pembuatan KTP baru / KK...',
+                'SKKehilangan' => 'Contoh: untuk pengantar pembuatan laporan kehilangan di kepolisian...',
+                'SPPAD', 'SPPAK', 'SPPDK' => 'Contoh: untuk keperluan administrasi kepindahan alamat domisili...',
+                default => 'Contoh: untuk keperluan administrasi / pengajuan dokumen...',
+            };
+        @endphp
+        @if (!empty($jenisSurat->form_fields) && count($jenisSurat->form_fields) > 0)
             <div class="bg-primary-fixed/20 border border-primary/20 rounded-xl p-md text-body-sm text-on-surface">
-                <strong>Data Usaha</strong>
-                <p class="text-on-surface-variant mt-xs">Isi detail usaha Anda untuk Surat Keterangan Usaha.</p>
+                <strong>Data Isian Tambahan</strong>
+                <p class="text-on-surface-variant mt-xs">Lengkapi data berikut sesuai dengan persyaratan {{ $jenisSurat->nama }}.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-md">
-                <div>
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Bentuk Perusahaan</label>
-                    <input type="text" name="data_isian[bentuk_perusahaan]" value="{{ old('data_isian.bentuk_perusahaan') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: Perorangan, PT, CV, Toko...">
-                </div>
-                <div>
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Nomor NPWP</label>
-                    <input type="text" name="data_isian[npwp]" value="{{ old('data_isian.npwp') }}" required maxlength="30" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: 12.345.678.9-012.000">
-                </div>
-                <div class="md:col-span-2">
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Alamat Perusahaan</label>
-                    <input type="text" name="data_isian[alamat_perusahaan]" value="{{ old('data_isian.alamat_perusahaan') }}" required maxlength="255" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Alamat lengkap tempat usaha">
-                </div>
-                <div>
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Bidang Usaha</label>
-                    <input type="text" name="data_isian[bidang_usaha]" value="{{ old('data_isian.bidang_usaha') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: Perdagangan, Jasa, Kuliner...">
-                </div>
-                <div>
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Jenis Barang/Jasa Utama</label>
-                    <input type="text" name="data_isian[jenis_barang]" value="{{ old('data_isian.jenis_barang') }}" required maxlength="100" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: Sembako, Pakaian, Makanan Ringan...">
-                </div>
-                <div>
-                    <label class="text-label-sm font-bold text-on-surface block mb-xs">Lama Usaha</label>
-                    <input type="text" name="data_isian[lama_usaha]" value="{{ old('data_isian.lama_usaha') }}" required maxlength="50" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: 2 Tahun, 6 Bulan...">
-                </div>
+                @foreach ($jenisSurat->form_fields as $field)
+                    @php $isTextarea = isset($field['type']) && $field['type'] === 'textarea'; @endphp
+                    <div class="{{ $isTextarea ? 'md:col-span-2' : '' }}">
+                        <label class="text-label-sm font-bold text-on-surface block mb-xs">{{ $field['label'] }} @if($field['required'])<span class="text-error">*</span>@endif</label>
+                        @if ($isTextarea)
+                            <textarea name="data_isian[{{ $field['name'] }}]" rows="3" {{ $field['required'] ? 'required' : '' }} class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant resize-none" placeholder="Masukkan {{ strtolower($field['label']) }}">{{ old('data_isian.'.$field['name']) }}</textarea>
+                        @else
+                            <input type="{{ $field['type'] ?? 'text' }}" name="data_isian[{{ $field['name'] }}]" value="{{ old('data_isian.'.$field['name']) }}" {{ $field['required'] ? 'required' : '' }} class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Masukkan {{ strtolower($field['label']) }}">
+                        @endif
+                        @error('data_isian.'.$field['name']) <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+                    </div>
+                @endforeach
             </div>
             
-            <input type="hidden" name="keterangan" value="Surat Keterangan Usaha">
+            <div>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Keperluan <span class="text-error">*</span></label>
+                <textarea name="keterangan" rows="3" required maxlength="1000" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="{{ $placeholderKeperluan }}">{{ old('keterangan', $jenisSurat->nama) }}</textarea>
+                @error('keterangan') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
+            </div>
         @else
             <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Keperluan</label>
-                <textarea name="keterangan" rows="4" required maxlength="1000" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="Contoh: untuk keperluan pengajuan beasiswa anak...">{{ old('keterangan') }}</textarea>
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Keperluan <span class="text-error">*</span></label>
+                <textarea name="keterangan" rows="4" required maxlength="1000" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant" placeholder="{{ $placeholderKeperluan }}">{{ old('keterangan') }}</textarea>
                 @error('keterangan') <p class="text-error text-label-sm mt-xs">{{ $message }}</p> @enderror
             </div>
         @endif
@@ -92,7 +101,7 @@
         <div>
             <label class="text-label-sm font-bold text-on-surface block mb-xs">Dokumen Pendukung (opsional)</label>
             <input type="file" name="file_pendukung" accept=".pdf,image/jpeg,image/png" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none border border-outline-variant file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-label-sm file:font-bold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-all">
-            <p class="text-[10px] text-on-surface-variant mt-xs">Maks. 2MB. Format: PDF, JPG, PNG</p>
+            <p class="text-[10px] text-on-surface-variant mt-xs">Maks. 15MB. Format: PDF, JPG, PNG</p>
         </div>
 
         <div class="bg-on-tertiary-container/5 border border-on-tertiary-container/20 rounded-xl p-md text-body-sm text-on-surface-variant flex gap-md">

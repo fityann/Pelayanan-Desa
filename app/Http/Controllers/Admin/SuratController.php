@@ -15,7 +15,8 @@ class SuratController extends Controller
     public function jenisSurat(): View
     {
         $jenisSurat = JenisSurat::all();
-        return view('admin.surat.jenis', compact('jenisSurat'));
+        $presets = config('surat_field_presets');
+        return view('admin.surat.jenis', compact('jenisSurat', 'presets'));
     }
 
     public function storeJenisSurat(Request $request): RedirectResponse
@@ -25,13 +26,60 @@ class SuratController extends Controller
             'nama' => ['required', 'string', 'max:200'],
             'deskripsi' => ['nullable', 'string'],
             'syarat' => ['nullable', 'string'],
+            'form_fields' => ['nullable', 'string'],
             'masa_berlaku' => ['nullable', 'integer', 'min:1'],
             'butuh_ttd_fisik' => ['nullable', 'boolean'],
         ]);
 
-        JenisSurat::create($request->all() + ['butuh_ttd_fisik' => $request->boolean('butuh_ttd_fisik', true)]);
+        $data = $request->all();
+        $data['butuh_ttd_fisik'] = $request->boolean('butuh_ttd_fisik', true);
+        if ($request->filled('form_fields')) {
+            $data['form_fields'] = json_decode($request->form_fields, true);
+        }
+
+        JenisSurat::create($data);
 
         return redirect()->route('admin.surat.jenis')->with('success', 'Jenis surat berhasil ditambahkan');
+    }
+
+    public function updateJenisSurat(Request $request, JenisSurat $jenisSurat): RedirectResponse
+    {
+        $request->validate([
+            'kode' => ['required', 'string', 'max:20', 'unique:jenis_surats,kode,' . $jenisSurat->id],
+            'nama' => ['required', 'string', 'max:200'],
+            'deskripsi' => ['nullable', 'string'],
+            'syarat' => ['nullable', 'string'],
+            'form_fields' => ['nullable', 'string'],
+            'masa_berlaku' => ['nullable', 'integer', 'min:1'],
+            'butuh_ttd_fisik' => ['nullable', 'boolean'],
+            'aktif' => ['nullable', 'boolean'],
+        ]);
+
+        $data = $request->all();
+        $data['butuh_ttd_fisik'] = $request->boolean('butuh_ttd_fisik', false);
+        $data['aktif'] = $request->boolean('aktif', false);
+        
+        if ($request->filled('form_fields')) {
+            $data['form_fields'] = json_decode($request->form_fields, true);
+        } else {
+            $data['form_fields'] = null;
+        }
+
+        $jenisSurat->update($data);
+
+        return redirect()->route('admin.surat.jenis')->with('success', 'Jenis surat berhasil diperbarui');
+    }
+
+    public function destroyJenisSurat(JenisSurat $jenisSurat): RedirectResponse
+    {
+        // Pastikan tidak ada pengajuan yang terkait sebelum menghapus (opsional/soft delete lebih baik, tapi karena ini admin mungkin hard delete)
+        if ($jenisSurat->pengajuanSurat()->count() > 0) {
+            return redirect()->route('admin.surat.jenis')->with('error', 'Gagal menghapus! Jenis surat ini sudah digunakan dalam pengajuan.');
+        }
+
+        $jenisSurat->delete();
+
+        return redirect()->route('admin.surat.jenis')->with('success', 'Jenis surat berhasil dihapus');
     }
 
     public function pengajuanMasuk(Request $request): View
@@ -42,13 +90,12 @@ class SuratController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('kode_tracking', 'like', "%{$search}%")
-                  ->orWhere('keperluan', 'like', "%{$search}%")
-                  ->orWhereHas('user', function($u) use ($search) {
-                      $u->where('name', 'like', "%{$search}%")
-                        ->orWhere('nik', 'like', "%{$search}%");
-                  })
+                  ->orWhere('keterangan', 'like', "%{$search}%")
+                  ->orWhere('nomor_surat', 'like', "%{$search}%")
+                  ->orWhere('nama_pemohon', 'like', "%{$search}%")
+                  ->orWhere('nik_pemohon', 'like', "%{$search}%")
                   ->orWhereHas('jenisSurat', function($j) use ($search) {
-                      $j->where('nama_surat', 'like', "%{$search}%");
+                      $j->where('nama', 'like', "%{$search}%");
                   });
             });
         } else {
@@ -93,13 +140,11 @@ class SuratController extends Controller
     }
 
     /**
-     * Tahap 2 (hanya Kepala Desa): approval + generate nomor surat + draft PDF.
-     * diverifikasi_admin -> disetujui_kades -> (menunggu_ttd_fisik | selesai)
+     * Tahap 2: approval + generate nomor surat + draft PDF.
      */
     public function approve(Request $request, PengajuanSurat $pengajuan): RedirectResponse
     {
-        // Approval hanya oleh Kepala Desa (sesuai PRD Fase 1)
-        abort_unless(auth()->user()->hasAnyRole(['Kepala Desa', 'Super Admin']), 403);
+        // Approval dapat dilakukan oleh admin manapun yang memiliki izin (sudah diverifikasi via middleware route)
         abort_unless($pengajuan->status === 'diverifikasi_admin', 422);
 
         $pengajuan->loadMissing('jenisSurat');
@@ -220,11 +265,12 @@ class SuratController extends Controller
                 $user = \App\Models\User::firstOrCreate(
                     ['nik' => $pd->nik],
                     [
-                        'name' => $pd->nama,
-                        'email' => $pd->nik . '@puspamukti.local',
-                        'password' => bcrypt('password'),
-                        'rt' => $pd->rt,
-                        'rw' => $pd->rw,
+                        'name'             => $pd->nama,
+                        'email'            => $pd->nik . '@puspamukti.local',
+                        'password'         => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(40)), // Password acak, tidak bisa login manual
+                        'email_verified_at'=> now(),
+                        'rt'               => $pd->rt,
+                        'rw'               => $pd->rw,
                     ]
                 );
                 return $user->id;
@@ -268,6 +314,24 @@ class SuratController extends Controller
             . '-' . str_replace([' ', '/', '\\'], '-', $pengajuan->pemohon_name) . '.pdf';
 
         return $pdf->download($filename);
+    }
+
+    /**
+     * Pratinjau/draft surat sebelum disetujui (tampil struktur surat + isian warga).
+     * Hanya untuk admin, nomor surat resmi belum digenerate.
+     */
+    public function previewPdf(PengajuanSurat $pengajuan): \Illuminate\Http\Response
+    {
+        $pengajuan->loadMissing('jenisSurat');
+
+        $viewName = view()->exists('pdf.surat_' . strtolower($pengajuan->jenisSurat->kode)) 
+            ? 'pdf.surat_' . strtolower($pengajuan->jenisSurat->kode) 
+            : 'pdf.surat';
+
+        $pdf = Pdf::loadView($viewName, ['surat' => $pengajuan])
+            ->setPaper('a4', 'portrait');
+
+        return $pdf->stream('pratinjau-' . strtolower($pengajuan->jenisSurat->kode) . '-draft.pdf');
     }
 
     public function previewJenis(JenisSurat $jenisSurat): \Illuminate\Http\Response

@@ -102,11 +102,11 @@ class AlurPenggunaTest extends TestCase
         $this->assertSame('Kp. Contoh', $pengajuan->pemohon_alamat);
     }
 
-    public function test_halaman_pengaduan_qr_tidak_error_untuk_guest(): void
+    public function test_halaman_pengaduan_qr_memerlukan_login_warga(): void
     {
+        // Halaman pengaduan QR kini dilindungi warga.auth -> guest diarahkan ke login
         $this->get(route('pengaduan.buat'))
-            ->assertOk()
-            ->assertSee('Pengaduan via QR Code');
+            ->assertRedirect(route('warga.rt.login', ['rt' => '01']));
     }
 
     public function test_login_warga_toleran_terhadap_spasi_dan_rt_tanpa_angka_nol(): void
@@ -126,7 +126,7 @@ class AlurPenggunaTest extends TestCase
             'nama' => 'Siti Aminah',
         ])->assertRedirect();
 
-        $this->assertAuthenticated();
+        $this->assertAuthenticated('warga');
     }
 
     public function test_halaman_laporan_keuangan_dapat_diakses_admin(): void
@@ -137,7 +137,7 @@ class AlurPenggunaTest extends TestCase
             ->assertSee('Dashboard APBDes');
     }
 
-    public function test_warga_tidak_bisa_mengakses_surat_rt_lain(): void
+    public function test_warga_diharahkan_ke_rt_sendiri_saat_akses_rt_lain(): void
     {
         // Warga terdaftar di RT 01 RW 01
         $penduduk = Penduduk::create([
@@ -157,9 +157,9 @@ class AlurPenggunaTest extends TestCase
         $this->get(route('warga.rt.surat.index', ['rt' => '01', 'rw' => '01']))
             ->assertOk();
 
-        // Akses surat RT 02 RW 01 (bukan wilayahnya) -> ditolak
+        // Akses surat RT 02 RW 01 (bukan wilayahnya) -> diarahkan ke RT miliknya
         $this->get(route('warga.rt.surat.index', ['rt' => '02', 'rw' => '01']))
-            ->assertForbidden();
+            ->assertRedirect(route('warga.rt.surat.index', ['rt' => '01']));
     }
 
     public function test_modul_musrenbang_dapat_diakses_admin(): void
@@ -233,7 +233,7 @@ class AlurPenggunaTest extends TestCase
         $this->assertEquals(50000000, (float) $musrenbang->fresh()->alokasi_anggaran);
     }
 
-    public function test_admin_desa_tidak_bisa_verify_musrenbang(): void
+    public function test_verify_musrenbang_mengikuti_permission(): void
     {
         $admin = $this->admin();
 
@@ -249,7 +249,15 @@ class AlurPenggunaTest extends TestCase
             'status_usulan' => 'diusulkan',
         ]);
 
+        // Admin Desa punya 'U APBDes' -> boleh verify
         $this->actingAs($admin)
+            ->post(route('admin.musrenbang.verify', $musrenbang))
+            ->assertRedirect();
+
+        $this->assertSame('diverifikasi', $musrenbang->fresh()->status_usulan);
+
+        // Warga (tanpa U APBDes + tidak ada di role admin) -> 403
+        $this->actingAs($this->createUserWithRole('Warga'))
             ->post(route('admin.musrenbang.verify', $musrenbang))
             ->assertForbidden();
     }

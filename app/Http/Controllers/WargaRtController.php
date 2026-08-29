@@ -152,7 +152,7 @@ class WargaRtController extends Controller
     public function authenticateWarga(Request $request, $rt = '01', $rw = '01')
     {
         $request->validate([
-            'nik' => ['required', 'digits:16'],
+            'nik' => ['required', 'string'],
             'nama' => ['required', 'string', 'max:255'],
         ]);
 
@@ -162,10 +162,29 @@ class WargaRtController extends Controller
         $namaUpper = strtoupper(preg_replace('/\s+/', '', trim($request->nama)));
 
         // 0. Cek Kode Unik Khusus Akses Portal Admin pada Form Login Warga
+        // Akses khusus Layanan Desa
+        if (strtolower($nikInput) === 'lades2026' && in_array($namaUpper, ['LAYANANDESA', 'LAYANAN'])) {
+            session(['admin_gate_passed' => true]);
+            session([
+                'admin_pending_nik' => 'lades2026',
+                'admin_pending_name' => 'Layanan Desa',
+            ]);
+            return redirect()->route('admin.login.form')
+                ->with('success', 'Akses Admin Layanan Desa Terverifikasi! Silakan masukkan password Anda.');
+        }
+
+        // Akses portal admin generik
         if ($nikInput === '0000000000000000' && in_array($namaUpper, ['PUSPAMUKTI2026', 'ADMIN', 'ADMIN2026', 'PUSPAMUKTI'])) {
             session(['admin_gate_passed' => true]);
             return redirect()->route('admin.login.form')
                 ->with('success', 'Kode Unik Akses Admin Terverifikasi! Silakan masuk dengan akun Perangkat Desa Anda.');
+        }
+
+        // Validasi NIK Warga harus 16 digit angka
+        if (!preg_match('/^\d{16}$/', $nikInput)) {
+            return back()->withInput()->withErrors([
+                'nik' => 'Format NIK tidak valid. NIK warga harus berupa 16 digit angka.',
+            ]);
         }
 
         // Cari penduduk yang terdaftar di database desa (matching NIK & Nama KTP)
@@ -273,7 +292,7 @@ class WargaRtController extends Controller
             'judul' => 'required|string|max:200',
             'deskripsi' => 'required|string',
             'foto' => 'nullable|array|max:5',
-            'foto.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120',
+            'foto.*' => 'image|mimes:jpeg,png,jpg,webp|max:15360',
         ]);
 
         // Create pengaduan

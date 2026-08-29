@@ -3,12 +3,13 @@
 <head>
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'SILAPU - Sistem Layanan Puspamukti')</title>
 
     <!-- Favicon / Logo Tab -->
-    <link rel="icon" type="image/jpeg" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
-    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti.jpg') }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="shortcut icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo-desa-puspamukti-rounded.png') }}">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
@@ -65,7 +66,7 @@
 
             @if ($isWarga)
                 <div x-data="{ open: {{ $isActive(['layanan/surat', 'pengaduan/buat', 'informasi.publik', 'layanan/musrenbang']) ? 'true' : 'false' }} }" class="rounded-xl">
-                    <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['layanan/surat', 'pengaduan/buat', 'layanan/musrenbang']) ? 'text-white font-bold' : $dropdownHeaderClass }}">
+                    <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['layanan/surat', 'pengaduan/buat', 'layanan/musrenbang']) ? 'text-white font-bold uppercase tracking-wider' : $dropdownHeaderClass }}">
                         <span class="flex items-center gap-md">
                             <span class="material-symbols-outlined text-emerald-400">holiday_village</span>
                             <span class="text-label-md">Layanan Warga</span>
@@ -108,7 +109,7 @@
             @if ($isStaff)
             {{-- ===================== KEPENDUDUKAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'text-white font-bold' : $dropdownHeaderClass }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/penduduk', 'admin/keluarga']) ? 'text-white font-bold uppercase tracking-wider' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">group</span>
                         <span class="text-label-md">Kependudukan</span>
@@ -124,20 +125,20 @@
                      x-transition:leave-start="opacity-100 translate-y-0"
                      x-transition:leave-end="opacity-0 -translate-y-1"
                      class="space-y-xs mt-xs pl-md border-l border-slate-800 ml-4">
-                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/penduduk') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.penduduk.index') }}">
-                        <span class="material-symbols-outlined text-[18px]">groups</span>
-                        <span class="text-label-md">Data Penduduk</span>
-                    </a>
                     <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/keluarga') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.keluarga.index') }}">
                         <span class="material-symbols-outlined text-[18px]">family_restroom</span>
-                        <span class="text-label-md">Data Keluarga</span>
+                        <span class="text-label-md">Data Keluarga (KK)</span>
+                    </a>
+                    <a class="flex items-center gap-md px-md py-2.5 transition-all {{ $isActive('admin/penduduk') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.penduduk.index') }}">
+                        <span class="material-symbols-outlined text-[18px]">group</span>
+                        <span class="text-label-md">Data Penduduk</span>
                     </a>
                 </div>
             </div>
 
             {{-- ===================== LAYANAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/surat']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/surat']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/surat']) ? 'text-amber-300 font-extrabold uppercase tracking-wider' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">description</span>
                         <span class="text-label-md">Layanan Surat</span>
@@ -174,7 +175,7 @@
 
             {{-- ===================== PERENCANAAN ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/musrenbang']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/musrenbang']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/musrenbang']) ? 'text-amber-300 font-extrabold uppercase tracking-wider' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">how_to_vote</span>
                         <span class="text-label-md">Perencanaan</span>
@@ -199,7 +200,7 @@
 
             {{-- ===================== KEUANGAN & ASET ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja', 'admin/assets', 'admin/kategori-aset']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja', 'admin/assets', 'admin/kategori-aset']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/apbdes', 'admin/pencairan-dana', 'admin/belanja', 'admin/assets', 'admin/kategori-aset']) ? 'text-amber-300 font-extrabold uppercase tracking-wider' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">account_balance</span>
                         <span class="text-label-md">Keuangan & Aset</span>
@@ -244,7 +245,7 @@
 
             {{-- ===================== KOMUNIKASI ===================== --}}
             <div x-data="{ open: {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'true' : 'false' }} }" class="rounded-xl">
-                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'text-amber-300 font-extrabold' : $dropdownHeaderClass }}">
+                <button @click="open = !open" class="w-full flex items-center justify-between px-md py-3 transition-all {{ $isActive(['admin/pengaduan', 'admin/informasi', 'admin/qr-links', 'admin/chat']) ? 'text-amber-300 font-extrabold uppercase tracking-wider' : $dropdownHeaderClass }}">
                     <span class="flex items-center gap-md">
                         <span class="material-symbols-outlined text-amber-400">campaign</span>
                         <span class="text-label-md">Komunikasi</span>
@@ -286,10 +287,10 @@
             @endif
 
             <div class="pt-md border-t border-slate-800/80 mt-md">
-                @if($isAdmin)
+                @if($isSuperAdmin || $isKades)
                 <a class="flex items-center gap-md px-md py-3 transition-all {{ $isActive('admin/roles') ? $activeLinkClass : $inactiveLinkClass }}" href="{{ route('admin.roles.index') }}">
                     <span class="material-symbols-outlined">manage_accounts</span>
-                    <span class="text-label-md">User & Role</span>
+                    <span class="text-label-md uppercase tracking-wider">User & Role</span>
                 </a>
                 @endif
             </div>
@@ -489,9 +490,15 @@
         </header>
 
         <!-- Page Content -->
-        <main class="relative pt-16 flex-1 px-lg py-lg">
-            @yield('content')
-        </main>
+        @hasSection('full_width_content')
+            <main class="relative pt-16 flex-1 w-full h-[calc(100vh-4rem)] overflow-hidden">
+                @yield('full_width_content')
+            </main>
+        @else
+            <main class="relative pt-16 flex-1 px-lg py-lg">
+                @yield('content')
+            </main>
+        @endif
     </div>
 
     <style>

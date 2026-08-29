@@ -20,9 +20,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Role admin dan perangkat desa memiliki semua izin akses panel
+        // Hanya Super Admin yang lolos semua pemeriksaan izin.
+        // Role lainnya memakai izin granular dari RolePermissionSeeder.
         Gate::before(function ($user, $ability) {
-            if ($user && $user->hasAnyRole(['Super Admin', 'Kepala Desa', 'Sekretaris Desa', 'Bendahara', 'Admin Desa'])) {
+            if ($user && $user->hasRole('Super Admin')) {
                 return true;
             }
             return null;

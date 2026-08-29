@@ -16,10 +16,12 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                     @auth
-                        @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin Desa']))
+                        @if(auth()->user()->hasAnyRole(['Super Admin', 'Kepala Desa']))
                             <x-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                                 {{ __('Pengguna') }}
                             </x-nav-link>
+                        @endif
+                        @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin Desa', 'Kepala Desa']))
                             <x-nav-link :href="route('admin.keluarga.index')" :active="request()->routeIs('admin.keluarga.*')">
                                 {{ __('Keluarga') }}
                             </x-nav-link>
@@ -110,10 +112,12 @@
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
             @auth
-                @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin Desa']))
+                @if(auth()->user()->hasAnyRole(['Super Admin', 'Kepala Desa']))
                     <x-responsive-nav-link :href="route('admin.users.index')" :active="request()->routeIs('admin.users.*')">
                         {{ __('Pengguna') }}
                     </x-responsive-nav-link>
+                @endif
+                @if(auth()->user()->hasAnyRole(['Super Admin', 'Admin Desa', 'Kepala Desa']))
                     <x-responsive-nav-link :href="route('admin.keluarga.index')" :active="request()->routeIs('admin.keluarga.*')">
                         {{ __('Keluarga') }}
                     </x-responsive-nav-link>

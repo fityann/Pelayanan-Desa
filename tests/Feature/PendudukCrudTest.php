@@ -4,24 +4,34 @@ namespace Tests\Feature;
 
 use App\Models\Penduduk;
 use App\Models\User;
+use Database\Seeders\RolePermissionSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Spatie\Permission\Models\Role;
 use Tests\TestCase;
 
 class PendudukCrudTest extends TestCase
 {
-    protected function setUp(): void
+    use RefreshDatabase;
+
+    private function admin(): User
     {
-        parent::setUp();
+        $this->seed(RolePermissionSeeder::class);
+
+        $user = User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin@puspamukti.local',
+            'nik' => '3201010101010101',
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+        ]);
+        $user->assignRole('Super Admin');
+
+        return $user;
     }
 
     public function test_admin_can_add_penduduk_via_ajax()
     {
-        $admin = User::where('email', 'admin@puspamukti.local')->first();
-        if (!$admin) {
-            $admin = User::factory()->create();
-            $admin->assignRole('Super Admin');
-        }
+        $admin = $this->admin();
+        $this->actingAs($admin);
 
         $nik = '320101' . rand(1000000000, 9999999999);
         $data = [
@@ -41,12 +51,10 @@ class PendudukCrudTest extends TestCase
             'kewarganegaraan' => 'WNI',
         ];
 
-        $response = $this->actingAs($admin)
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest',
-            ])
-            ->postJson('/admin/penduduk', $data);
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->postJson('/admin/penduduk', $data);
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -62,21 +70,14 @@ class PendudukCrudTest extends TestCase
 
     public function test_admin_validation_error_returns_json()
     {
-        $admin = User::where('email', 'admin@puspamukti.local')->first();
-        if (!$admin) {
-            $admin = User::factory()->create();
-            $admin->assignRole('Super Admin');
-        }
+        $this->actingAs($this->admin());
 
-        // Invalid: missing NIK and Nama
-        $response = $this->actingAs($admin)
-            ->withHeaders([
-                'Accept' => 'application/json',
-                'X-Requested-With' => 'XMLHttpRequest',
-            ])
-            ->postJson('/admin/penduduk', [
-                'alamat' => 'Alamat tanpa NIK',
-            ]);
+        $response = $this->withHeaders([
+            'Accept' => 'application/json',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->postJson('/admin/penduduk', [
+            'alamat' => 'Alamat tanpa NIK',
+        ]);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['nik', 'nama']);

@@ -50,13 +50,19 @@
                 <label class="text-label-sm font-bold text-on-surface block mb-xs">Password</label>
                 <input type="password" name="password" required class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
             </div>
-            <div>
-                <label class="text-label-sm font-bold text-on-surface block mb-xs">Role</label>
-                <select name="role" class="w-full bg-surface-container rounded-xl px-lg py-3 text-body-md outline-none focus:ring-2 focus:ring-primary/20 border border-outline-variant">
+            <div class="md:col-span-2">
+                <label class="text-label-sm font-bold text-on-surface block mb-xs">Role <span class="text-error">*</span></label>
+                <div class="bg-surface-container/50 rounded-xl p-lg border border-outline-variant/20 max-h-60 overflow-y-auto">
                     @foreach ($roles as $role)
-                        <option value="{{ $role->id }}" {{ old('role') == $role->id ? 'selected' : '' }}>{{ $role->name }}</option>
+                        <label class="flex items-center gap-2 cursor-pointer px-2 py-2 rounded-lg hover:bg-surface-variant/30 transition-colors">
+                            <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary" {{ old('roles', []) && in_array($role->id, old('roles')) ? 'checked' : '' }}>
+                            <span class="text-body-sm text-on-surface">{{ $role->name }}</span>
+                        </label>
                     @endforeach
-                </select>
+                </div>
+                @error('roles')
+                    <p class="text-error text-body-sm mt-1">{{ $message }}</p>
+                @enderror
             </div>
         </div>
         <div class="flex gap-md justify-end mt-lg pt-md border-t border-surface-variant/30">

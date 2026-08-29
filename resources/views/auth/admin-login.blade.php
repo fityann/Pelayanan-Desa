@@ -91,7 +91,7 @@
                         </div>
 
                         <button type="submit"
-                                class="w-full bg-[#4B5D3A] hover:bg-[#364329] text-white font-black py-3.5 px-6 rounded-2xl shadow-xl shadow-[#4B5D3A]/30 border border-[#D8B84C]/40 hover:scale-[1.01] transition-all flex items-center justify-center space-x-2 text-base mt-2">
+                                class="w-full bg-[#6A3297] hover:bg-[#55287A] text-white font-black py-3.5 px-6 rounded-2xl shadow-xl shadow-[#6A3297]/30 border border-[#D8B84C]/40 hover:scale-[1.01] transition-all flex items-center justify-center space-x-2 text-base mt-2">
                             <span class="material-symbols-outlined text-xl text-[#F0D878]">dashboard</span>
                             <span>Masuk ke Dashboard Admin</span>
                         </button>

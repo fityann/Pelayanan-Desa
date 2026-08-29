@@ -136,6 +136,25 @@
                            placeholder="Contoh: Sampah menumpuk di RT 05"
                            required>
                 </div>
+
+                <script>
+                    // Placeholder dinamis berdasarkan kategori yang dipilih
+                    const judulPlaceholders = {
+                        'sampah'     : 'Contoh: Sampah menumpuk di depan gang RT 05',
+                        'jalan'      : 'Contoh: Jalan berlubang di Jl. Merdeka RT 03',
+                        'drainase'   : 'Contoh: Saluran air tersumbat di RT 02 banjir setiap hujan',
+                        'penerangan' : 'Contoh: Lampu jalan mati di pertigaan RT 04',
+                        'air'        : 'Contoh: Air PDAM tidak mengalir sejak 2 hari lalu',
+                        'lainnya'    : 'Contoh: Pohon tumbang menghalangi jalan RT 01',
+                    };
+
+                    document.querySelectorAll('input[name="kategori"]').forEach(function(radio) {
+                        radio.addEventListener('change', function() {
+                            const judulInput = document.getElementById('judulInput');
+                            judulInput.placeholder = judulPlaceholders[this.value] || 'Masukkan judul pengaduan';
+                        });
+                    });
+                </script>
                 
                 <!-- Deskripsi Detail -->
                 <div class="mb-md">
@@ -154,12 +173,12 @@
                         Foto Bukti (Opsional)
                     </label>
                     <div class="relative">
-                        <input type="file" name="foto[]" id="fotoInput" accept="image/*" capture="environment" multiple
+                        <input type="file" name="foto[]" id="fotoInput" accept="image/*" multiple
                                class="sr-only"
                                onchange="previewImage(event)">
                         <label for="fotoInput" class="block w-full bg-surface border border-outline-variant rounded-lg px-md py-3 text-body-sm cursor-pointer hover:bg-surface-container transition-colors text-center">
                             <span class="material-symbols-outlined inline-block mr-sm">add_photo_alternate</span>
-                            Ambil/Gambar Foto (maks. 5)
+                            Ambil/Gambar Foto (maks. 5, 15MB/file)
                         </label>
                     </div>
                     <div id="imagePreview" class="mt-sm hidden">
@@ -534,6 +553,15 @@
                 }
             });
             
+            // Check if response is JSON
+            const contentType = response.headers.get('content-type');
+            if (!contentType || !contentType.includes('application/json')) {
+                if (response.status === 401 || response.status === 419) {
+                    throw new Error('Sesi telah berakhir. Silakan muat ulang halaman atau login kembali.');
+                }
+                throw new Error('Terjadi kesalahan pada server. (Respons tidak valid)');
+            }
+
             const result = await response.json();
             
             if (response.ok) {
@@ -573,7 +601,7 @@
                 showToast(errorMessage, 'error');
             }
         } catch (error) {
-            showToast('Koneksi jaringan bermasalah.', 'error');
+            showToast(error.message || 'Koneksi jaringan bermasalah.', 'error');
             console.error('Form submission error:', error);
         } finally {
             // Reset button state

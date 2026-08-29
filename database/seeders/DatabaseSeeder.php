@@ -30,12 +30,14 @@ class DatabaseSeeder extends Seeder
         }
 
         // ==== CREATE DEFAULT USERS ====
+        // ⚠️  CATATAN KEAMANAN: Password di bawah ini adalah password DEFAULT untuk testing/seeding.
+        //     WAJIB ubah semua password ini setelah deploy ke production melalui fitur "Ubah Password" di menu profil.
         $users = [
             [
-                'name' => 'Admin Puspamukti',
+                'name' =>'Admin Puspamukti',
                 'email' => 'admin@puspamukti.local',
                 'nik' => '0000000000000000',
-                'password' => 'admin123',
+                'password' => 'Admin2026',             // Super Admin
                 'role' => 'Super Admin',
             ],
             [
@@ -46,7 +48,7 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kantor Desa Puspamukti',
                 'rt' => '01',
                 'rw' => '01',
-                'password' => 'kepaladesa123',
+                'password' => 'Kades2026',             // Kepala Desa
                 'role' => 'Kepala Desa',
             ],
             [
@@ -57,7 +59,7 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kantor Desa Puspamukti',
                 'rt' => '01',
                 'rw' => '01',
-                'password' => 'sekdes123',
+                'password' => 'Sekdes2026',            // Sekretaris Desa
                 'role' => 'Sekretaris Desa',
             ],
             [
@@ -68,7 +70,7 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kantor Desa Puspamukti',
                 'rt' => '01',
                 'rw' => '01',
-                'password' => 'bendahara123',
+                'password' => 'Bendahara2026',         // Bendahara
                 'role' => 'Bendahara',
             ],
             [
@@ -79,7 +81,18 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kantor Desa Puspamukti',
                 'rt' => '01',
                 'rw' => '01',
-                'password' => 'admindesa123',
+                'password' => 'AdminDesa2026',         // Admin Desa
+                'role' => 'Admin Desa',
+            ],
+            [
+                'name' => 'Layanan Desa',
+                'email' => 'layanan@puspamukti.local',
+                'nik' => 'lades2026',
+                'phone' => '081234567899',
+                'address' => 'Kantor Desa Puspamukti',
+                'rt' => '01',
+                'rw' => '01',
+                'password' => 'Layanan2026',           // Layanan Desa
                 'role' => 'Admin Desa',
             ],
             [
@@ -90,7 +103,7 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kp. Cigalontang RT 01 RW 01',
                 'rt' => '01',
                 'rw' => '01',
-                'password' => 'warga123',
+                'password' => 'Warga2026',             // Warga (akun test)
                 'role' => 'Warga',
             ],
             [
@@ -101,7 +114,7 @@ class DatabaseSeeder extends Seeder
                 'address' => 'Kp. Bojong RT 02 RW 01',
                 'rt' => '02',
                 'rw' => '01',
-                'password' => 'warga123',
+                'password' => 'Warga2026',             // Warga 2 (akun test)
                 'role' => 'Warga',
             ],
         ];

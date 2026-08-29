@@ -25,7 +25,7 @@
             </h2>
             <div class="space-y-4">
                 @foreach ($pengumuman as $p)
-                    <div class="bg-white rounded-xl shadow-sm p-5 flex items-start space-x-4">
+                    <a href="{{ route('informasi.publik.detail', $p->id) }}" class="block bg-white rounded-xl shadow-sm hover:shadow-md hover:ring-1 hover:ring-teal-500 transition-all p-5 flex items-start space-x-4 cursor-pointer">
                         <div class="w-12 h-12 rounded-xl bg-teal-100 flex items-center justify-center text-teal-600 shrink-0">
                             <span class="material-symbols-outlined">campaign</span>
                         </div>
@@ -34,7 +34,7 @@
                             <p class="text-sm text-gray-600 mt-1 line-clamp-3">{{ strip_tags($p->isi) }}</p>
                             <span class="text-xs text-gray-500 mt-2 block">{{ $p->published_at?->format('d M Y') }}</span>
                         </div>
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -48,7 +48,7 @@
             </h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($agenda as $a)
-                    <div class="bg-white rounded-xl shadow-sm p-5 border-l-4 border-emerald-600">
+                    <a href="{{ route('informasi.publik.detail', $a->id) }}" class="block bg-white rounded-xl shadow-sm hover:shadow-md p-5 border-l-4 border-emerald-600 hover:border-teal-500 transition-all cursor-pointer">
                         <div class="flex items-center gap-3 mb-3">
                             <div class="flex flex-col items-center bg-emerald-50 rounded-lg px-3 py-1">
                                 <span class="font-bold text-emerald-700">{{ $a->tanggal_kegiatan?->format('d') }}</span>
@@ -62,7 +62,7 @@
                                 <span>{{ $a->lokasi }}</span>
                             </p>
                         @endif
-                    </div>
+                    </a>
                 @endforeach
             </div>
         </div>
@@ -75,7 +75,7 @@
         </h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse ($berita as $b)
-                <div class="bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md transition-all">
+                <a href="{{ route('informasi.publik.detail', $b->id) }}" class="block bg-white rounded-xl shadow-sm overflow-hidden hover:shadow-md hover:ring-2 hover:ring-teal-500 transition-all cursor-pointer">
                     @if ($b->gambar)
                         <div class="h-44 bg-cover bg-center" style="background-image: url('{{ Storage::url($b->gambar) }}')"></div>
                     @else
@@ -88,7 +88,7 @@
                         <p class="text-sm text-gray-600 line-clamp-3 mb-3">{{ strip_tags($b->isi) }}</p>
                         <span class="text-xs text-gray-500">{{ $b->published_at?->format('d M Y') }}</span>
                     </div>
-                </div>
+                </a>
             @empty
                 <div class="col-span-full text-center py-10 text-gray-500">Belum ada berita</div>
             @endforelse

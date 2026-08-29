@@ -70,30 +70,35 @@ class AdminAccessTest extends TestCase
 
     public function test_permission_crud_is_enforced_on_routes(): void
     {
-        // Bendahara punya 'R Penduduk' tapi TIDAK punya 'C Penduduk'
-        $bendahara = $this->createUserWithRole('Bendahara');
+        // Manajemen User & Role & Permission hanya dimiliki Super Admin / Kepala Desa.
+        $admin = $this->createUserWithRole('Admin Desa');
+        $kades = $this->createUserWithRole('Kepala Desa');
 
-        $this->actingAs($bendahara)
-            ->get(route('admin.penduduk.index'))
-            ->assertOk();
-
-        $this->actingAs($bendahara)
-            ->get(route('admin.penduduk.create'))
+        // Admin Desa tidak punya 'R Role & Permission' -> ditolak
+        $this->actingAs($admin)
+            ->get(route('admin.roles.index'))
             ->assertForbidden();
 
-        // Admin Desa punya 'C Penduduk'
-        $admin = $this->createUserWithRole('Admin Desa');
-
+        // Admin Desa tidak punya 'R Manajemen User' -> ditolak
         $this->actingAs($admin)
-            ->get(route('admin.penduduk.create'))
+            ->get(route('admin.users.index'))
+            ->assertForbidden();
+
+        // Kepala Desa punya izin tersebut -> boleh
+        $this->actingAs($kades)
+            ->get(route('admin.roles.index'))
+            ->assertOk();
+
+        $this->actingAs($kades)
+            ->get(route('admin.users.index'))
             ->assertOk();
     }
 
     public function test_roles_page_works_with_seeded_permissions(): void
     {
-        $admin = $this->createUserWithRole('Admin Desa');
+        $kades = $this->createUserWithRole('Kepala Desa');
 
-        $response = $this->actingAs($admin)
+        $response = $this->actingAs($kades)
             ->get(route('admin.roles.index'));
 
         $response->assertOk();
@@ -101,10 +106,9 @@ class AdminAccessTest extends TestCase
         $response->assertSee('UD');
     }
 
-    public function test_only_kades_can_approve_surat(): void
+    public function test_approve_surat_mengikuti_permission_pengajuan_surat(): void
     {
         $admin = $this->createUserWithRole('Admin Desa');
-        $kades = $this->createUserWithRole('Kepala Desa');
 
         $jenis = \App\Models\JenisSurat::create([
             'kode' => 'SKU',
@@ -118,16 +122,28 @@ class AdminAccessTest extends TestCase
             'butuh_ttd_fisik' => true,
         ]);
 
+        // Admin Desa punya 'U Pengajuan Surat' -> boleh approve
         $this->actingAs($admin)
-            ->post(route('admin.surat.approve', $pengajuan))
-            ->assertForbidden();
-
-        $this->actingAs($kades)
             ->post(route('admin.surat.approve', $pengajuan))
             ->assertRedirect(route('admin.surat.pengajuan'));
 
         $this->assertSame('menunggu_ttd_fisik', $pengajuan->fresh()->status);
         $this->assertNotNull($pengajuan->fresh()->nomor_surat);
+
+        // Cabut izin approve -> akses ditolak 403
+        $role = Role::findByName('Admin Desa');
+        $role->revokePermissionTo('U Pengajuan Surat');
+
+        $pengajuan2 = \App\Models\PengajuanSurat::create([
+            'user_id' => $admin->id,
+            'jenis_surat_id' => $jenis->id,
+            'status' => 'diverifikasi_admin',
+            'butuh_ttd_fisik' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->post(route('admin.surat.approve', $pengajuan2))
+            ->assertForbidden();
     }
 
     public function test_revoking_permission_revokes_access(): void

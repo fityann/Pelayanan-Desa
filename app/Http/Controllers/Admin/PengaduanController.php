@@ -23,9 +23,9 @@ class PengaduanController extends Controller
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('isi', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%")
                   ->orWhere('nama_pelapor', 'like', "%{$search}%")
-                  ->orWhere('nik_pelapor', 'like', "%{$search}%");
+                  ->orWhere('tiket_id', 'like', "%{$search}%");
             });
         } else {
             // Apply status filters if no explicit search
@@ -199,6 +199,18 @@ class PengaduanController extends Controller
         $pengaduan->tanggal_diproses = now();
         $pengaduan->save();
         
+        // Kirim notifikasi ke warga jika ada user_id
+        if ($pengaduan->user_id) {
+            \App\Models\Notification::create([
+                'user_id' => $pengaduan->user_id,
+                'judul' => 'Pengaduan Diproses',
+                'pesan' => "Pengaduan Anda mengenai '{$pengaduan->judul}' saat ini sedang ditindaklanjuti oleh perangkat desa.",
+                'tipe' => 'info',
+                'icon' => 'hourglass_top',
+                'link' => null
+            ]);
+        }
+        
         return response()->json([
             'success' => true,
             'message' => 'Pengaduan berhasil diproses'
@@ -220,9 +232,21 @@ class PengaduanController extends Controller
         $pengaduan->tanggal_selesai = now();
         $pengaduan->save();
         
+        // Kirim notifikasi ke warga jika ada user_id
+        if ($pengaduan->user_id) {
+            \App\Models\Notification::create([
+                'user_id' => $pengaduan->user_id,
+                'judul' => 'Pengaduan Selesai',
+                'pesan' => "Pengaduan Anda mengenai '{$pengaduan->judul}' telah selesai ditangani." . ($pengaduan->tanggapan ? " Tanggapan: {$pengaduan->tanggapan}" : ""),
+                'tipe' => 'success',
+                'icon' => 'task_alt',
+                'link' => null
+            ]);
+        }
+
         return response()->json([
             'success' => true,
-            'message' => 'Pengaduan berhasil diselesaikan'
+            'message' => 'Pengaduan berhasil ditandai selesai'
         ]);
     }
     

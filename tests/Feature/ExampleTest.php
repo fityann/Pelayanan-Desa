@@ -12,8 +12,9 @@ class ExampleTest extends TestCase
      */
     public function test_the_application_returns_a_successful_response(): void
     {
+        // '/' dialihkan ke landing RT 01
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertRedirect(route('warga.rt.landing', ['rt' => '01']));
     }
 }

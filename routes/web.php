@@ -68,6 +68,7 @@ Route::get('/cek-nik/{nik}', function (string $nik) {
 })->name('cek-nik');
 
 Route::get('/informasi-desa', [InformasiController::class, 'publik'])->name('informasi.publik');
+Route::get('/informasi-desa/{informasi}', [InformasiController::class, 'publikDetail'])->name('informasi.publik.detail');
 Route::get('/apbdes-publik', [ApbdesController::class, 'publik'])->name('apbdes.publik');
 Route::get('/aset-desa', [\App\Http\Controllers\AsetController::class, 'index'])->name('aset.publik');
 
@@ -93,12 +94,16 @@ Route::prefix('rt/{rt}')->name('warga.rt.')->group(function () {
         Route::get('/surat/status/{kode}', [WargaSuratController::class, 'statusRt'])->name('surat.status');
         Route::get('/surat/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('surat.pdf');
         Route::get('/surat/{jenisSurat}/buat', [WargaSuratController::class, 'createRt'])->name('surat.create');
-        Route::post('/surat/{jenisSurat}', [WargaSuratController::class, 'storeRt'])->name('surat.store');
+        Route::post('/surat/{jenisSurat}', [WargaSuratController::class, 'storeRt'])
+            ->middleware('throttle:5,1') // Maks 5 pengajuan surat per menit
+            ->name('surat.store');
 
         // Chat warga dengan admin desa (hanya warga yang sudah login)
         Route::get('/chat', [WargaChatController::class, 'index'])->name('chat');
         Route::get('/chat/data', [WargaChatController::class, 'data'])->name('chat.data');
-        Route::post('/chat', [WargaChatController::class, 'kirim'])->name('chat.store');
+        Route::post('/chat', [WargaChatController::class, 'kirim'])
+            ->middleware('throttle:30,1') // Maks 30 pesan per menit
+            ->name('chat.store');
 
         // Notifikasi warga (terlihat di icon lonceng)
         Route::get('/notif/data', [WargaNotificationController::class, 'data'])->name('notif.data');
@@ -124,7 +129,9 @@ Route::middleware('warga.auth')->group(function () {
         Route::get('/status/{kode}', [WargaSuratController::class, 'status'])->name('status');
         Route::get('/pdf/{kode}', [WargaSuratController::class, 'pdf'])->name('pdf');
         Route::get('/{jenisSurat}/buat', [WargaSuratController::class, 'create'])->name('create');
-        Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])->name('store');
+        Route::post('/{jenisSurat}', [WargaSuratController::class, 'store'])
+            ->middleware('throttle:5,1') // Maks 5 pengajuan surat per menit
+            ->name('store');
     });
 
     // Layanan Warga - Usulan Kegiatan (Musrenbang)
@@ -138,7 +145,9 @@ Route::middleware('warga.auth')->group(function () {
 Route::middleware('warga.auth')->group(function () {
     // QR Code pengaduan: /pengaduan/buat
     Route::get('/pengaduan/buat', [WargaPengaduanController::class, 'create'])->name('pengaduan.buat');
-    Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])->name('pengaduan.store');
+    Route::post('/pengaduan', [WargaPengaduanController::class, 'store'])
+        ->middleware('throttle:10,1') // Maks 10 pengaduan per menit per IP
+        ->name('pengaduan.store');
 });
 
 Route::middleware('auth')->group(function () {
@@ -184,6 +193,8 @@ Route::prefix('admin')->name('admin.')
         Route::get('surat/jenis', [SuratController::class, 'jenisSurat'])->middleware('permission:R Surat')->name('surat.jenis');
         Route::get('surat/jenis/{jenisSurat}/preview', [SuratController::class, 'previewJenis'])->middleware('permission:R Surat')->name('surat.jenis.preview');
         Route::post('surat/jenis', [SuratController::class, 'storeJenisSurat'])->middleware('permission:C Surat')->name('surat.jenis.store');
+        Route::put('surat/jenis/{jenisSurat}', [SuratController::class, 'updateJenisSurat'])->middleware('permission:U Surat')->name('surat.jenis.update');
+        Route::delete('surat/jenis/{jenisSurat}', [SuratController::class, 'destroyJenisSurat'])->middleware('permission:D Surat')->name('surat.jenis.destroy');
 
         // Pengajuan Surat (pemrosesan)
         Route::get('surat/pengajuan', [SuratController::class, 'pengajuanMasuk'])->middleware('permission:R Pengajuan Surat')->name('surat.pengajuan');
@@ -192,6 +203,7 @@ Route::prefix('admin')->name('admin.')
         Route::post('surat/{pengajuan}/reject', [SuratController::class, 'reject'])->middleware('permission:U Pengajuan Surat')->name('surat.reject');
         Route::post('surat/{pengajuan}/selesai', [SuratController::class, 'selesai'])->middleware('permission:U Pengajuan Surat')->name('surat.selesai');
         Route::get('surat/{pengajuan}/pdf', [SuratController::class, 'pdf'])->middleware('permission:R Pengajuan Surat')->name('surat.pdf');
+        Route::get('surat/{pengajuan}/preview', [SuratController::class, 'previewPdf'])->middleware('permission:R Pengajuan Surat')->name('surat.preview');
 
         // Arsip Surat
         Route::get('surat/arsip', [SuratController::class, 'arsip'])->middleware('permission:R Arsip Surat')->name('surat.arsip');
@@ -276,8 +288,11 @@ Route::prefix('admin')->name('admin.')
 
         // Role & Permission
         Route::get('roles', [RoleController::class, 'index'])->middleware(['permission:R Role & Permission', 'can_manage_users'])->name('roles.index');
+        Route::get('roles/create', [RoleController::class, 'create'])->middleware(['permission:C Role & Permission', 'can_manage_users'])->name('roles.create');
+        Route::post('roles', [RoleController::class, 'store'])->middleware(['permission:C Role & Permission', 'can_manage_users'])->name('roles.store');
         Route::post('roles/update', [RoleController::class, 'update'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.update');
         Route::post('roles/sync', [RoleController::class, 'syncAll'])->middleware(['permission:U Role & Permission', 'can_manage_users'])->name('roles.sync');
+        Route::delete('roles/{role}', [RoleController::class, 'destroy'])->middleware(['permission:D Role & Permission', 'can_manage_users'])->name('roles.destroy');
 
         // Notifikasi Admin (tersedia untuk semua staff/role yang masuk area admin)
         Route::get('notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');

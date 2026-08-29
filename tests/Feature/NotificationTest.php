@@ -57,13 +57,28 @@ class NotificationTest extends TestCase
         $this->admin();
         $jenis = JenisSurat::create(['kode' => 'SKU', 'nama' => 'Surat Keterangan Usaha', 'aktif' => true]);
 
-        $this->post(route('warga.surat.store', $jenis), [
-            'nama' => 'Warga Test',
+        $penduduk = \App\Models\Penduduk::create([
             'nik' => '3201010101010111',
-            'no_whatsapp' => '081234567890',
+            'nama' => 'Warga Test',
+            'rt' => '01', 'rw' => '01',
             'alamat' => 'Kp. Contoh',
-            'keterangan' => 'Untuk keperluan bank',
-        ])->assertRedirect();
+        ]);
+        $warga = User::create([
+            'name' => $penduduk->nama,
+            'email' => 'warga-notif@test.local',
+            'nik' => $penduduk->nik,
+            'password' => bcrypt('password'),
+            'email_verified_at' => now(),
+        ]);
+
+        $this->actingAs($warga, 'warga')
+            ->post(route('warga.rt.surat.store', ['rt' => '01', 'jenisSurat' => $jenis]), [
+                'nama' => 'Warga Test',
+                'nik' => '3201010101010111',
+                'no_whatsapp' => '081234567890',
+                'alamat' => 'Kp. Contoh',
+                'keterangan' => 'Untuk keperluan bank',
+            ])->assertRedirect();
 
         $this->assertDatabaseHas('notifications', [
             'tipe' => 'surat',

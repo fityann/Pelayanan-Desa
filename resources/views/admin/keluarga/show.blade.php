@@ -60,14 +60,20 @@
 
     <!-- Daftar Anggota Keluarga -->
     <div class="bg-surface-container-lowest rounded-3xl shadow-sm border border-outline-variant/20 overflow-hidden">
-        <div class="p-lg border-b border-outline-variant/20 flex items-center justify-between bg-surface-container/30">
+        <div class="p-lg border-b border-outline-variant/20 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-md bg-surface-container/30">
             <div class="flex items-center gap-sm">
                 <span class="material-symbols-outlined text-primary">groups</span>
                 <h3 class="text-title-md font-bold text-on-surface">Daftar Anggota Keluarga</h3>
+                <span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-label-sm font-bold ml-2">
+                    {{ $keluarga->penduduk->count() }} Orang
+                </span>
             </div>
-            <div class="bg-primary text-on-primary px-3 py-1 rounded-full text-label-sm font-bold">
-                {{ $keluarga->penduduk->count() }} Orang
-            </div>
+            
+            <a href="{{ route('admin.penduduk.create', ['no_kk' => $keluarga->no_kk, 'keluarga_id' => $keluarga->id, 'rt' => $keluarga->rt, 'rw' => $keluarga->rw, 'alamat' => $keluarga->alamat]) }}" 
+               class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-label-sm font-bold shadow-md shadow-emerald-600/20 transition-all flex items-center gap-1.5 hover:scale-[1.02] active:scale-[0.98]">
+                <span class="material-symbols-outlined text-lg">person_add</span>
+                <span>Tambah Anggota Keluarga</span>
+            </a>
         </div>
 
         <div class="overflow-x-auto">
@@ -105,9 +111,14 @@
                     @empty
                         <tr>
                             <td colspan="6" class="px-lg py-8 text-center text-on-surface-variant">
-                                <div class="flex flex-col items-center gap-2">
-                                    <span class="material-symbols-outlined text-4xl opacity-50">person_off</span>
+                                <div class="flex flex-col items-center gap-3">
+                                    <span class="material-symbols-outlined text-4xl text-slate-300">person_off</span>
                                     <p class="text-body-sm font-medium">Belum ada data anggota keluarga (Penduduk) yang dihubungkan dengan Nomor KK ini.</p>
+                                    <a href="{{ route('admin.penduduk.create', ['no_kk' => $keluarga->no_kk, 'keluarga_id' => $keluarga->id, 'rt' => $keluarga->rt, 'rw' => $keluarga->rw, 'alamat' => $keluarga->alamat]) }}" 
+                                       class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all flex items-center gap-1 mt-1">
+                                        <span class="material-symbols-outlined text-base">person_add</span>
+                                        <span>Tambah Anggota Sekarang (Auto No. KK)</span>
+                                    </a>
                                 </div>
                             </td>
                         </tr>

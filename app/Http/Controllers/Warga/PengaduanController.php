@@ -26,7 +26,7 @@ class PengaduanController extends Controller
             'nama' => 'required|string|max:100',
             'whatsapp' => 'required|string|max:20',
             'foto' => 'nullable|array|max:5',
-            'foto.*' => 'image|mimes:jpeg,png,jpg,webp|max:5120', // 5MB per file
+            'foto.*' => 'image|mimes:jpeg,png,jpg,webp|max:15360', // 15MB per file
             'sumber_akses' => 'required|string',
             'lokasi_qr' => 'nullable|string',
             'latitude' => 'nullable|numeric',
@@ -68,7 +68,8 @@ class PengaduanController extends Controller
         if ($request->hasFile('foto')) {
             $fotoPaths = [];
             foreach ($request->file('foto') as $index => $foto) {
-                $filename = 'pengaduan_' . Str::random(10) . '_' . $index . '.' . $foto->getClientOriginalExtension();
+                // Gunakan ->extension() (berbasis MIME type aktual) bukan ->getClientOriginalExtension() (dari nama file browser)
+                $filename = 'pengaduan_' . Str::random(10) . '_' . $index . '.' . $foto->extension();
                 $fotoPaths[] = $foto->storeAs('pengaduan', $filename, 'public');
             }
             $pengaduan->foto = json_encode($fotoPaths);

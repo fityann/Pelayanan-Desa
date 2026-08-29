@@ -19,15 +19,21 @@ class AuthenticationTest extends TestCase
 
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
-        $user = User::factory()->create();
-
-        $response = $this->post('/login', [
-            'login' => $user->email,
-            'password' => 'password',
+        $penduduk = \App\Models\Penduduk::create([
+            'nik' => '3201010101010111',
+            'nama' => 'Warga Test',
+            'rt' => '01',
+            'rw' => '01',
+            'alamat' => 'Kp. Contoh',
         ]);
 
-        $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response = $this->post('/login', [
+            'nik' => $penduduk->nik,
+            'nama' => $penduduk->nama,
+        ]);
+
+        $this->assertAuthenticated('warga');
+        $response->assertRedirect(route('warga.rt.surat.index', ['rt' => '01', 'rw' => '01']));
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

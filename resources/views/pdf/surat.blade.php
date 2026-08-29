@@ -130,6 +130,9 @@
         if (!str_contains(strtolower($cleanAlamat), 'rt')) {
             $cleanAlamat .= " RT $rtNumber";
         }
+
+        $formFieldsPdf  = (array) ($surat->jenisSurat->form_fields ?? []);
+        $dataIsianPdf   = (array) ($surat->data_isian ?? []);
     @endphp
 
     <!-- Kop Surat Resmi Desa -->
@@ -184,6 +187,18 @@
                 <td style="font-weight: bold;">Alamat Lengkap</td>
                 <td>: {{ $cleanAlamat }}</td>
             </tr>
+            @if(count($dataIsianPdf) > 0)
+                @foreach($dataIsianPdf as $key => $value)
+                    @php
+                        $fieldPdf = collect($formFieldsPdf)->firstWhere('name', $key);
+                        $labelPdf = $fieldPdf['label'] ?? ucwords(str_replace('_', ' ', $key));
+                    @endphp
+                    <tr>
+                        <td style="font-weight: bold;">{{ $labelPdf }}</td>
+                        <td>: {{ $value ?? '-' }}</td>
+                    </tr>
+                @endforeach
+            @endif
         </table>
 
         <p>Orang tersebut di atas adalah benar warga penduduk yang berdomisili di Desa Puspamukti Kecamatan Cigalontang Kabupaten Tasikmalaya.</p>
